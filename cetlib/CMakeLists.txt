@@ -139,6 +139,27 @@ target_link_libraries(cetlib-static
   )
 set_target_properties(cetlib-static PROPERTIES OUTPUT_NAME cetlib)
 
+#-----------------------------------------------------------------------
+# Install
+#
+install(TARGETS cetlib cetlib-static
+  EXPORT ${PROJECT_NAME}Targets
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+install(FILES ${cetlib_PUBLIC_HEADERS}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
+  )
+install(FILES ${cetlib_DETAIL_HEADERS}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/detail
+  )
+install(FILES ${cetlib_POLARSSL_HEADERS}
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/polarssl
+  )
+
+
+
 ## ======================================================================
 ##
 ## Build/install script
