@@ -7,9 +7,10 @@ namespace cet {
                                            std::string const& delimSet )
   {
     std::vector<std::string> tokens;
+    auto tmp = std::regex(delimSet);
     std::copy( std::sregex_token_iterator(str.begin(),
                                           str.end(),
-                                          std::regex( delimSet ),
+                                          tmp,
                                           -1),
                std::sregex_token_iterator(),
                std::back_inserter( tokens ) );
