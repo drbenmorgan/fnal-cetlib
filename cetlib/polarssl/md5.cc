@@ -28,11 +28,11 @@
  *  http://www.ietf.org/rfc/rfc1321.txt
  */
 
-#include "polarssl/config.h"
+#include "cetlib/polarssl/config.h"
 
 #if defined(POLARSSL_MD5_C)
 
-#include "polarssl/md5.h"
+#include "cetlib/polarssl/md5.h"
 
 #if defined(POLARSSL_FS_IO) || defined(POLARSSL_SELF_TEST)
 #include <stdio.h>

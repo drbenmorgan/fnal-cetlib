@@ -31,7 +31,7 @@
 #ifndef POLARSSL_VERSION_H
 #define POLARSSL_VERSION_H
 
-#include "polarssl/config.h"
+#include "cetlib/polarssl/config.h"
 
 #ifdef __cplusplus
 namespace polarssl {
