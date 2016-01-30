@@ -140,9 +140,14 @@ target_link_libraries(cetlib-static
 set_target_properties(cetlib-static PROPERTIES OUTPUT_NAME cetlib)
 
 #-----------------------------------------------------------------------
+# Program
+add_executable(inc-expand inc-expand.cc)
+target_link_libraries(inc-expand cetlib-static)
+
+#-----------------------------------------------------------------------
 # Install
 #
-install(TARGETS cetlib cetlib-static
+install(TARGETS cetlib cetlib-static inc-expand
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
