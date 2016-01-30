@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.3)
 project(cetlib VERSION 1.17.2)
 
+# Mock cetbuildtools
+list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cbt")
+
 include(GNUInstallDirs)
 
 # C++ Standard Config
@@ -28,7 +31,7 @@ enable_testing()
 #-----------------------------------------------------------------------
 # Process components
 add_subdirectory(cetlib)
-#add_subdirectory(test)
+add_subdirectory(test)
 #add_subdirectory( perllib )          # Modular plugin skeleton generator
 #add_subdirectory( ups )              # ups files
 

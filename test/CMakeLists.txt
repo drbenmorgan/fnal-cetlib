@@ -4,6 +4,11 @@
 #
 # ======================================================================
 
+# NB: To run tests, these need to be run with CMAKE_BINARY_DIR/test
+# in the PATH, as cet_test/cet_test_exec always look in PATH, rather
+# than using known paths from CMake.
+
+include(SetCompilerFlags)
 include(CetTest)
 cet_enable_asserts()
 
@@ -100,7 +105,7 @@ test_library(2_1_5)
 cet_test(LibraryManager_t USE_BOOST_UNIT
   LIBRARIES
   ${Boost_FILESYSTEM_LIBRARY}
-  -ldl
+  ${CMAKE_DL_LIBS}
   )
 
 cet_test(replace_all_test USE_BOOST_UNIT
