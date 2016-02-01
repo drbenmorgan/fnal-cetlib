@@ -4,8 +4,7 @@ project(cetlib VERSION 1.17.2)
 
 # Mock cetbuildtools
 list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cbt")
-
-include(GNUInstallDirs)
+include(MiniCet)
 
 # C++ Standard Config
 set(CMAKE_CXX_EXTENSIONS OFF)
