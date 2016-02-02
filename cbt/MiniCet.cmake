@@ -2,6 +2,22 @@
 #   sans UPS.
 # - Real mix for now, to be refactored into modules later
 #
+# Additional notes
+# ----------------
+# Enforcement of Compiler ID/Version
+# ----------------------------------
+# NOTIMPLEMENTED. Note however the content of the "PackageConfigVersion.cmake"
+# file that CMake's CMakePackageConfigHelpers module generates.
+# It also checks that 32/64 bitness of found package matches that being built
+# for, and marks the found package version as "unsuitable".
+# That needs further checking for behaviour, but this could be extended
+# to Compiler ID/Version. I.e. mark package version as unsuitable if
+# it was built with a different compiler/version than that in use
+# by the client project.
+# Could also be implemented by *optional* inclusion of a module file
+# to check this. That way clients could switch between hard/soft
+# checks (e.g. hard requirement in UPS land).
+#
 #-----------------------------------------------------------------------
 # Copyright 2016 Ben Morgan <Ben.Morgan@warwick.ac.uk>
 # Copyright 2016 University of Warwick
