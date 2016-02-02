@@ -229,21 +229,19 @@ set(CMAKE_CXX_FLAGS "${CET_COMPILER_CXX_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVE
 
 # SSE2 flags only in release (optimized) modes?
 
-
 #-----------------------------------------------------------------------
 # END OF SETCOMPILERFLAGS Implementation
 #-----------------------------------------------------------------------
 
 
 #-----------------------------------------------------------------------
-# INSTALL POLICIES
+# INSTALL/OUTPUT POLICIES
 #-----------------------------------------------------------------------
 # - Default to GNU-style
 # -- Provide switch to use UPS-style install tree
 # -- Essentially only needs to change defaults for binary dirs per
 #    UPS's conventions. Naming structure should be derivable from
 #    CMake builtins to query OS/bit/package
-
 include(GNUInstallDirs)
 
 # -- Provide additional variables for CMake/FHICL/GDML dirs
@@ -284,4 +282,61 @@ foreach(dir CMAKEDIR FHICLDIR GDMLDIR)
     set(CMAKE_INSTALL_FULL_${dir} "${CMAKE_INSTALL_${dir}}")
   endif()
 endforeach()
+
+# - With those in place, can create buildtree layout for products
+# Again, a policy decision, but sensible default is:
+# - root directory for everything, efFectively mapping to
+#   CMAKE_INSTALL_PREFIX
+# - Separate directories under that for binary products in different
+#   modes
+# Could be extended to other install location variables if required
+#
+set(${PROJECT_NAME}_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/BuildProducts")
+
+# - Single mode generators, by default
+# +- BuildProducts/
+#    +- bin/
+#    +- lib/
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${CMAKE_INSTALL_BINDIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${CMAKE_INSTALL_LIBDIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${CMAKE_INSTALL_LIBDIR}")
+
+# - Multi mode generators, by default
+# BuildProducts/
+# +- Release/
+# |  +- bin/
+# |  +- lib/
+# +- Debug/
+# |  +- bin/
+# |  +- lib/
+# | ...
+foreach(_conftype ${CMAKE_CONFIGURATION_TYPES})
+  string(TOUPPER ${_conftype} _conftype_uppercase)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${_conftype_uppercase}
+    "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${_conftype}/${CMAKE_INSTALL_BINDIR}"
+    )
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${_conftype_uppercase}
+    "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${_conftype}/${CMAKE_INSTALL_LIBDIR}"
+    )
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${_conftype_uppercase}
+    "${${PROJECT_NAME}_OUTPUT_DIRECTORY}/${_conftype}/${CMAKE_INSTALL_LIBDIR}"
+    )
+endforeach()
+
+#-----------------------------------------------------------------------
+# CETTEST.cmake ET AL
+#-----------------------------------------------------------------------
+# - Clarify cet_test implementation/properties/running
+# ALSO - USING A STANDARD BUILD PRODUCT BREAKS BASE CET_TEST...
+# Current system doesn't allow for multiconfig generators, and test
+# runners like cet_exec_test are not very portable (in that case,
+# requires GNU getopt implementation).
+# Also would like better factorization of
+# - Build tests
+# - Running tests
+# - Handling results
+#-----------------------------------------------------------------------
+# END OF CETTEST.cmake IMPLEMENTATION
+#-----------------------------------------------------------------------
+
 
