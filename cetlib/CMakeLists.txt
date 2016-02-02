@@ -114,7 +114,12 @@ add_library(cetlib SHARED
   ${cetlib_SOURCES}
   )
 target_compile_features(cetlib PUBLIC ${cetlib_COMPILE_FEATURES})
-target_include_directories(cetlib PUBLIC ${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
+target_include_directories(cetlib
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    ${Boost_INCLUDE_DIRS}
+  )
 target_link_libraries(cetlib
   ${Boost_FILESYSTEM_LIBRARY}
   ${Boost_REGEX_LIBRARY}
@@ -130,7 +135,13 @@ add_library(cetlib-static STATIC
   ${cetlib_SOURCES}
   )
 target_compile_features(cetlib-static PUBLIC ${cetlib_COMPILE_FEATURES})
-target_include_directories(cetlib-static PUBLIC ${PROJECT_SOURCE_DIR} ${Boost_INCLUDE_DIRS})
+target_include_directories(cetlib-static
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    ${Boost_INCLUDE_DIRS}
+  )
+
 target_link_libraries(cetlib-static
   ${Boost_FILESYSTEM_LIBRARY}
   ${Boost_REGEX_LIBRARY}
@@ -163,7 +174,44 @@ install(FILES ${cetlib_POLARSSL_HEADERS}
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/polarssl
   )
 
+#-----------------------------------------------------------------------
+# Create exports file(s)
+include(CMakePackageConfigHelpers)
 
+# - Common to both trees
+write_basic_package_version_file(
+  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  COMPATIBILITY SameMajorVersion
+  )
+
+# - Build tree (EXPORT only for now, config file needs some thought,
+#   dependent on the use of multiconfig)
+export(
+  EXPORT ${PROJECT_NAME}Targets
+  NAMESPACE cetlib::
+  FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+  )
+
+# - Install tree
+configure_package_config_file("${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in"
+  "${PROJECT_BINARY_DIR}/InstallCMakeFiles/${PROJECT_NAME}Config.cmake"
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+  )
+
+install(
+  FILES
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    "${PROJECT_BINARY_DIR}/InstallCMakeFiles/${PROJECT_NAME}Config.cmake"
+  DESTINATION
+    "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+    )
+
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  NAMESPACE cetlib::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+  )
 
 ## ======================================================================
 ##
