@@ -208,8 +208,50 @@ set(CMAKE_CXX_FLAGS "${CET_COMPILER_CXX_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVE
 # INSTALL POLICIES
 #-----------------------------------------------------------------------
 # - Default to GNU-style
-#   Provide additional variables for FHICL/GDML dirs
-#   Provide switch to use UPS-style install tree
+# -- Provide switch to use UPS-style install tree
+# -- Essentially only needs to change defaults for binary dirs per
+#    UPS's conventions. Naming structure should be derivable from
+#    CMake builtins to query OS/bit/package
+
 include(GNUInstallDirs)
 
+# -- Provide additional variables for CMake/FHICL/GDML dirs
+# Assumed that CMake Package Configuration files are architecture dependent
+# Not *always* true, but gives a good default
+if(NOT DEFINED CMAKE_INSTALL_CMAKEDIR)
+  set(CMAKE_INSTALL_CMAKEDIR "" CACHE PATH "CMake package configuration files (LIBDIR/cmake)")
+  set(CMAKE_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
+endif()
+
+# FHICL files are always architecture independent
+# - Policy at present is to follow other man/doc style and use "fhicl/PROJECT_NAME"
+#   Could equally use PROJECT_NAME/fhicl as default if better fit
+if(NOT DEFINED CMAKE_INSTALL_FHICLDIR)
+  set(CMAKE_INSTALL_FHICLDIR "" CACHE PATH "FHICL configuration files (DATAROOTDIR/fhicl/PROJECT_NAME)")
+  set(CMAKE_INSTALL_FHICLDIR "${CMAKE_INSTALL_DATAROOTDIR}/fhicl/${PROJECT_NAME}")
+endif()
+
+# GDML files are always architecture independent
+# - Policy at present is to follow other man/doc style and use "gdml/PROJECT_NAME"
+#   Could equally use PROJECT_NAME/gdml as default if better fit
+if(NOT DEFINED CMAKE_INSTALL_GDMLDIR)
+  set(CMAKE_INSTALL_GDMLDIR "" CACHE PATH "GDML configuration files (DATAROOTDIR/gdml/PROJECT_NAME)")
+  set(CMAKE_INSTALL_GDMLDIR "${CMAKE_INSTALL_DATAROOTDIR}/gdml/${PROJECT_NAME}")
+endif()
+
+# ANY OTHERS?? (Discounting perllib as this is extremely limited and not critical for functionality)
+
+
+# - As with other dirs,
+#   - provide absolute path variables
+#   - mark as advanced
+# None of these variables are special cases like etc/var, so handling is simple
+foreach(dir CMAKEDIR FHICLDIR GDMLDIR)
+  mark_as_advanced(CMAKE_INSTALL_${dir})
+  if(NOT IS_ABSOLUTE "${CMAKE_INSTALL_${dir}}")
+    set(CMAKE_INSTALL_FULL_${dir} "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_${dir}}")
+  else()
+    set(CMAKE_INSTALL_FULL_${dir} "${CMAKE_INSTALL_${dir}}")
+  endif()
+endforeach()
 
