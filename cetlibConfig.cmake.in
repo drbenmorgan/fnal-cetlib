@@ -1,4 +1,10 @@
 # - cetlibConfig Template file
+
+# - May not need this variable as versioning file
+# holds details, but seems to be convention
+set(@PROJECT_NAME@_VERSION "@PROJECT_VERSION@")
+
+# - CMakePackageConfigHelpers Startup...
 @PACKAGE_INIT@
 
 # Don't *strictly* need include dir as linking to cetlib::cetlib
@@ -18,6 +24,6 @@ set_and_check(@PROJECT_NAME@_INCLUDEDIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 # if it's a *private* and *shared lib only* dependency (i.e. no
 # headers appear in out package's public interface)
 
-
+# - Include our targets
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 
