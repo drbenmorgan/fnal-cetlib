@@ -184,223 +184,287 @@ include(CetCopy)
 #include(FindUpsBoost)
 # Need cet_script for PREBUILT scripts
 include(CetMake)
+
+# NOT USED IN THIS MODULE
 # May need to escape a string to avoid misinterpretation as regex
-include(CetRegexEscape)
+#include(CetRegexEscape)
 
 # If Boost has been specified but the library hasn't, load the library.
 #IF((NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY) AND BOOST_VERS)
 #  find_ups_boost(${BOOST_VERS} unit_test_framework)
 #ENDIF()
 
+# Module Know Thine Self
+set(CET_TEST_MODULE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
 # Wrap the cet_test_exec so we always use ours - It means that PATH
 # is not needed.
-set(CET_EXEC_TEST ${CMAKE_CURRENT_LIST_DIR}/cet_exec_test)
+set(CET_EXEC_TEST "${CET_TEST_MODULE_DIR}/cet_exec_test")
 
-
-SET(CET_TEST_GROUPS "NONE"
+# Test groups
+set(CET_TEST_GROUPS "NONE"
   CACHE STRING "List of optional test groups to be configured."
   )
+mark_as_advanced(CET_TEST_GROUPS)
+string(TOUPPER "${CET_TEST_GROUPS}" CET_TEST_GROUPS_UC)
 
-
-STRING(TOUPPER "${CET_TEST_GROUPS}" CET_TEST_GROUPS_UC)
-
-SET(CET_TEST_ENV ""
+# Test environment variables
+set(CET_TEST_ENV ""
   CACHE INTERNAL "Environment to add to every test"
   FORCE
   )
 
-FUNCTION(_update_defined_test_groups)
-  IF(ARGC)
-    SET(TMP_LIST ${CET_DEFINED_TEST_GROUPS})
-    LIST(APPEND TMP_LIST ${ARGN})
-    LIST(REMOVE_DUPLICATES TMP_LIST)
-    SET(CET_DEFINED_TEST_GROUPS ${TMP_LIST}
+# - ??
+function(_update_defined_test_groups)
+  if(ARGC)
+    set(TMP_LIST ${CET_DEFINED_TEST_GROUPS})
+    list(APPEND TMP_LIST ${ARGN})
+    list(REMOVE_DUPLICATES TMP_LIST)
+    set(CET_DEFINED_TEST_GROUPS ${TMP_LIST}
       CACHE STRING "List of defined test groups."
       FORCE
       )
-  ENDIF()
-ENDFUNCTION()
+  endif()
+endfunction()
 
-FUNCTION(_check_want_test CET_OPTIONAL_GROUPS CET_WANT_TEST)
-  IF(NOT CET_OPTIONAL_GROUPS)
-    SET(${CET_WANT_TEST} YES PARENT_SCOPE)
-    RETURN() # Short-circuit.
-  ENDIF()
-  SET (${CET_WANT_TEST} NO PARENT_SCOPE)
-  LIST(FIND CET_TEST_GROUPS_UC ALL WANT_ALL)
-  LIST(FIND CET_TEST_GROUPS_UC NONE WANT_NONE)
-  IF(WANT_ALL GREATER -1)
-    SET (${CET_WANT_TEST} YES PARENT_SCOPE)
-    RETURN() # Short-circuit.
-  ELSEIF(WANT_NONE GREATER -1)
-    RETURN() # Short-circuit.
-  ELSE()
-    FOREACH(item IN LISTS CET_OPTIONAL_GROUPS)
-      STRING(TOUPPER "${item}" item_uc)
-      LIST(FIND CET_TEST_GROUPS_UC ${item_uc} FOUND_ITEM)
-      IF(FOUND_ITEM GREATER -1)
-        SET (${CET_WANT_TEST} YES PARENT_SCOPE)
-        RETURN() # Short-circuit.
-      ENDIF()
-    ENDFOREACH()
-  ENDIF()
-ENDFUNCTION()
+# - ??
+function(_check_want_test CET_OPTIONAL_GROUPS CET_WANT_TEST)
+  if(NOT CET_OPTIONAL_GROUPS)
+    set(${CET_WANT_TEST} YES PARENT_SCOPE)
+    return() # Short-circuit.
+  endif()
+
+  set(${CET_WANT_TEST} NO PARENT_SCOPE)
+
+  list(FIND CET_TEST_GROUPS_UC ALL WANT_ALL)
+  list(FIND CET_TEST_GROUPS_UC NONE WANT_NONE)
+
+  if(WANT_ALL GREATER -1)
+    set(${CET_WANT_TEST} YES PARENT_SCOPE)
+    return() # Short-circuit.
+  elseif(WANT_NONE GREATER -1)
+    return() # Short-circuit.
+  else()
+    foreach(item IN LISTS CET_OPTIONAL_GROUPS)
+      string(TOUPPER "${item}" item_uc)
+      list(FIND CET_TEST_GROUPS_UC ${item_uc} FOUND_ITEM)
+      if(FOUND_ITEM GREATER -1)
+        set(${CET_WANT_TEST} YES PARENT_SCOPE)
+        return() # Short-circuit.
+      endif()
+    endforeach()
+  endif()
+endfunction()
 
 ####################################
 # Main macro definitions.
-MACRO(cet_test_env)
-  CMAKE_PARSE_ARGUMENTS(CET_TEST
+macro(cet_test_env)
+  cmake_parse_arguments(CET_TEST
     "CLEAR"
     ""
     ""
     ${ARGN}
     )
-  IF(CET_TEST_CLEAR)
-    SET(CET_TEST_ENV "")
-  ENDIF()
-  LIST(APPEND CET_TEST_ENV ${CET_TEST_UNPARSED_ARGUMENTS})
-ENDMACRO()
 
-FUNCTION(cet_test CET_TARGET)
+  if(CET_TEST_CLEAR)
+    set(CET_TEST_ENV "")
+  endif()
+  list(APPEND CET_TEST_ENV ${CET_TEST_UNPARSED_ARGUMENTS})
+endmacro()
+
+# -- Actual heavy lifting
+function(cet_test CET_TARGET)
   # Parse arguments
-  IF(${CET_TARGET} MATCHES .*/.*)
-    MESSAGE(FATAL_ERROR "${CET_TARGET} shuld not be a path. Use a simple "
+  if(${CET_TARGET} MATCHES .*/.*)
+    message(FATAL_ERROR "${CET_TARGET} shuld not be a path. Use a simple "
       "target name with the HANDBUILT and TEST_EXEC options instead.")
-  ENDIF()
-  CMAKE_PARSE_ARGUMENTS (CET
+  endif()
+
+  cmake_parse_arguments(CET
     "HANDBUILT;PREBUILT;NO_AUTO;USE_BOOST_UNIT;INSTALL_BIN;INSTALL_EXAMPLE;INSTALL_SOURCE"
     "OUTPUT_FILTER;TEST_EXEC"
     "CONFIGURATIONS;DATAFILES;DEPENDENCIES;LIBRARIES;OPTIONAL_GROUPS;OUTPUT_FILTER_ARGS;REQUIRED_FILES;SOURCES;TEST_ARGS;TEST_PROPERTIES;REF"
     ${ARGN}
     )
+
   # Set up to handle a per-test work directory for parallel testing.
-  SET(CET_TEST_WORKDIR "${CMAKE_CURRENT_BINARY_DIR}/${CET_TARGET}.d")
+  set(CET_TEST_WORKDIR "${CMAKE_CURRENT_BINARY_DIR}/${CET_TARGET}.d")
   file(MAKE_DIRECTORY "${CET_TEST_WORKDIR}")
-  IF(CET_TEST_EXEC)
-    IF(NOT CET_HANDBUILT)
-      MESSAGE(FATAL_ERROR "cet_test: target ${CET_TARGET} cannot specify "
+
+  # - Actual program to run as the test
+  if(CET_TEST_EXEC)
+    if(NOT CET_HANDBUILT)
+      message(FATAL_ERROR "cet_test: target ${CET_TARGET} cannot specify "
         "TEST_EXEC without HANDBUILT")
-    ENDIF()
-  ELSE()
-    SET(CET_TEST_EXEC ${CMAKE_CURRENT_BINARY_DIR}/${CET_TARGET})
-  ENDIF()
-  IF(CET_UNPARSED_ARGUMENTS)
+    endif()
+  else()
+    set(CET_TEST_EXEC ${CMAKE_CURRENT_BINARY_DIR}/${CET_TARGET})
+  endif()
+
+  if(CET_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "cet_test: DATAFILES option is now mandatory: non-option arguments are no longer permitted.")
-  ENDIF()
-  if (DEFINED CET_DATAFILES)
+  endif()
+
+  # - Collect datafiles
+  if(DEFINED CET_DATAFILES)
     list(REMOVE_DUPLICATES CET_DATAFILES)
     set(datafiles_tmp)
-    foreach (df ${CET_DATAFILES})
+
+    foreach(df ${CET_DATAFILES})
       get_filename_component(dfd ${df} DIRECTORY)
-      if (dfd)
+      if(dfd)
         list(APPEND datafiles_tmp ${df})
       else(dfd)
         list(APPEND datafiles_tmp ${CMAKE_CURRENT_SOURCE_DIR}/${df})
-      endif(dfd)
+      endif()
     endforeach()
+
     set(CET_DATAFILES ${datafiles_tmp})
-  endif(DEFINED CET_DATAFILES)
-  IF(CET_HANDBUILT AND CET_PREBUILT)
+  endif()
+
+  #-----------------------------
+  # - Define the test executable
+  if(CET_HANDBUILT AND CET_PREBUILT)
     # CET_HANDBUILT and CET_PREBUILT are mutually exclusive.
-    MESSAGE(FATAL_ERROR "cet_test: target ${CET_TARGET} cannot have both CET_HANDBUILT "
-      "and CET_PREBUILT options set.")
-  ELSEIF(CET_PREBUILT) # eg scripts.
-    IF (NOT CET_INSTALL_BIN)
-      SET(CET_NO_INSTALL "NO_INSTALL")
-    ENDIF()
-    cet_script(${CET_TARGET} ${CET_NO_INSTALL} DEPENDENCIES ${CET_DEPENDENCIES})
-  ELSEIF(NOT CET_HANDBUILT) # Normal build.
-# Too noisy for now!
-#    MESSAGE(WARNING "Building the test executable with cet_test is deprecated: use cet_make_exec(NO_INSTALL) or art_make_exec(NO_INSTALL) and cet_test(HANDBUILT) instead.")
+    message(FATAL_ERROR
+      "cet_test: target ${CET_TARGET} cannot have both CET_HANDBUILT "
+      "and CET_PREBUILT options set."
+      )
+  elseif(CET_PREBUILT)
+    # eg scripts.
+    if(NOT CET_INSTALL_BIN)
+      set(CET_NO_INSTALL "NO_INSTALL")
+    endif()
+
+    cet_script(
+      ${CET_TARGET}
+      ${CET_NO_INSTALL}
+      DEPENDENCIES ${CET_DEPENDENCIES}
+      )
+  elseif(NOT CET_HANDBUILT)
+    # Normal build.
+    # Too noisy for now! (??So is it deprecated or not??)
+    #    MESSAGE(WARNING "Building the test executable with cet_test is deprecated: use cet_make_exec(NO_INSTALL) or art_make_exec(NO_INSTALL) and cet_test(HANDBUILT) instead.")
     # Build the executable.
-    IF(NOT CET_SOURCES) # Useful default.
-      SET(CET_SOURCES ${CET_TARGET}.cc)
-    ENDIF()
-    ADD_EXECUTABLE(${CET_TARGET} ${CET_SOURCES})
+    if(NOT CET_SOURCES) # Useful default.
+      set(CET_SOURCES ${CET_TARGET}.cc)
+    endif()
+
+    add_executable(${CET_TARGET} ${CET_SOURCES})
+    # -- !! It's this that *should* allow running without explicit paths!!
     set(CET_EXEC_TEST $<TARGET_FILE:${CET_TARGET}>)
-    IF(CET_USE_BOOST_UNIT)
+
+    # Boost.Unit-ify
+    if(CET_USE_BOOST_UNIT)
       # Make sure we have the correct library available.
-      IF (NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
-        MESSAGE(FATAL_ERROR "cet_test: target ${CET_TARGET} has USE_BOOST_UNIT "
+      if(NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
+        message(FATAL_ERROR
+          "cet_test: target ${CET_TARGET} has USE_BOOST_UNIT "
           "option set but Boost Unit Test Framework Library cannot be found: is "
-          "boost set up?")
-      ENDIF()
+          "boost set up?"
+          )
+      endif()
+
       # Compile options (-Dxxx) for simple-format unit tests.
-      SET_TARGET_PROPERTIES(${CET_TARGET} PROPERTIES
+      set_target_properties(${CET_TARGET} PROPERTIES
         COMPILE_DEFINITIONS "BOOST_TEST_MAIN;BOOST_TEST_DYN_LINK"
         )
-      TARGET_LINK_LIBRARIES(${CET_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-    ENDIF()
-    IF(COMMAND find_tbb_offloads)
+      target_link_libraries(${CET_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    endif()
+
+    # ??Where and what is find_tbb_offloads??
+    if(COMMAND find_tbb_offloads)
       find_tbb_offloads(FOUND_VAR have_tbb_offload ${CET_SOURCES})
-      IF(have_tbb_offload)
-        SET_TARGET_PROPERTIES(${CET_TARGET} PROPERTIES LINK_FLAGS ${TBB_OFFLOAD_FLAG})
-      ENDIF()
-    ENDIF()
+      if(have_tbb_offload)
+        set_target_properties(${CET_TARGET} PROPERTIES LINK_FLAGS ${TBB_OFFLOAD_FLAG})
+      endif()
+    endif()
+
+    # Link to any required libs
     if(CET_LIBRARIES)
       set(link_lib_list "")
-      foreach (lib ${CET_LIBRARIES})
-	      string(REGEX MATCH [/] has_path "${lib}")
-	      if( has_path )
-	        list(APPEND link_lib_list ${lib})
-	      else()
-	        string(TOUPPER  ${lib} ${lib}_UC )
-	        #_cet_debug_message( "simple_plugin: check ${lib}" )
-	        if( ${${lib}_UC} )
+      foreach(lib ${CET_LIBRARIES})
+        # ?? What is the intent of this path matching or uppercasing ??
+        string(REGEX MATCH [/] has_path "${lib}")
+        if(has_path)
+          list(APPEND link_lib_list ${lib})
+        else()
+          string(TOUPPER ${lib} ${lib}_UC)
+
+          if(${${lib}_UC})
             _cet_debug_message( "changing ${lib} to ${${${lib}_UC}}")
             list(APPEND link_lib_list ${${${lib}_UC}})
-	        else()
+          else()
             list(APPEND link_lib_list ${lib})
-	        endif()
-	      endif( has_path )
+          endif()
+        endif()
       endforeach()
-      TARGET_LINK_LIBRARIES(${CET_TARGET} ${link_lib_list})
+
+      target_link_libraries(${CET_TARGET} ${link_lib_list})
     endif()
-  ENDIF()
+  endif()
+
+  #------
+  # Setup
   cet_copy(${CET_DATAFILES} DESTINATION ${CET_TEST_WORKDIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  IF(CET_CONFIGURATIONS)
-    SET(CONFIGURATIONS_CMD CONFIGURATIONS)
-  ENDIF()
+
+  if(CET_CONFIGURATIONS)
+    set(CONFIGURATIONS_CMD CONFIGURATIONS)
+  endif()
+
   _update_defined_test_groups(${CET_OPTIONAL_GROUPS})
   _check_want_test("${CET_OPTIONAL_GROUPS}" WANT_TEST)
-  IF(NOT CET_NO_AUTO AND WANT_TEST)
-    LIST(FIND CET_TEST_PROPERTIES SKIP_RETURN_CODE skip_return_code)
-    IF (skip_return_code GREATER -1)
-      MATH(EXPR skip_return_code "${skip_return_code} + 1")
-      LIST(GET CET_TEST_PROPERTIES ${skip_return_code} skip_return_code)
-    ELSE()
-      SET(skip_return_code 247)
-      LIST(APPEND CET_TEST_PROPERTIES SKIP_RETURN_CODE ${skip_return_code})
-    ENDIF()
-    IF(CET_REF)
-      LIST(FIND CET_TEST_PROPERTIES PASS_REGULAR_EXPRESSION has_pass_exp)
-      LIST(FIND CET_TEST_PROPERTIES FAIL_REGULAR_EXPRESSION has_fail_exp)
-      IF(has_pass_exp GREATER -1 OR has_fail_exp GREATER -1)
-        MESSAGE(FATAL_ERROR "Cannot specify REF option for test ${CET_TARGET} in conjunction with (PASS|FAIL)_REGULAR_EXPESSION.")
-      ENDIF()
-      LIST(LENGTH CET_REF CET_REF_LEN)
-      IF(CET_REF_LEN EQUAL 1)
-        SET(OUTPUT_REF ${CET_REF})
-      ELSE()
-        LIST(GET CET_REF 0 OUTPUT_REF)
-        LIST(GET CET_REF 1 ERROR_REF)
-        SET(DEF_ERROR_REF "-DTEST_REF_ERR=${ERROR_REF}")
-        SET(DEF_TEST_ERR "-DTEST_ERR=${CET_TARGET}.err")
-      ENDIF()
-      SEPARATE_ARGUMENTS(TEST_ARGS UNIX_COMMAND "${CET_TEST_ARGS}")
-      IF(CET_OUTPUT_FILTER)
-        SET(DEF_OUTPUT_FILTER "-DOUTPUT_FILTER=${CET_OUTPUT_FILTER}")
-      ENDIF()
-      IF(CET_OUTPUT_FILTER_ARGS)
-        SEPARATE_ARGUMENTS(FILTER_ARGS UNIX_COMMAND "${CET_OUTPUT_FILTER_ARGS}")
-        SET(DEF_OUTPUT_FILTER_ARGS "-DOUTPUT_FILTER_ARGS=${FILTER_ARGS}")
-      ENDIF()
-      IF (DEFINED ENV{CETBUILDTOOLS_DIR})
-        SET(COMPARE $ENV{CETBUILDTOOLS_DIR}/Modules/RunAndCompare.cmake)
-      ELSE() # Inside cetbuildtools itself.
-        SET(COMPARE ${PROJECT_SOURCE_DIR}/Modules/RunAndCompare.cmake)
-      ENDIF()
-      ADD_TEST(NAME ${CET_TARGET}
+
+  if(NOT CET_NO_AUTO AND WANT_TEST)
+    list(FIND CET_TEST_PROPERTIES SKIP_RETURN_CODE skip_return_code)
+
+    if(skip_return_code GREATER -1)
+      math(EXPR skip_return_code "${skip_return_code} + 1")
+      list(GET CET_TEST_PROPERTIES ${skip_return_code} skip_return_code)
+    else()
+      set(skip_return_code 247)
+      list(APPEND CET_TEST_PROPERTIES SKIP_RETURN_CODE ${skip_return_code})
+    endif()
+
+    if(CET_REF)
+      list(FIND CET_TEST_PROPERTIES PASS_REGULAR_EXPRESSION has_pass_exp)
+      list(FIND CET_TEST_PROPERTIES FAIL_REGULAR_EXPRESSION has_fail_exp)
+
+      if(has_pass_exp GREATER -1 OR has_fail_exp GREATER -1)
+        message(FATAL_ERROR "Cannot specify REF option for test ${CET_TARGET} in conjunction with (PASS|FAIL)_REGULAR_EXPESSION.")
+      endif()
+
+      list(LENGTH CET_REF CET_REF_LEN)
+      if(CET_REF_LEN EQUAL 1)
+        set(OUTPUT_REF ${CET_REF})
+      else()
+        list(GET CET_REF 0 OUTPUT_REF)
+        list(GET CET_REF 1 ERROR_REF)
+        set(DEF_ERROR_REF "-DTEST_REF_ERR=${ERROR_REF}")
+        set(DEF_TEST_ERR "-DTEST_ERR=${CET_TARGET}.err")
+      endif()
+
+      separate_arguments(TEST_ARGS UNIX_COMMAND "${CET_TEST_ARGS}")
+
+      if(CET_OUTPUT_FILTER)
+        set(DEF_OUTPUT_FILTER "-DOUTPUT_FILTER=${CET_OUTPUT_FILTER}")
+      endif()
+
+      if(CET_OUTPUT_FILTER_ARGS)
+        separate_arguments(FILTER_ARGS UNIX_COMMAND "${CET_OUTPUT_FILTER_ARGS}")
+        set(DEF_OUTPUT_FILTER_ARGS "-DOUTPUT_FILTER_ARGS=${FILTER_ARGS}")
+      endif()
+
+      #if(DEFINED ENV{CETBUILDTOOLS_DIR})
+      #  set(COMPARE $ENV{CETBUILDTOOLS_DIR}/Modules/RunAndCompare.cmake)
+      #else() # Inside cetbuildtools itself.
+      # set(COMPARE ${PROJECT_SOURCE_DIR}/Modules/RunAndCompare.cmake)
+      #endif()
+      # - !! CetBuildTools always knows itself !!
+      set(COMPARE "${CET_TEST_MODULE_DIR}/RunAndCompare.cmake")
+
+      # ADD_TEST
+      add_test(NAME ${CET_TARGET}
         ${CONFIGURATIONS_CMD} ${CET_CONFIGURATIONS}
         COMMAND ${CET_EXEC_TEST} --wd ${CET_TEST_WORKDIR}
         --required-files "${CET_REQUIRED_FILES}"
@@ -416,78 +480,101 @@ FUNCTION(cet_test CET_TARGET)
         ${DEF_OUTPUT_FILTER} ${DEF_OUTPUT_FILTER_ARGS}
         -P ${COMPARE}
         )
-    ELSE(CET_REF)
+    else()
       # Add the test.
-      ADD_TEST(NAME ${CET_TARGET}
+      add_test(NAME ${CET_TARGET}
         ${CONFIGURATIONS_CMD} ${CET_CONFIGURATIONS}
         COMMAND
         ${CET_EXEC_TEST} --wd ${CET_TEST_WORKDIR}
         --required-files "${CET_REQUIRED_FILES}"
         --datafiles "${CET_DATAFILES}"
         --skip-return-code ${skip_return_code}
-        ${CET_TEST_EXEC} ${CET_TEST_ARGS})
-    ENDIF(CET_REF)
-    IF(${CMAKE_VERSION} VERSION_GREATER "2.8")
-      SET_TESTS_PROPERTIES(${CET_TARGET} PROPERTIES WORKING_DIRECTORY ${CET_TEST_WORKDIR})
-    ENDIF()
-    IF(CET_TEST_PROPERTIES)
-      SET_TESTS_PROPERTIES(${CET_TARGET} PROPERTIES ${CET_TEST_PROPERTIES})
-    ENDIF()
-    IF(CET_TEST_ENV)
-      # Set global environment.
-      GET_TEST_PROPERTY(${CET_TARGET} ENVIRONMENT CET_TEST_ENV_TMP)
-      IF(CET_TEST_ENV_TMP)
-        SET_TESTS_PROPERTIES(${CET_TARGET} PROPERTIES ENVIRONMENT "${CET_TEST_ENV};${CET_TEST_ENV_TMP}")
-      ELSE()
-        SET_TESTS_PROPERTIES(${CET_TARGET} PROPERTIES ENVIRONMENT "${CET_TEST_ENV}")
-      ENDIF()
-    ENDIF()
-    IF(CET_REF)
-      GET_TEST_PROPERTY(${CET_TARGET} REQUIRED_FILES REQUIRED_FILES_TMP)
-      IF(REQUIRED_FILES_TMP)
-        SET_TESTS_PROPERTIES("${CET_TARGET}" PROPERTIES REQUIRED_FILES "${REQUIRED_FILES_TMP};${CET_REF}")
-      ELSE()
-        SET_TESTS_PROPERTIES("${CET_TARGET}" PROPERTIES REQUIRED_FILES "${CET_REF}")
-      ENDIF()
-    ENDIF()
-  ELSE(NOT CET_NO_AUTO AND WANT_TEST)
-    IF(CET_OUTPUT_FILTER OR CET_OUTPUT_FILTER_ARGS)
-      MESSAGE(FATAL_ERROR "OUTPUT_FILTER and OUTPUT_FILTER_ARGS are not accepted if REF is not specified.")
-    ENDIF()
-  ENDIF(NOT CET_NO_AUTO AND WANT_TEST)
-  IF(CET_INSTALL_BIN)
-    IF(CET_HANDBUILT)
-      MESSAGE(WARNING "INSTALL_BIN option ignored for HANDBUILT tests.")
-    ELSEIF(NOT CET_PREBUILT)
-      INSTALL(TARGETS ${CET_TARGET} DESTINATION ${flavorqual_dir}/bin)
-    ENDIF()
-  ENDIF()
-  IF(CET_INSTALL_EXAMPLE)
-    # Install to examples directory of product.
-    INSTALL(FILES ${CET_SOURCES} ${CET_DATAFILES}
-      DESTINATION ${product}/${version}/example
-      )
-  ENDIF()
-  IF(CET_INSTALL_SOURCE)
-    # Install to sources/test (will need to be amended for eg ART's
-    # multiple test directories.
-    INSTALL(FILES ${CET_SOURCES}
-      DESTINATION ${product}/${version}/source/test
-      )
-  ENDIF()
-ENDFUNCTION(cet_test)
+        ${CET_TEST_EXEC} ${CET_TEST_ARGS}
+        )
+    endif()
 
-FUNCTION(cet_test_assertion CONDITION FIRST_TARGET)
-  IF (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
-    SET_TESTS_PROPERTIES(${FIRST_TARGET} ${ARGN} PROPERTIES
+    # -- ?? Can probably always assume this now ??
+    if(${CMAKE_VERSION} VERSION_GREATER "2.8")
+      set_tests_properties(${CET_TARGET}
+        PROPERTIES WORKING_DIRECTORY ${CET_TEST_WORKDIR}
+        )
+    endif()
+
+    if(CET_TEST_PROPERTIES)
+      set_tests_properties(${CET_TARGET} PROPERTIES ${CET_TEST_PROPERTIES})
+    endif()
+
+    if(CET_TEST_ENV)
+      # Set global environment.
+      get_test_property(${CET_TARGET} ENVIRONMENT CET_TEST_ENV_TMP)
+
+      if(CET_TEST_ENV_TMP)
+        set_tests_properties(${CET_TARGET}
+          PROPERTIES ENVIRONMENT "${CET_TEST_ENV};${CET_TEST_ENV_TMP}")
+      ELSE()
+        SET_TESTS_PROPERTIES(${CET_TARGET}
+          PROPERTIES ENVIRONMENT "${CET_TEST_ENV}"
+          )
+      endif()
+    endif()
+
+    if(CET_REF)
+      get_test_property(${CET_TARGET} REQUIRED_FILES REQUIRED_FILES_TMP)
+
+      if(REQUIRED_FILES_TMP)
+        set_tests_properties("${CET_TARGET}"
+          PROPERTIES REQUIRED_FILES "${REQUIRED_FILES_TMP};${CET_REF}"
+          )
+      else()
+        set_tests_properties("${CET_TARGET}"
+          PROPERTIES REQUIRED_FILES "${CET_REF}"
+          )
+      endif()
+    endif()
+  else()
+    if(CET_OUTPUT_FILTER OR CET_OUTPUT_FILTER_ARGS)
+      message(FATAL_ERROR "OUTPUT_FILTER and OUTPUT_FILTER_ARGS are not accepted if REF is not specified.")
+    endif()
+  endif()
+
+  # ?? Are there *any* use cases where we want to install test programs??
+  # Or rather, if there are, don't do it here!
+  #if(CET_INSTALL_BIN)
+  #  if(CET_HANDBUILT)
+  #    message(WARNING "INSTALL_BIN option ignored for HANDBUILT tests.")
+  #  elseif(NOT CET_PREBUILT)
+  #    install(TARGETS ${CET_TARGET} DESTINATION ${flavorqual_dir}/bin)
+  #  endif()
+  #endif()
+
+  #if(CET_INSTALL_EXAMPLE)
+  #  # Install to examples directory of product.
+  #  install(FILES ${CET_SOURCES} ${CET_DATAFILES}
+  #    DESTINATION ${product}/${version}/example
+  #    )
+  #endif()
+
+  #if(CET_INSTALL_SOURCE)
+  #  # Install to sources/test (will need to be amended for eg ART's
+  #  # multiple test directories.
+  #  install(FILES ${CET_SOURCES}
+  #    DESTINATION ${product}/${version}/source/test
+  #    )
+  #endif()
+endfunction()
+
+# - ??
+function(cet_test_assertion CONDITION FIRST_TARGET)
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" )
+    set_tests_properties(${FIRST_TARGET} ${ARGN} PROPERTIES
       PASS_REGULAR_EXPRESSION
       "Assertion failed: \\(${CONDITION}\\), "
       )
-  ELSE()
-    SET_TESTS_PROPERTIES(${FIRST_TARGET} ${ARGN} PROPERTIES
+  else()
+    set_tests_properties(${FIRST_TARGET} ${ARGN} PROPERTIES
       PASS_REGULAR_EXPRESSION
       "Assertion `${CONDITION}' failed\\."
       )
-  ENDIF()
-ENDFUNCTION()
-########################################################################
+  endif()
+endfunction()
+
