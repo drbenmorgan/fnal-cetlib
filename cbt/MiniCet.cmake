@@ -203,6 +203,21 @@ elseif(APPLE)
 endif()
 
 #-----------------------------------------------------------------------
+# SSE2/Arch optimizations
+#
+option(CET_COMPILER_ENABLE_SSE2 "enable SSE2 specific optimizations" OFF)
+mark_as_advanced(CET_COMPILER_ENABLE_SSE2)
+
+if(CET_COMPILER_ENABLE_SSE2)
+  foreach(_lang "C" "CXX")
+    if(CMAKE_${_lang}_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
+      set(CET_COMPILER_${_lang}_SSE2_FLAGS "-msse2 -ftree-vectorizer-verbose")
+    endif()
+  endforeach()
+endif()
+
+
+#-----------------------------------------------------------------------
 # Compile compiler flags
 # TODO : Review which of these might be better as compile properties
 # - General, All Mode Options
@@ -211,6 +226,9 @@ set(CMAKE_C_FLAGS "${CET_COMPILER_C_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVEL}} 
 set(CMAKE_CXX_FLAGS "${CET_COMPILER_CXX_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVEL}} ${CET_COMPILER_CXX_ERROR_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # DWARF flags only in debugging modes?
+
+# SSE2 flags only in release (optimized) modes?
+
 
 #-----------------------------------------------------------------------
 # END OF SETCOMPILERFLAGS Implementation
