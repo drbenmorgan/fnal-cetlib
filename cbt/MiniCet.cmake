@@ -107,6 +107,7 @@ enum_option(CET_COMPILER_DIAGNOSTIC_LEVEL
   DOC "Set warning diagnostic level"
   CASE_INSENSITIVE
   )
+mark_as_advanced(CET_COMPILER_DIAGNOSTIC_LEVEL)
 
 # - Diagnostics by language/compiler
 foreach(_lang "C" "CXX")
@@ -135,15 +136,19 @@ endforeach()
 # Assertions (i.e. no -DNDEBUG) in all build modes
 #
 option(CET_COMPILER_ENABLE_ASSERTS "enable assertions for all build modes" OFF)
+mark_as_advanced(CET_COMPILER_ENABLE_ASSERTS)
 # TODO all needed functions/calls
 
 #-----------------------------------------------------------------------
 # Treat warnings as errors
-#
 option(CET_COMPILER_WARNINGS_ARE_ERRORS "treat all warnings as errors" ON)
-
 # - Allow override for deprecations
 option(CET_COMPILER_ALLOW_DEPRECATIONS "ignore deprecation warnings" ON)
+
+mark_as_advanced(
+  CET_COMPILER_WARNINGS_ARE_ERRORS
+  CET_COMPILER_ALLOW_DEPRECATIONS
+  )
 
 if(CET_COMPILER_WARNINGS_ARE_ERRORS)
   foreach(_lang "C" "CXX")
@@ -167,6 +172,11 @@ enum_option(CET_COMPILER_DWARF_VERSION
   DOC "Set version of DWARF standard to emit"
   )
 
+mark_as_advanced(
+  CET_COMPILER_DWARF_STRICT
+  CET_COMPILER_DWARF_VERSION
+  )
+
 # Probably also need check that compiler in use supports DWARF...
 if(CET_COMPILER_DWARF_STRICT)
   foreach(_lang "C" "CXX")
@@ -180,6 +190,8 @@ endif()
 # Undefined symbol policy
 #
 option(CET_COMPILER_NO_UNDEFINED_SYMBOLS "required full symbol resolution for shared libs" ON)
+mark_as_advanced(CET_COMPILER_NO_UNDEFINED_SYMBOLS)
+
 if(CET_COMPILER_NO_UNDEFINED_SYMBOLS)
   if(APPLE)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined,error")
@@ -192,6 +204,7 @@ endif()
 
 #-----------------------------------------------------------------------
 # Compile compiler flags
+# TODO : Review which of these might be better as compile properties
 # - General, All Mode Options
 string(TOUPPER "${CET_COMPILER_DIAGNOSTIC_LEVEL}" CET_COMPILER_DIAGNOSTIC_LEVEL)
 set(CMAKE_C_FLAGS "${CET_COMPILER_C_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVEL}} ${CET_COMPILER_C_ERROR_FLAGS} ${CMAKE_C_FLAGS}")
@@ -240,7 +253,6 @@ if(NOT DEFINED CMAKE_INSTALL_GDMLDIR)
 endif()
 
 # ANY OTHERS?? (Discounting perllib as this is extremely limited and not critical for functionality)
-
 
 # - As with other dirs,
 #   - provide absolute path variables
