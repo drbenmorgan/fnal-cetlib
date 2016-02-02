@@ -317,6 +317,7 @@ FUNCTION(cet_test CET_TARGET)
       SET(CET_SOURCES ${CET_TARGET}.cc)
     ENDIF()
     ADD_EXECUTABLE(${CET_TARGET} ${CET_SOURCES})
+    set(CET_EXEC_TEST $<TARGET_FILE:${CET_TARGET}>)
     IF(CET_USE_BOOST_UNIT)
       # Make sure we have the correct library available.
       IF (NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
