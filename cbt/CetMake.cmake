@@ -122,18 +122,7 @@ macro(cet_make_exec cet_exec_name)
 
   # - Boost.Unit.ify
   if(CME_USE_BOOST_UNIT)
-    # Make sure we have the correct library available.
-    if(NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
-      message(FATAL_ERROR "cet_make_exec: target ${cet_exec_name} has USE_BOOST_UNIT "
-        "option set but Boost Unit Test Framework Library cannot be found: is "
-        "boost set up?")
-    endif()
-    # Compile options (-Dxxx) for simple-format unit tests.
-    set_target_properties(${cet_exec_name} PROPERTIES
-      COMPILE_DEFINITIONS BOOST_TEST_MAIN
-      COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
-      )
-    target_link_libraries(${cet_exec_name} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    cet_use_boost_unit(${cet_exec_name})
   endif()
 
   # - Linking, but path vs what?

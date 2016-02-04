@@ -355,4 +355,39 @@ endforeach()
 # END OF CETTEST.cmake IMPLEMENTATION
 #-----------------------------------------------------------------------
 
+#-----------------------------------------------------------------------
+# BOOST.UNIT HELPERS
+#-----------------------------------------------------------------------
+# Many places where Boost.unit is used.
+# Generally always boils down to setting a couple of target properties
+# and linking said target to the Boost.Unit library.
+# Encapsulate this in a function taking the target to be "Boost.Unitified"
+# Will need review if additional use cases/styles of use are encountered
+# TODO: Error checking
+
+# - Apply needed properties
+function(cet_use_boost_unit _target)
+  if(NOT TARGET ${_target})
+    message(FATAL_ERROR "cet_use_boost_unit: input '${_target}' is not a valid CMake target")
+  endif()
+
+  # Append, don't overwrite, compile definitions.
+  # All target types need(or rather use) BOOST_TEST_DYN_LINK
+  # BOOST_TEST_MAIN for executables only
+  set_property(TARGET ${_target}
+    APPEND PROPERTY
+      COMPILE_DEFINITIONS
+        BOOST_TEST_DYN_LINK
+        $<$<STREQUAL:$<TARGET_PROPERTY:${_target},TYPE>,EXECUTABLE>:BOOST_TEST_MAIN>
+    )
+
+  # PRIVATE incs/libs for now as is assumed tests will not be installed
+  # include directories - make private for now
+  target_include_directories(${_target} PRIVATE ${Boost_INCLUDE_DIRS})
+  # libs to link - can't specify link rule here as others may use it.
+  target_link_libraries(${_target} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+endfunction()
+#-----------------------------------------------------------------------
+# END OF BOOST.UNIT HELPERS
+#-----------------------------------------------------------------------
 

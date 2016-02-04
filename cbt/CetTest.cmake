@@ -366,20 +366,7 @@ function(cet_test CET_TARGET)
 
     # Boost.Unit-ify
     if(CET_USE_BOOST_UNIT)
-      # Make sure we have the correct library available.
-      if(NOT Boost_UNIT_TEST_FRAMEWORK_LIBRARY)
-        message(FATAL_ERROR
-          "cet_test: target ${CET_TARGET} has USE_BOOST_UNIT "
-          "option set but Boost Unit Test Framework Library cannot be found: is "
-          "boost set up?"
-          )
-      endif()
-
-      # Compile options (-Dxxx) for simple-format unit tests.
-      set_target_properties(${CET_TARGET} PROPERTIES
-        COMPILE_DEFINITIONS "BOOST_TEST_MAIN;BOOST_TEST_DYN_LINK"
-        )
-      target_link_libraries(${CET_TARGET} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+      cet_use_boost_unit(${CET_TARGET})
     endif()
 
     # ??Where and what is find_tbb_offloads??
