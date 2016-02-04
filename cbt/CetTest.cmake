@@ -169,6 +169,16 @@
 #   cet_test() or add_test() -- require at least one.
 #
 ########################################################################
+# Additional notes by Ben
+# - *think* cet_exec_test only exists to
+#   i) Remove any files that aren't supplied as datafiles or required?
+#  ii) 'Fail' if anything in datafiles or requiredfiles is missing?
+# - Appears to be some overlap between this and what CMake tests themselves
+#   can do (REQUIRED_FILES etc properties).
+# - Cleaning directory is good, but probably better to have tests with
+#   appropriate setup/teardown as well.
+
+########################################################################
 
 #-----------------------------------------------------------------------
 # Modifications Copyright 2015 Ben Morgan <Ben.Morgan@warwick.ac.uk
@@ -493,43 +503,28 @@ function(cet_test CET_TARGET)
         )
     endif()
 
-    # -- ?? Can probably always assume this now ??
-    if(${CMAKE_VERSION} VERSION_GREATER "2.8")
-      set_tests_properties(${CET_TARGET}
-        PROPERTIES WORKING_DIRECTORY ${CET_TEST_WORKDIR}
-        )
-    endif()
+    # Collate and apply directly known properties
+    # -- CMake 2.8 and higher, but that's o.k. as we rely 2.8 anyway
+    set_tests_properties(${CET_TARGET}
+      PROPERTIES WORKING_DIRECTORY ${CET_TEST_WORKDIR}
+      )
 
     if(CET_TEST_PROPERTIES)
       set_tests_properties(${CET_TARGET} PROPERTIES ${CET_TEST_PROPERTIES})
     endif()
 
+    # - Simplify ENV/REF by using append - if prepend is required, write a
+    #   function to do this (or submit a patch upstream to extend set_property)
     if(CET_TEST_ENV)
-      # Set global environment.
-      get_test_property(${CET_TARGET} ENVIRONMENT CET_TEST_ENV_TMP)
-
-      if(CET_TEST_ENV_TMP)
-        set_tests_properties(${CET_TARGET}
-          PROPERTIES ENVIRONMENT "${CET_TEST_ENV};${CET_TEST_ENV_TMP}")
-      ELSE()
-        SET_TESTS_PROPERTIES(${CET_TARGET}
-          PROPERTIES ENVIRONMENT "${CET_TEST_ENV}"
-          )
-      endif()
+      set_property(TEST ${CET_TARGET}
+        APPEND PROPERTY ENVIRONMENT "${CET_TEST_ENV}"
+        )
     endif()
 
     if(CET_REF)
-      get_test_property(${CET_TARGET} REQUIRED_FILES REQUIRED_FILES_TMP)
-
-      if(REQUIRED_FILES_TMP)
-        set_tests_properties("${CET_TARGET}"
-          PROPERTIES REQUIRED_FILES "${REQUIRED_FILES_TMP};${CET_REF}"
-          )
-      else()
-        set_tests_properties("${CET_TARGET}"
-          PROPERTIES REQUIRED_FILES "${CET_REF}"
-          )
-      endif()
+      set_property(TEST ${CET_TARGET}
+        APPEND PROPERTY REQUIRED_FILES "${CET_REF}"
+        )
     endif()
   else()
     if(CET_OUTPUT_FILTER OR CET_OUTPUT_FILTER_ARGS)
