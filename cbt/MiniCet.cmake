@@ -18,6 +18,40 @@
 # to check this. That way clients could switch between hard/soft
 # checks (e.g. hard requirement in UPS land).
 #
+# Likely ordering of UPS/Default switching
+# ----------------------------------------
+# Setup that may be derived from the ups/product_deps file is a mix
+# of install directory policy and compiler/build mode options.
+# These are somewhat orthogonal, but need to have this setup
+# before either the compiler flags can be set or the install dirs
+# populated. A UPS style build also implies CACHE FORCE or some
+# vars so the user can never override them in this mode.
+#
+# Install policy shouldn't affect CMAKE_INSTALL_PREFIX, but may modify
+# bindir/libdir/cmakedir and so on
+#
+# It's qualifiers that affect build mode and flags, clear that:
+#
+# eN : Implies a GNU compiler version plus C++ standard
+#      - Could validate version at least here
+#      - Package defines a minimum standard, but might compile
+#        against a newer one (e.g. code uses C++11, but compile
+#        using C++14).
+#      - Can probably be dealt with using compile features plus
+#        typical option to "promote" standard by adding features
+#        for the "promoted" standard.
+# debug:opt:prof : Implies the build mode selected, and SINGLE MODE
+#                  GENERATORS only (resolved if UPS, via
+#                  CMAKE_PREFIX_PATH and suitable PackageConfig files,
+#                  can find all modes at once!) ((but only a limitation
+#                  in terms of *forcing* no mixing of, e.g., debug and
+#                  release libs).
+#                : At least there are easy sensible defaults here
+#
+# anything else ?
+#
+#
+
 #-----------------------------------------------------------------------
 # Copyright 2016 Ben Morgan <Ben.Morgan@warwick.ac.uk>
 # Copyright 2016 University of Warwick
