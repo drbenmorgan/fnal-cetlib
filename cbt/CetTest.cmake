@@ -352,7 +352,7 @@ function(cet_test CET_TARGET)
 
     add_executable(${CET_TARGET} ${CET_SOURCES})
     # -- !! It's this that *should* allow running without explicit paths!!
-    set(CET_EXEC_TEST $<TARGET_FILE:${CET_TARGET}>)
+    set(CET_TEST_EXEC $<TARGET_FILE:${CET_TARGET}>)
 
     # Boost.Unit-ify
     if(CET_USE_BOOST_UNIT)
