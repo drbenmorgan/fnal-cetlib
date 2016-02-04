@@ -91,7 +91,7 @@ int main()
 #endif
   }
   assert(simple::n_alive == 0);
-#if GCC_IS_AT_LEAST(4,8,1) || defined(__ICC)
+#if GCC_IS_AT_LEAST(4,8,1) || defined(__ICC) || defined(__clang__)
   assert(simple::n_born == 5);
 #else
   assert(simple::n_born == 6);
