@@ -163,7 +163,7 @@ namespace cet {
   inline auto
   transform_all( Container const& in,
                  OutputIt out, UnaryOp unary_op )
-  { return std::transform(cbegin(in), cend(in), out, unary_op); }
+  { return std::transform(cet::cbegin(in), cet::cend(in), out, unary_op); }
 
   // Two-container input
   template< class Container1, class Container2, class OutputIt, class BinaryOp >
@@ -178,7 +178,7 @@ namespace cet {
   transform_all( Container1 const& in1,
                  Container2 const& in2,
                  OutputIt out, BinaryOp binary_op )
-  { return std::transform(cbegin(in1), cend(in1), cbegin(in2), out, binary_op); }
+  { return std::transform(cet::cbegin(in1), cet::cend(in1), cet::cbegin(in2), out, binary_op); }
 }
 
 // ======================================================================
