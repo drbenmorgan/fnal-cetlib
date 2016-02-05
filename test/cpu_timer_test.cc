@@ -6,6 +6,7 @@
 #include "cetlib/cpu_timer.h"
 
 #include <chrono>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <thread>
