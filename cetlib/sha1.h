@@ -7,8 +7,8 @@
 //
 // ======================================================================
 
-#include "boost/array.hpp"
 #include "polarssl/sha1.h"
+#include <array>
 #include <cstring>
 #include <string>
 
@@ -23,7 +23,7 @@ class cet::sha1
 public:
   static  std::size_t const             digest_sz  = 20;
   typedef  unsigned char                uchar;
-  typedef  boost::array<uchar,digest_sz>  digest_t;
+  typedef  std::array<uchar,digest_sz>  digest_t;
 
   sha1( ) { reset(); }
   explicit
