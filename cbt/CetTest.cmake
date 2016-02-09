@@ -369,13 +369,8 @@ function(cet_test CET_TARGET)
       set_boost_unit_properties(${CET_TARGET})
     endif()
 
-    # ??Where and what is find_tbb_offloads??
-    if(COMMAND find_tbb_offloads)
-      find_tbb_offloads(FOUND_VAR have_tbb_offload ${CET_SOURCES})
-      if(have_tbb_offload)
-        set_target_properties(${CET_TARGET} PROPERTIES LINK_FLAGS ${TBB_OFFLOAD_FLAG})
-      endif()
-    endif()
+    # TBB.offload-ify
+    set_tbb_offload_properties(${CET_TARGET})
 
     # Link to any required libs
     if(CET_LIBRARIES)

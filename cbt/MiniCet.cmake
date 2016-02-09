@@ -425,3 +425,33 @@ endfunction()
 # END OF BOOST.UNIT HELPERS
 #-----------------------------------------------------------------------
 
+#-----------------------------------------------------------------------
+# TBB.OFFLOAD HELPERS
+#-----------------------------------------------------------------------
+# Several places where "find_tbb_offloads" occurs. This command does
+# not (apparently) appear anywhere in the cetbuildtools code, so
+# seems to be a placeholder. Nevertheless, can provide a suitable
+# wrapper to apply the additional properties needed
+# TODO: Note that the CMake Variable TBB_OFFLOAD_FLAG also needs to be
+# set... plus whatever other links... but that can all be co-located here.
+function(set_tbb_offload_properties _target)
+  if(NOT TARGET ${_target})
+    message(FATAL_ERROR "set_tbb_offload_properties: input '${_target}' is not a valid CMake target")
+  endif()
+
+  # Only apply if the find_tbb_offloads command exists...
+  if(COMMAND find_tbb_offloads)
+    get_target_property(_target_sources ${_target} SOURCES)
+    find_tbb_offloads(FOUND_VAR have_tbb_offload ${_target_sources})
+    if(have_tbb_offload)
+      set_property(TARGET ${_target}
+        APPEND PROPERTY
+          LINK_FLAGS ${TBB_OFFLOAD_FLAG}
+        )
+    endif()
+  endif()
+endfunction()
+#-----------------------------------------------------------------------
+# END OF TBB.OFFLOAD HELPERS
+#-----------------------------------------------------------------------
+

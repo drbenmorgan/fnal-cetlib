@@ -112,13 +112,8 @@ macro(cet_make_exec cet_exec_name)
 
   add_executable(${cet_exec_name} ${CME_SOURCE})
 
-  # - Where's find_tbb_offloads defined?
-  if(COMMAND find_tbb_offloads)
-    find_tbb_offloads(FOUND_VAR have_tbb_offload ${CME_SOURCE})
-    if(have_tbb_offload)
-      set_target_properties(${cet_exec_name} PROPERTIES LINK_FLAGS ${TBB_OFFLOAD_FLAG})
-    endif()
-  endif()
+  # - TBB offload-ify
+  set_tbb_offload_properties(${cet_exec_name})
 
   # - Boost.Unit.ify
   if(CME_USE_BOOST_UNIT)
@@ -348,13 +343,8 @@ macro(cet_make_library)
     target_link_libraries(${CML_LIBRARY_NAME} ${cml_lib_list})
   endif()
 
-  # WHERE IS FIND_TBB_OFFLOADS???
-  if(COMMAND find_tbb_offloads)
-    find_tbb_offloads(FOUND_VAR have_tbb_offload ${cet_src_list})
-    if(have_tbb_offload)
-      set_target_properties(${CML_LIBRARY_NAME} PROPERTIES LINK_FLAGS ${TBB_OFFLOAD_FLAG})
-    endif()
-  endif()
+  # TBB.offload-ify
+  set_tbb_offload_properties(${CML_LIBRARY_NAME})
 
   if(NOT CML_NO_INSTALL)
     _cet_check_lib_directory()
