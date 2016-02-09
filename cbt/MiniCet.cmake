@@ -400,9 +400,9 @@ endforeach()
 # TODO: Error checking
 
 # - Apply needed properties
-function(cet_use_boost_unit _target)
+function(set_boost_unit_properties _target)
   if(NOT TARGET ${_target})
-    message(FATAL_ERROR "cet_use_boost_unit: input '${_target}' is not a valid CMake target")
+    message(FATAL_ERROR "set_boost_unit_properties: input '${_target}' is not a valid CMake target")
   endif()
 
   # Append, don't overwrite, compile definitions.

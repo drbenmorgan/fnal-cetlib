@@ -366,7 +366,7 @@ function(cet_test CET_TARGET)
 
     # Boost.Unit-ify
     if(CET_USE_BOOST_UNIT)
-      cet_use_boost_unit(${CET_TARGET})
+      set_boost_unit_properties(${CET_TARGET})
     endif()
 
     # ??Where and what is find_tbb_offloads??

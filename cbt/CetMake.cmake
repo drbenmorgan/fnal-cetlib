@@ -122,7 +122,7 @@ macro(cet_make_exec cet_exec_name)
 
   # - Boost.Unit.ify
   if(CME_USE_BOOST_UNIT)
-    cet_use_boost_unit(${cet_exec_name})
+    set_boost_unit_properties(${cet_exec_name})
   endif()
 
   # - Linking, but path vs what?
