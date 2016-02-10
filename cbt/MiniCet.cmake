@@ -201,9 +201,7 @@ function(cet_enable_asserts)
     ""
     ${ARGN}
     )
-  if(NOT CDA_DIRECTORY)
-    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
-  endif()
+  set_ifnot(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
   get_directory_property(_local_compile_defs DIRECTORY "${CDA_DIRECTORY}" COMPILE_DEFINITIONS)
   # Remove genexp and NDEBUG from list of compile definitions
@@ -224,9 +222,7 @@ function(cet_disable_asserts)
     ""
     ${ARGN}
     )
-  if(NOT CDA_DIRECTORY)
-    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
-  endif()
+  set_ifnot(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
   get_directory_property(_local_compile_defs DIRECTORY "${CDA_DIRECTORY}" COMPILE_DEFINITIONS)
 
@@ -248,9 +244,7 @@ function(cet_default_asserts)
     ""
     ${ARGN}
     )
-  if(NOT CDA_DIRECTORY)
-    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
-  endif()
+  set_ifnot(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
   # Remove settings from all modes
   cet_enable_asserts(DIRECTORY "${CDA_DIRECTORY}")
