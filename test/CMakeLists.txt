@@ -8,7 +8,6 @@
 # in the PATH, as cet_test/cet_test_exec always look in PATH, rather
 # than using known paths from CMake.
 
-include(SetCompilerFlags)
 include(CetTest)
 cet_enable_asserts()
 

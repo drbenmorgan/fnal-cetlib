@@ -187,7 +187,80 @@ endforeach()
 #
 option(CET_COMPILER_ENABLE_ASSERTS "enable assertions for all build modes" OFF)
 mark_as_advanced(CET_COMPILER_ENABLE_ASSERTS)
-# TODO all needed functions/calls
+
+# - PRIVATE: encapsulate the generator expression used to set NDEBUG
+function(__cet_get_assert_genexp VAR)
+  set(${VAR} "$<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:NDEBUG>" PARENT_SCOPE)
+endfunction()
+
+# - Enable Asserts for all build modes
+function(cet_enable_asserts)
+  cmake_parse_arguments(CDA
+    ""
+    "DIRECTORY"
+    ""
+    ${ARGN}
+    )
+  if(NOT CDA_DIRECTORY)
+    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
+  endif()
+
+  get_directory_property(_local_compile_defs DIRECTORY "${CDA_DIRECTORY}" COMPILE_DEFINITIONS)
+  # Remove genexp and NDEBUG from list of compile definitions
+  list(REMOVE_ITEM _local_compile_defs "NDEBUG")
+  __cet_get_assert_genexp(_assert_genexp)
+  list(REMOVE_ITEM _local_compile_defs "${_assert_genexp}")
+
+  set_property(DIRECTORY "${CDA_DIRECTORY}"
+    PROPERTY COMPILE_DEFINITIONS "${_local_compile_defs}"
+    )
+endfunction()
+
+# - Disable asserts for all modes
+function(cet_disable_asserts)
+    cmake_parse_arguments(CDA
+    ""
+    "DIRECTORY"
+    ""
+    ${ARGN}
+    )
+  if(NOT CDA_DIRECTORY)
+    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
+  endif()
+
+  get_directory_property(_local_compile_defs DIRECTORY "${CDA_DIRECTORY}" COMPILE_DEFINITIONS)
+
+  # Remove genexp (not strictly neccessary, but avoids duplication
+  __cet_get_assert_genexp(_assert_genexp)
+  list(REMOVE_ITEM _local_compile_defs "${_assert_genexp}")
+  list(APPEND _local_compile_defs "NDEBUG")
+
+  set_property(DIRECTORY "${CDA_DIRECTORY}"
+    PROPERTY COMPILE_DEFINITIONS "${_local_compile_defs}"
+    )
+endfunction()
+
+# - Set assertions for "release style" modes only
+function(cet_default_asserts)
+  cmake_parse_arguments(CDA
+    ""
+    "DIRECTORY"
+    ""
+    ${ARGN}
+    )
+  if(NOT CDA_DIRECTORY)
+    set(CDA_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
+  endif()
+
+  # Remove settings from all modes
+  cet_enable_asserts(DIRECTORY "${CDA_DIRECTORY}")
+
+  # Disable assertions for Release-style modes
+  __cet_get_assert_genexp(_cetgexp)
+  set_property(DIRECTORY "${CDA_DIRECTORY}"
+    APPEND PROPERTY COMPILE_DEFINITIONS ${_cetgexp}
+    )
+endfunction()
 
 #-----------------------------------------------------------------------
 # Treat warnings as errors
@@ -228,13 +301,14 @@ mark_as_advanced(
   )
 
 # Probably also need check that compiler in use supports DWARF...
-if(CET_COMPILER_DWARF_STRICT)
-  foreach(_lang "C" "CXX")
-    if(CMAKE_${_lang}_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
-      set(CET_COMPILER_${_lang}_DWARF_FLAGS "-gdwarf-${CET_COMPILER_DWARF_VERSION} -gstrict-dwarf")
+foreach(_lang "C" "CXX")
+  if(CMAKE_${_lang}_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
+    set(CET_COMPILER_${_lang}_DWARF_FLAGS "-gdwarf-${CET_COMPILER_DWARF_VERSION}")
+    if(CET_COMPILER_DWARF_STRICT)
+      set(CET_COMPILER_${_lang}_DWARF_FLAGS "${CET_COMPILER_${_lang}_DWARF_FLAGS} -gstrict-dwarf")
     endif()
-  endforeach()
-endif()
+  endif()
+endforeach()
 
 #-----------------------------------------------------------------------
 # Undefined symbol policy
@@ -266,7 +340,6 @@ if(CET_COMPILER_ENABLE_SSE2)
   endforeach()
 endif()
 
-
 #-----------------------------------------------------------------------
 # Compile compiler flags
 # TODO : Review which of these might be better as compile properties
@@ -275,9 +348,24 @@ string(TOUPPER "${CET_COMPILER_DIAGNOSTIC_LEVEL}" CET_COMPILER_DIAGNOSTIC_LEVEL)
 set(CMAKE_C_FLAGS "${CET_COMPILER_C_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVEL}} ${CET_COMPILER_C_ERROR_FLAGS} ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CET_COMPILER_CXX_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVEL}} ${CET_COMPILER_CXX_ERROR_FLAGS} ${CMAKE_CXX_FLAGS}")
 
-# DWARF flags only in debugging modes?
+# Per-Mode flags (Release, Debug, RelWithDebInfo, MinSizeRel)
+# DWARF done here as it's not completely generic like warnings
+set(CMAKE_C_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS}")
+set(CMAKE_C_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_C_DWARF_FLAGS}")
+set(CMAKE_C_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS} -fno-omit-frame-pointer")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
+
+set(CMAKE_CXX_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
+set(CMAKE_CXX_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS} -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+
 
 # SSE2 flags only in release (optimized) modes?
+
+# Assertions are handled by compile definitions so they can be changed
+# on a per directory tree basis. Set defaults here for top level project dir.
+cet_default_asserts(DIRECTORY "${PROJECT_SOURCE_DIR}")
 
 #-----------------------------------------------------------------------
 # END OF SETCOMPILERFLAGS Implementation

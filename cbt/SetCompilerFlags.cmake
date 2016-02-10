@@ -115,6 +115,9 @@
 #   List the values of various variables
 #
 ########################################################################
+message(WARNING "SetCompilerFlags is Deprecated: Review usage!!")
+
+
 include(CMakeParseArguments)
 include(CetGetProductInfo)
 include(CetHaveQual)
