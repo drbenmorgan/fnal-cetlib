@@ -161,6 +161,66 @@ endfunction()
 # Strictly should be one-time because it affects so many things and
 # like changing compiler, want to confine it to specific build dir.
 if(UPS_BUILD_AND_INSTALL)
+  # -- Load "cetpkg_info_file.cmake" from build dir, custom handling
+  #    failure so that message is specific
+  # Can/should expect the following variables to be set/cached:
+  # (deived from product_deps files by report_product_info program
+  # CETPKG_NAME -> "product" var in CBT (==PROJECT_NAME)
+  # CETPKG_VERSION -> "version" var in CBT (UPS style version)
+  # CETPKG_DEFAULT_VERSION -> "default_version" var in CBT
+  # CETPKG_ONLY_FOR_BUILD -> list of buildtime only deps
+  # CETPKG_QUAL -> "full_qualifier" var in CBT (: separated list of q's)
+  #                CAN BE OVERIDDEN BY MRB_QUALS FROM THE ENV...
+  #                "<product>_full_qualifier" var in CBT
+  #                NOT overrriden
+  # CETPKG_TYPE -> doesn't map, used in env to set CMAKE_BUILD_TYPE
+  #                Here, read and use it as default build type...
+  # CETPKG_CC -> filename of C compiler
+  # CETPKG_CXX -> filename of CXX compiler
+  # CETPKG_FC -> filename of Fortran compiler
+  # CETPKG_SOURCE -> ==PROJECT_SOURCE_DIR
+  # CETPKG_BUILD -> ==PROJECT_BINARY_DIR
+  #
+  # Additional var set in the processing of these:
+  #
+  # "cet_ups_dir" == ${PROJECT_SOURCE_DIR}/ups
+  # "qualifier" == "<product>_full_qualifier" stripped of ":(debug|opt|prof)"
+  # "cet_dot_version" == PROJECT_VERSION
+  #                      BUT... UPS/Proper versions must match
+  #                      i.e. "1.2.3" == "v1_2_3" == "v1_02_0003" etc
+  # "flavorqual_dir" = <product>/<version>/<flavorqual>
+  #                    See SetFlavorQual module for how <flavorqual>
+  #                    is derived (needs UPS and cetpkgsupport)
+  #
+  # ADDITIONAL variables for install locations are derived from running
+  # the report_XXXdir programs. Those query the product_deps file
+  # directly, so no reason these can't be added to the above file:
+  # There is however processing based on the value returned by the
+  # report_XXXdir returns. All can return "flags"
+  # - DEFAULT
+  # - NONE
+  # - ERROR
+  #
+  # Otherwise some postprocessing is done, mostly, if not exclusively
+  # to regex replace "tags" "flavorqual_dir" and "product_dir" with
+  # the CMake values "${flavorqual_dir}" and "${product}/${version}"
+  # respectively.
+  #
+  # <product>_lib_dir -> DEFAULT = "${flavorqual_dir}/lib"
+  # <product>_bin_dir -> DEFAULT = "${flovorqual_dir}/bin"
+  # <product>_inc_dir -> DEFAULT = "${product}/${version}/include
+  # <product>_fcl_dir -> DEFAULT = "${product}/${version}/fcl"
+  # <product>_fw_dir  -> DEFAULT = NONE
+  # <product>_gdml_dir -> DEFAULT = NONE(?)
+  # <product>_perllib -> DEFAULT = NONE
+  # <product>_ups_perllib ->
+  # <product>_perllib_subdir ->
+  # <product>_test_dir -> DEFAULT = "${product}/${version}/test"
+  #
+  # Though these are processed, they are either derived from info
+  # in the product_deps or already in the cetpkg_info_file file.
+  # TODO: THIS FILE NEEDS CREATING BY set_dev_products PROGRAM OR SIMILAR
+
   # -- Check qualifier is as expected
   # Need "primary qualifier"
   # Map it to compiler ID/Version
@@ -173,7 +233,7 @@ if(UPS_BUILD_AND_INSTALL)
   # 'debug' -> Debug
   # 'opt' -> Release
   # 'prof' -> MinSizeRel
-  # This is derived from the "CETPKG_TYPE" varible, usually
+  # This is derived from the "CETPKG_TYPE" variable, usually
   # via environment and then passing it manually on the cmd line, e.g.
   # "-DCMAKE_BUILD_TYPE=$CETPKG_TYPE"
   # Can therefore pick it up from environment, or from file generated
@@ -187,7 +247,7 @@ if(UPS_BUILD_AND_INSTALL)
   #                        = <flavorqual_dir>/lib/<product>/cmake ELSE
   # headers     -> header_install_dir = <product>_inc_dir
   #                ...plus subdir structures...
-  # <flavorqual_dir> = <<product>/<version>/<flavorqual>
+  #
 endif()
 
 
