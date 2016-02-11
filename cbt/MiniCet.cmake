@@ -140,6 +140,62 @@ endfunction()
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+# DECIDE ON UPSification OR NOT
+#-----------------------------------------------------------------------
+# "UPSification" means
+# 1) Changing default locations for installation
+#    ...
+# 2) Using "qualifier" to fix build type, supported compiler(*),
+#    language standard to compile against(**)
+#    (*) This could mean failing if things don't match
+#    (**) e.g. code only needs C++11, but want to compile against C++14
+#         Vice Versa, failures will be handled by compile features
+#
+# https://cdcvs.fnal.gov/redmine/projects/cet-is-public/wiki/AboutQualifiers
+#
+# 3) Generation of install products (table files etc)
+# 4) May be others
+#
+
+# To begin with, lets activate manually
+# Strictly should be one-time because it affects so many things and
+# like changing compiler, want to confine it to specific build dir.
+if(UPS_BUILD_AND_INSTALL)
+  # -- Check qualifier is as expected
+  # Need "primary qualifier"
+  # Map it to compiler ID/Version
+  # - fail if they don't match
+  # Adjust minimum C++ standard via compile features
+  # - leave to CMake to determine if compiler supports the requisite
+  #   features, and user to set their own min set of features.
+
+  # -- Build mode
+  # 'debug' -> Debug
+  # 'opt' -> Release
+  # 'prof' -> MinSizeRel
+  # This is derived from the "CETPKG_TYPE" varible, usually
+  # via environment and then passing it manually on the cmd line, e.g.
+  # "-DCMAKE_BUILD_TYPE=$CETPKG_TYPE"
+  # Can therefore pick it up from environment, or from file generated
+  # by setup_for_development?
+
+  # -- Install locations
+  # Hard set defaults, i.e. overwrite even if -D'd
+  # runtime     -> <product>_bin_dir
+  # lib/archive -> <product>_lib_dir
+  # cmakefile   -> distdir = <product>/<version>/cmake IF NOFLAVOR
+  #                        = <flavorqual_dir>/lib/<product>/cmake ELSE
+  # headers     -> header_install_dir = <product>_inc_dir
+  #                ...plus subdir structures...
+  # <flavorqual_dir> = <<product>/<version>/<flavorqual>
+endif()
+
+
+#-----------------------------------------------------------------------
+# END OF UPSificiation
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
 # SETCOMPILERFLAGs.cmake Implementation
 #-----------------------------------------------------------------------
 # Replace hardcoded arguments to cet_set_compiler_flags() with
@@ -283,7 +339,6 @@ endif()
 
 #-----------------------------------------------------------------------
 # DWARF debugging levels
-#
 option(CET_COMPILER_DWARF_STRICT "only emit DWARF debugging info at defined level" ON)
 # NB: this is a number, so again an enum option
 enum_option(CET_COMPILER_DWARF_VERSION
@@ -298,6 +353,10 @@ mark_as_advanced(
   )
 
 # Probably also need check that compiler in use supports DWARF...
+# NOTE: Clang doesn't provide -gstrict-dwarf flag (simply ignores it and
+# warns it's unused), but has further options for emitting debugging
+# such as tuning output for gdb, lldb, sce.
+# Dwarf version may also not be needed here.
 foreach(_lang "C" "CXX")
   if(CMAKE_${_lang}_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
     set(CET_COMPILER_${_lang}_DWARF_FLAGS "-gdwarf-${CET_COMPILER_DWARF_VERSION}")
