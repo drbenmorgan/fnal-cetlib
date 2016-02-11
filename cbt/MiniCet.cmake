@@ -188,6 +188,9 @@ endforeach()
 option(CET_COMPILER_ENABLE_ASSERTS "enable assertions for all build modes" OFF)
 mark_as_advanced(CET_COMPILER_ENABLE_ASSERTS)
 
+#-----------------------------------------------------------------------
+# Assertion management functions
+#
 # - PRIVATE: encapsulate the generator expression used to set NDEBUG
 function(__cet_get_assert_genexp VAR)
   set(${VAR} "$<$<OR:$<CONFIG:Release>,$<CONFIG:MinSizeRel>>:NDEBUG>" PARENT_SCOPE)
@@ -344,23 +347,59 @@ set(CMAKE_CXX_FLAGS "${CET_COMPILER_CXX_DIAGFLAGS_${CET_COMPILER_DIAGNOSTIC_LEVE
 
 # Per-Mode flags (Release, Debug, RelWithDebInfo, MinSizeRel)
 # DWARF done here as it's not completely generic like warnings
-set(CMAKE_C_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS}")
-set(CMAKE_C_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_C_DWARF_FLAGS}")
-set(CMAKE_C_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS} -fno-omit-frame-pointer")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
+# - C Language
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
+  set(CMAKE_C_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS}")
+  set(CMAKE_C_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_C_DWARF_FLAGS}")
+  set(CMAKE_C_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_C_DWARF_FLAGS} -fno-omit-frame-pointer")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g")
+endif()
 
-set(CMAKE_CXX_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
-set(CMAKE_CXX_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS} -fno-omit-frame-pointer")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-
+# - CXX Language
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|(Apple)+Clang|Intel")
+  set(CMAKE_CXX_FLAGS_RELEASE        "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
+  set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g ${CET_COMPILER_CXX_DWARF_FLAGS}")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL     "-O3 -g ${CET_COMPILER_CXX_DWARF_FLAGS} -fno-omit-frame-pointer")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+endif()
 
 # SSE2 flags only in release (optimized) modes?
 
 # Assertions are handled by compile definitions so they can be changed
-# on a per directory tree basis. Set defaults here for top level project dir.
+# on a per directory tree basis. Set defaults here for project
 cet_default_asserts(DIRECTORY "${PROJECT_SOURCE_DIR}")
 
+# - If user requested, enable assertions in all modes
+if(CET_COMPILER_ENABLE_ASSERTS)
+  cet_enable_asserts(DIRECTORY "${PROJECT_SOURCE_DIR}")
+endif()
+
+
+# If we're generating for single-mode and no build type has been set,
+# default to RelWithDebInfo
+if(NOT CMAKE_CONFIGURATION_TYPES)
+  if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE RelWithDebInfo
+      CACHE STRING "Choose the type of build, options are: None Release MinSizeRel Debug RelWithDebInfo"
+      FORCE
+      )
+  else()
+    # Force to the cache, but use existing value, translating if
+    # required from CET -> CMake types
+    string(TOUPPER "${CMAKE_BUILD_TYPE}" _local_build_type)
+    if(_local_build_type STREQUAL "PROF")
+      set(CMAKE_BUILD_TYPE "MinSizeRel")
+    endif()
+    if(_local_build_type STREQUAL "OPT")
+      set(CMAKE_BUILD_TYPE "Release")
+    endif()
+
+    set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}"
+      CACHE STRING "Choose the type of build, options are: None Release MinSizeRel Debug RelWithDebInfo"
+      FORCE
+      )
+  endif()
+endif()
 #-----------------------------------------------------------------------
 # END OF SETCOMPILERFLAGS Implementation
 #-----------------------------------------------------------------------
