@@ -78,13 +78,13 @@ endmacro()
 #                      VALUES <value1> ... <valueN>
 #                      TYPE   <valuetype>
 #                      DOC    <docstring>
-#                      [DEFAULT <elem>]
+#                      [DEFAULT <item>]
 #                      [CASE_INSENSITIVE])
 #          Declare a cache variable <option> that can only take values
 #          listed in VALUES. TYPE may be FILEPATH, PATH or STRING.
 #          <docstring> should describe that option, and will appear in
 #          the interactive CMake interfaces. If DEFAULT is provided,
-#          <elem> will be taken as the zero-indexed element in VALUES
+#          <item> will be taken as the element in VALUES
 #          to which the value of <option> should default to if not
 #          provided. Otherwise, the default is taken as the first
 #          entry in VALUES. If CASE_INSENSITIVE is present, then
@@ -113,8 +113,15 @@ function(enum_option _var)
   endif()
 
   set_ifnot(_ENUMOP_TYPE STRING)
-  set_ifnot(_ENUMOP_DEFAULT 0)
-  list(GET _ENUMOP_VALUES ${_ENUMOP_DEFAULT} _default)
+  list(GET _ENUMOP_VALUES 0 _default)
+  if(_ENUMOP_DEFAULT)
+    list(FIND _ENUMOP_VALUES "${_ENUMOP_DEFAULT}" _default_index)
+    if(_default_index GREATER -1)
+      list(GET _ENUMOP_VALUES ${_default_index} _default)
+    else()
+      message(FATAL_ERROR "enum_option DEFAULT value '${_ENUMOP_DEFAULT}' not present in value set '${_ENUMOP_VALUES}'\n")
+    endif()
+  endif()
 
   if(NOT DEFINED ${_var})
     set(${_var} ${_default} CACHE ${_ENUMOP_TYPE} "${_ENUMOP_DOC} (${_ENUMOP_VALUES})")
@@ -126,7 +133,7 @@ function(enum_option _var)
 
     list(FIND _ENUMOP_VALUES ${_var_tmp} _elem)
     if(_elem LESS 0)
-      message(FATAL_ERROR "Value '${${_var}}' for variable ${_var} is not allowed\nIt must be selected from the set: ${_ENUMOP_VALUES} (DEFAULT: ${_default})\n")
+      message(FATAL_ERROR "enum_option value '${${_var}}' for variable ${_var} is not allowed\nIt must be selected from the set: ${_ENUMOP_VALUES} (DEFAULT: ${_default})\n")
     else()
       # - convert to lowercase
       if(_ENUMOP_CASE_INSENSITIVE)
@@ -666,6 +673,69 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
       )
   endif()
 endif()
+
+#-----------------------------------------------------------------------
+# Configure compile features
+# - Done here because we will want to perform any library feature checks
+#   with all our requisite flags in place
+# - What is the required standard?
+#   - Project itself requires a minimum standard for use, determined
+#     by its own code.
+#   - It may be compiled against a higher standard if the user selects
+#     this (USE CASE: installs for use by client packages that require
+#     the higher standard)
+#   - Project may link to lower level packages compiled against its
+#     minimum or a higher standard.
+#     - CMake cannot (out the box) tell if a package found by find_package
+#       was compiled against the same standard. It's the job of the
+#       config management system to ensure CMAKE_PREFIX_PATH is set
+#       correctly so the compatible packages are located.
+#       In fact that's exactly what CET/UPS does at the moment as
+#       it's the primary qualifier that is used for setup of deps
+#       and then to determine the standard to compile against
+#
+# - CMake's compile features are useful here, and will propagate/promote
+#   the compile standard as needed, but need to think about error cases.
+# - Qualifier translates to a specific compiler/version/std so can
+#   translate that to the equivalent compile feature lists.
+# - We'll *want* to set compile features to take advantage of their
+#   usefulness outside the CET environment (and also within, they easily
+#   abstract out and take care of setting any flags to enable std support)
+#   , but will need care to integrate them with the minimum feature
+#   sets implied by qualifiers (e.g. "e9" implies that the package
+#   can only use the compile features supported by GNU 4.9.3 in C++14
+#   mode).
+#
+# - Use Case: Allow user to specify minimum standard required, and to
+#   promote standard above that. Some hard coding at present
+set(__cet_cxx_standard_minimum 11)
+
+enum_option(CET_COMPILER_CXX_STANDARD
+  VALUES 11 14 17
+  TYPE STRING
+  DEFAULT ${__cet_cxx_standard_minimum}
+  DOC "Set C++ Standard to compile against"
+  CASE_INSENSITIVE
+  )
+mark_as_advanced(CET_COMPILER_CXX_STANDARD)
+
+# - Compile Features
+# Always disable vendor extensions
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# If requested standard is higher than minimum, add compile features
+# for that standard to the main list. If compiler has no known features
+# for the standard, exit with an error
+if(CET_COMPILER_CXX_STANDARD GREATER __cet_cxx_standard_minimum)
+  if(CMAKE_CXX${CET_COMPILER_CXX_STANDARD}_COMPILE_FEATURES)
+    list(APPEND CET_TARGET_COMPILE_FEATURES ${CMAKE_CXX${CET_COMPILER_CXX_STANDARD}_COMPILE_FEATURES})
+  else()
+    message(FATAL_ERROR "Compilation requested against C++ standard '${CET_COMPILER_CXX_STANDARD}'\nbut detected compiler '${CMAKE_CXX_COMPILER_ID}', version '${CMAKE_CXX_COMPILER_VERSION}'\ndoes not support any features of that standard")
+  endif()
+endif()
+message(STATUS "Compile features: ${CET_TARGET_COMPILE_FEATURES}")
+
+
 #-----------------------------------------------------------------------
 # END OF SETCOMPILERFLAGS Implementation
 #-----------------------------------------------------------------------
