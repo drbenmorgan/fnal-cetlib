@@ -140,6 +140,107 @@ endfunction()
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+# CET UTILITY FUNCTIONS
+#-----------------------------------------------------------------------
+# cet_get_dotted_version(UPSVERSION OUTPUTVAR)
+# - convert UPS style version to standard dotted version
+function(cet_get_dotted_version _upsversion _outputvar)
+  string(REPLACE "_" "." _dottedvar "${_upsversion}")
+  string(REGEX REPLACE "^v" "" _dottedvar "${_dottedvar}")
+  set(${_outputvar} "${_dottedvar}" PARENT_SCOPE)
+endfunction()
+
+# cet_have_qualifier(QUALIFIERPATH MATCHSTRING OUTPUTVAR)
+# - Search for entry MATCHSTRING in QUALIFIERPATH, setting OUTPUTVAR
+#   to TRUE (FALSE) if (not) found.
+function(cet_have_qualifier _qualpath _query _outputvar)
+  string(REGEX MATCH "(^|:)${_query}(:|$)" _gotmatch "${_qualpath}")
+  if(_gotmatch)
+    set(${_outputvar} TRUE PARENT_SCOPE)
+  else()
+    set(${_outputvar} FALSE PARENT_SCOPE)
+  endif()
+endfunction()
+
+# map primary qualifier to compiler
+# e2 => GNU 4.7.1 std=c++11, std=gnu (fortran)
+# e4 => GNU 4.8.1 std=c++11, std=gnu (fortran)
+# e5 => GNU 4.8.2 std=c++11, std=gnu (fortran)
+# e6 => GNU 4.9.1 std=c++1y, std=gnu (fortran)
+# e7 => GNU 4.9.2 std=c++1y, std=gnu (fortran)
+# e8 => GNU 5.2.0 std=c++14, std=gnu (fortran)
+# e9 => GNU 4.9.3 std=c++14, std=gnu (fortran)
+# i1 => Intel 14.0.2 std=c++11, GCC 4.8.2 backend
+# Implement as a function, but maybe better as a lookup table/properties
+# Set output var to compiler "VENDOR-VERSION" for input qualifier
+function(cet_get_compiler_for_qualifier _qualifier _outputvar)
+  set(_cet_compiler_vendor "UNKNOWN")
+  set(_cet_compiler_version "UNKNOWN")
+
+  # GNU...
+  if(_qualifier MATCHES "e[0-9]")
+    set(_cet_compiler_vendor "GNU")
+    if(_qualifier STREQUAL "e2")
+      set(_cet_compiler_version "4.7.1")
+    elseif(_qualifier STREQUAL "e4")
+      set(_cet_compiler_version "4.8.1")
+    elseif(_qualifier STREQUAL "e5")
+      set(_cet_compiler_version "4.8.2")
+    elseif(_qualifier STREQUAL "e6")
+      set(_cet_compiler_version "4.9.1")
+    elseif(_qualifier STREQUAL "e7")
+      set(_cet_compiler_version "4.9.2")
+    elseif(_qualifier STREQUAL "e8")
+      set(_cet_compiler_version "5.2.0")
+    elseif(_qualifier STREQUAL "e9")
+      set(_cet_compiler_version "4.9.3")
+    endif()
+  # - Intel
+  elseif(_qualifier MATCHES "i[0-9]")
+    set(_cet_compiler_vendor "Intel")
+    if(_qualifier STREQUAL "i1")
+      set(_cet_compiler_version "14.0.2")
+    endif()
+  endif()
+
+  set(${_outputvar} "${_cet_compiler_vendor}-${_cet_compiler_version}" PARENT_SCOPE)
+endfunction()
+
+
+
+# - Check primary compiler/version qualifier
+function(cet_validate_primary_qualifier _qualpath)
+  # There can only be one
+  string(REGEX MATCHALL "(e|i)[0-9]" _primaryquals "${_qualpath}")
+  list(LENGTH _primaryquals _pqcount)
+  if(_pqcount GREATER 1)
+    message(FATAL_ERROR
+      "More than one primary qualifier specificed in '${_qualpath}'\n"
+      "${_primaryquals}\n"
+      )
+  endif()
+
+  # Now have primary qualifier, so check we match up against the
+  # in use compiler(s)
+  cet_get_compiler_for_qualifier(${_primaryquals} _vendorinfo)
+  foreach(_language C CXX Fortran)
+    # Only process loaded languages
+    if(CMAKE_${_language}_COMPILER_LOADED)
+      if(NOT (_vendorinfo STREQUAL "${CMAKE_${_language}_COMPILER_ID}-${CMAKE_${_language}_COMPILER_VERSION}"))
+        message(FATAL_ERROR "${_language} compiler '${_vendorinfo}' for qualifier '${_primaryquals}' does not match that loaded by CMake:\n"
+        "${CMAKE_${_language}_COMPILER_ID}-${CMAKE_${_language}_COMPILER_VERSION}\n"
+        )
+      endif()
+    endif()
+  endforeach()
+endfunction()
+
+#-----------------------------------------------------------------------
+# END OF CET UTILITY FUNCTION SECTION
+#-----------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------
 # DECIDE ON UPSification OR NOT
 #-----------------------------------------------------------------------
 # "UPSification" means
@@ -161,6 +262,13 @@ endfunction()
 # Strictly should be one-time because it affects so many things and
 # like changing compiler, want to confine it to specific build dir.
 if(UPS_BUILD_AND_INSTALL)
+  # UPS Build/Install cannot support multimode generators
+  if(CMAKE_CONFIGURATION_TYPES)
+    message(FATAL_ERROR
+      "UPS Build/Install fails for multimode generators (using ${CMAKE_GENERATOR} ${CMAKE_EXTRA_GENERATOR})"
+      )
+  endif()
+
   # -- Load "cetpkg_info_file.cmake" from build dir, custom handling
   #    failure so that message is specific
   # Can/should expect the following variables to be set/cached:
@@ -191,6 +299,7 @@ if(UPS_BUILD_AND_INSTALL)
   # "flavorqual_dir" = <product>/<version>/<flavorqual>
   #                    See SetFlavorQual module for how <flavorqual>
   #                    is derived (needs UPS and cetpkgsupport)
+  #                    Effectively "OS.ARCH.quals"
   #
   # ADDITIONAL variables for install locations are derived from running
   # the report_XXXdir programs. Those query the product_deps file
@@ -204,14 +313,15 @@ if(UPS_BUILD_AND_INSTALL)
   # Otherwise some postprocessing is done, mostly, if not exclusively
   # to regex replace "tags" "flavorqual_dir" and "product_dir" with
   # the CMake values "${flavorqual_dir}" and "${product}/${version}"
-  # respectively.
+  # respectively. NB - these are all considered relative to
+  # CMAKE_PREFIX_PATH.
   #
   # <product>_lib_dir -> DEFAULT = "${flavorqual_dir}/lib"
   # <product>_bin_dir -> DEFAULT = "${flovorqual_dir}/bin"
   # <product>_inc_dir -> DEFAULT = "${product}/${version}/include
   # <product>_fcl_dir -> DEFAULT = "${product}/${version}/fcl"
   # <product>_fw_dir  -> DEFAULT = NONE
-  # <product>_gdml_dir -> DEFAULT = NONE(?)
+  # <product>_gdml_dir -> DEFAULT = NONE(? but similar to fcl?)
   # <product>_perllib -> DEFAULT = NONE
   # <product>_ups_perllib ->
   # <product>_perllib_subdir ->
@@ -220,25 +330,59 @@ if(UPS_BUILD_AND_INSTALL)
   # Though these are processed, they are either derived from info
   # in the product_deps or already in the cetpkg_info_file file.
   # TODO: THIS FILE NEEDS CREATING BY set_dev_products PROGRAM OR SIMILAR
+  include("${PROJECT_BINARY_DIR}/cetpkg_variable_report.cmake"
+    OPTIONAL
+    RESULT_VARIABLE CETPKG_FILE_LOADED
+    )
+  if(NOT CETPKG_FILE_LOADED)
+    message(FATAL_ERROR
+      "UPS build and install requested, but required cache file:\n"
+      "cetpkg_variable_report.cmake\n"
+      "is not present in the build directory. Run setup_for_development first\n"
+      )
+  endif()
 
-  # -- Check qualifier is as expected
-  # Need "primary qualifier"
+  # - Validate gross features:
+  # -- CETPKG_NAME == PROJECT_NAME
+  if(NOT (CETPKG_NAME STREQUAL PROJECT_NAME))
+    message(FATAL_ERROR
+      "UPS Product Name (${CETPKG_NAME}) != CMake Project Name ${PROJECT_NAME}\n"
+      "The CMake project name is the definitive name"
+      )
+  endif()
+
+  # -- Dotified(CETPKG_VERSION) == PROJECT_VERSION
+  cet_get_dotted_version("${CETPKG_VERSION}" CETPKG_DOT_VERSION)
+  if(NOT (CETPKG_DOT_VERSION VERSION_EQUAL PROJECT_VERSION))
+    message(FATAL_ERROR
+      "UPS Product Dot Version (${CETPKG_DOT_VERSION}) != CMake Project Version (${PROJECT_VERSION})\n"
+      "The CMake project version is the definitive version and must be set as a dotted version in the top level project() call, e.g.\n"
+      "project(foo VERSION 1.2.3)\n"
+      )
+  endif()
+
+  # -- Validate qualifiers
+  # The "qualifier" var
+  string(REGEX REPLACE ":(debug|opt|prof)" "" qualifier "${CETPKG_QUAL}")
+  message(STATUS "qualifier = ${qualifier}")
+  # Get "primary qualifier" approx regex [ei][0-9]
   # Map it to compiler ID/Version
   # - fail if they don't match
-  # Adjust minimum C++ standard via compile features
+  cet_validate_primary_qualifier(${CETPKG_QUAL})
+  # Adjust minimum C++ standard for primary via compile features
   # - leave to CMake to determine if compiler supports the requisite
   #   features, and user to set their own min set of features.
 
   # -- Build mode
-  # 'debug' -> Debug
-  # 'opt' -> Release
-  # 'prof' -> MinSizeRel
-  # This is derived from the "CETPKG_TYPE" variable, usually
-  # via environment and then passing it manually on the cmd line, e.g.
-  # "-DCMAKE_BUILD_TYPE=$CETPKG_TYPE"
-  # Can therefore pick it up from environment, or from file generated
-  # by setup_for_development?
+  # Should be able to take this directly from CETPKG_TYPE rather than
+  # throught the qualifier.
+  set(CMAKE_BUILD_TYPE "${CETPKG_TYPE}")
 
+  # Override dirs? NB - makes dirs uneditable/viewable in cache,
+  # though any added by GNUInstallDirs will be...
+  #unset(CMAKE_INSTALL_BINDIR)
+  #unset(CMAKE_INSTALL_BINDIR CACHE)
+  #set(CMAKE_INSTALL_BINDIR "${CETPKG_NAME}/${CETPKG_VERSION}/bin")
   # -- Install locations
   # Hard set defaults, i.e. overwrite even if -D'd
   # runtime     -> <product>_bin_dir
@@ -246,11 +390,14 @@ if(UPS_BUILD_AND_INSTALL)
   # cmakefile   -> distdir = <product>/<version>/cmake IF NOFLAVOR
   #                        = <flavorqual_dir>/lib/<product>/cmake ELSE
   # headers     -> header_install_dir = <product>_inc_dir
+  #                ... usually, but not always, appends <product>
   #                ...plus subdir structures...
+  # source      -> <product>/<version>/source/...subdirs...
   #
+  # scripts     -> <product>_bin_dir
+  # fhicl       -> <product>_fcl_dir
+  # gdml        -> <product>_gdml_dir
 endif()
-
-
 #-----------------------------------------------------------------------
 # END OF UPSificiation
 #-----------------------------------------------------------------------
