@@ -385,12 +385,7 @@ if(UPS_BUILD_AND_INSTALL)
   # throught the qualifier.
   set(CMAKE_BUILD_TYPE "${CETPKG_TYPE}")
 
-  # Override dirs? NB - makes dirs uneditable/viewable in cache,
-  # though any added by GNUInstallDirs will be...
-  #unset(CMAKE_INSTALL_BINDIR)
-  #unset(CMAKE_INSTALL_BINDIR CACHE)
-  #set(CMAKE_INSTALL_BINDIR "${CETPKG_NAME}/${CETPKG_VERSION}/bin")
-  # -- Install locations
+  # -- Install directories
   # Hard set defaults, i.e. overwrite even if -D'd
   # runtime     -> <product>_bin_dir
   # lib/archive -> <product>_lib_dir
@@ -404,6 +399,71 @@ if(UPS_BUILD_AND_INSTALL)
   # scripts     -> <product>_bin_dir
   # fhicl       -> <product>_fcl_dir
   # gdml        -> <product>_gdml_dir
+  # Override and force to the cache all entries from GNUInstallDirs
+  # Though items are visible in the cache for clarity, they cannot
+  # be mofified as CET enforces a specific build policy
+  # TODO: example below is just for illustration. There's no construction
+  # /replacement of things like product_dir/flavorqual_dir from the
+  # info from the .cmake file (could be
+  # predone in the included .cmake file (or string_configure)
+  set(product_base_dir "${CETPKG_NAME}/${CETPKG_VERSION}")
+  set(product_flavorqual_dir "${product_base_dir}/OS.ARCH.QUALS")
+
+  # - BINDIR
+  set(CMAKE_INSTALL_BINDIR "${product_flavorqual_dir}/bin" CACHE PATH "user executables (UPS/CET policy)" FORCE)
+  # - SBINDIR
+  set(CMAKE_INSTALL_SBINDIR "${product_flavorqual_dir}/sbin" CACHE PATH "system admin executables (UPS/CET policy)" FORCE)
+  # - LIBEXECDIR
+  set(CMAKE_INSTALL_LIBEXECDIR "${product_flavorqual_dir}/libexec" CACHE PATH "program executables (UPS/CET policy)" FORCE)
+  # - SYSCONFDIR
+  set(CMAKE_INSTALL_SYSCONFDIR "${product_base_dir}/etc" CACHE PATH "read-only single-machine data (UPS/CET policy)" FORCE)
+  # - SHAREDSTATEDIR
+  set(CMAKE_INSTALL_SHAREDSTATEDIR "${product_base_dir}/com" CACHE PATH "modifiable architecture-independent data (UPS/CET policy)" FORCE)
+  # - LOCALSTATEDIR
+  set(CMAKE_INSTALL_LOCALSTATEDIR "${product_base_dir}/var" CACHE PATH "modifiable single-machine data (UPS/CET policy)" FORCE)
+  # - LIBDIR
+  set(CMAKE_INSTALL_LIBDIR "${product_flavorqual_dir}/lib" CACHE PATH "object code libraries (UPS/CET policy)" FORCE)
+  # - INCLUDEDIR
+  set(CMAKE_INSTALL_INCLUDEDIR "${product_base_dir}/include" CACHE PATH "C header files (UPS/CET policy)" FORCE)
+  # - OLDINCLUDEDIR (CHECK GNU DOCS ON THIS)
+  set(CMAKE_INSTALL_OLDINCLUDEDIR "/usr/include" CACHE PATH "C header files for non-gcc (/usr/include)" FORCE)
+  # - DATAROOTDIR
+  set(CMAKE_INSTALL_DATAROOTDIR "${product_base_dir}/share" CACHE PATH "read-only architecture-independent data root (UPS/CET policy)")
+
+  # - The following are derived from datarootdir in GNUInstallDirs,
+  #   we do the same, but with Cache forcing
+  # - DATADIR
+  set(CMAKE_INSTALL_DATADIR "" CACHE PATH "read-only architecture-independent data (DATAROOTDIR)" FORCE)
+  set(CMAKE_INSTALL_DATADIR "${CMAKE_INSTALL_DATAROOTDIR}")
+  # - INFODIR
+  set(CMAKE_INSTALL_INFODIR "" CACHE PATH "info documentation (DATAROOTDIR/info)" FORCE)
+  set(CMAKE_INSTALL_INFODIR "${CMAKE_INSTALL_DATAROOTDIR}/info")
+  # - LOCALEDIR
+  set(CMAKE_INSTALL_LOCALEDIR "" CACHE PATH "locale-dependent data (DATAROOTDIR/locale)" FORCE)
+  set(CMAKE_INSTALL_LOCALEDIR "${CMAKE_INSTALL_DATAROOTDIR}/locale")
+  # - MANDIR
+  set(CMAKE_INSTALL_MANDIR "" CACHE PATH "man documentation (DATAROOTDIR/man)" FORCE)
+  set(CMAKE_INSTALL_MANDIR "${CMAKE_INSTALL_DATAROOTDIR}/man")
+  # - DOCDIR
+  set(CMAKE_INSTALL_DOCDIR "" CACHE PATH "documentation root (DATAROOTDIR/doc/PROJECT_NAME)" FORCE)
+  set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DATAROOTDIR}/doc/${PROJECT_NAME}")
+
+  # CMAKE/CET Extensions
+  # - Some copying from later on. Might be able to refactor these into
+  # functions as main difference is FORCE to cache.
+  # - CMAKEDIR
+  set(CMAKE_INSTALL_CMAKEDIR "" CACHE PATH "CMake package configuration files (LIBDIR/cmake)" FORCE)
+  set(CMAKE_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
+  # - FHICLDIR
+  set(CMAKE_INSTALL_FHICLDIR "" CACHE PATH "FHICL configuration files (DATAROOTDIR/fhicl/PROJECT_NAME)" FORCE)
+  set(CMAKE_INSTALL_FHICLDIR "${CMAKE_INSTALL_DATAROOTDIR}/fhicl/${PROJECT_NAME}")
+  # - GDMLDIR
+  set(CMAKE_INSTALL_GDMLDIR "" CACHE PATH "GDML configuration files (DATAROOTDIR/gdml/PROJECT_NAME)" FORCE)
+  set(CMAKE_INSTALL_GDMLDIR "${CMAKE_INSTALL_DATAROOTDIR}/gdml/${PROJECT_NAME}")
+  # - PERLLIB??
+  # - TESTDIR??
+  # - FWDIR??
+
 endif()
 #-----------------------------------------------------------------------
 # END OF UPSificiation
