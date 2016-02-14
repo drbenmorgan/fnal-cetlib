@@ -62,6 +62,20 @@
 include(CMakeParseArguments)
 
 #-----------------------------------------------------------------------
+# GLOBAL DATA
+#-----------------------------------------------------------------------
+# - Help module to locate files/templates. Might be better/safer as
+#   a property.
+set(CETBUILDTOOLS_DIR "${CMAKE_CURRENT_LIST_DIR}")
+
+# Include zis only once
+if(NOT __CETBUILDTOOLS_INCLUDED)
+  set(__CETBUILDTOOLS_INCLUDED TRUE)
+else()
+  return()
+endif()
+
+#-----------------------------------------------------------------------
 # UTILITY FUNCTIONS
 #-----------------------------------------------------------------------
 # macro set_ifnot(<var> <value>)
@@ -142,6 +156,85 @@ function(enum_option _var)
     endif()
   endif()
 endfunction()
+
+#-----------------------------------------------------------------------
+# function configure_cxx_version_api(NAMESPACE <ns>)
+#          Create a header and source file defining compile and runtime
+#          C++ APIs for accessing a project's MAJOR.MINOR.PATCH version
+#          info. It's assumed these versions are always numerically
+#          comparable.
+#
+#          The NAMESPACE argument sets the C++ namespace inside which
+#          a `version` struct is created.
+#
+#          The generated header and sources files may be added to the
+#          relevant targets, used by other code in the project and
+#          installed as required. The header is #included in the
+#          source file directly (i.e. `#include <version.h>`), so
+#          include paths for any client targets must be set accordingly.
+#
+#          The header is marked up using Doxygen, so documentation may
+#          be generated for it if required.
+#
+#          Further items for configuration:
+#          - Package name for docs
+#            - Generally can be project_name, but...
+#          - Output file names/extensions locations.
+#          - Versions - at present assumes project() is used to set this
+#          - Additional build features like timestamp, rev control
+#            commit id, build features.
+function(configure_cxx_version_api)
+  cmake_parse_arguments(CXXAPI
+    ""
+    "NAMESPACE"
+    ""
+    ${ARGN}
+    )
+
+  # - Validate arguments
+  if(NOT CXXAPI_NAMESPACE)
+    message(FATAL_ERROR "configure_cxx_version_api: NAMESPACE argument must be provided")
+  endif()
+
+  string(TOUPPER "${CXXAPI_NAMESPACE}" CXXAPI_PREPROCESSOR_PREFIX)
+  string(REPLACE "::" "_" CXXAPI_PREPROCESSOR_PREFIX "${CXXAPI_PREPROCESSOR_PREFIX}")
+
+  # If we want a GUID in the include guard, here's one way to do it.
+  # Generally, the various names should be unique enough to identify
+  # the header.
+  #string(RANDOM ALPHABET "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" CXXAPI_GUID)
+  #set(CXXAPI_GUID "_${CXXAPI_GUID}")
+
+  # - Create open/close namespace defs (until C++17)
+  # Open...
+  string(REGEX REPLACE "::([a-zA-Z0-9_]+)" " { namespace \\1" CXXAPI_OPEN_NAMESPACE "${CXXAPI_NAMESPACE}")
+  # Close...
+  string(REGEX MATCHALL "::" CXXAPI_NAMESPACE_LEVELS "${CXXAPI_NAMESPACE}")
+  foreach(_level ${CXXAPI_NAMESPACE_LEVELS})
+    list(APPEND CXXAPI_CLOSE_NAMESPACE "}")
+  endforeach()
+
+  # Names/versions only from project for now
+  set_ifnot(CXXAPI_PROJECT_NAME "${PROJECT_NAME}")
+  set_ifnot(CXXAPI_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+  set_ifnot(CXXAPI_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+  set_ifnot(CXXAPI_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+  set_ifnot(CXXAPI_HEADER_OUTPUT_NAME "version.h")
+  set_ifnot(CXXAPI_SOURCE_OUTPUT_NAME "version.cpp")
+
+  # - Create the header and source files
+  configure_file("${CETBUILDTOOLS_DIR}/version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CXXAPI_HEADER_OUTPUT_NAME}"
+    @ONLY
+    )
+  configure_file("${CETBUILDTOOLS_DIR}/version.cpp.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${CXXAPI_SOURCE_OUTPUT_NAME}"
+    @ONLY
+    )
+endfunction()
+
+configure_cxx_version_api(NAMESPACE "cet")
+add_library(cbtversion STATIC version.h version.cpp)
 #-----------------------------------------------------------------------
 # END OF UTILITY FUNCTION SECTION
 #-----------------------------------------------------------------------
