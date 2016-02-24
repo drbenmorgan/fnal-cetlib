@@ -2,9 +2,11 @@
 cmake_minimum_required(VERSION 3.3)
 project(cetlib VERSION 1.17.2)
 
-# Mock cetbuildtools
-list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cbt")
-include(MiniCet)
+# - Cetbuildtools, version2
+find_package(cetbuildtools2 0.1.0 REQUIRED)
+set(CMAKE_MODULE_PATH ${cetbuildtools2_MODULE_PATH})
+include(CetInstallDirs)
+include(CetCompilerSettings)
 
 # C++ Standard Config
 set(CMAKE_CXX_EXTENSIONS OFF)
