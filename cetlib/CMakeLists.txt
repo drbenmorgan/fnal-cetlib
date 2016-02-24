@@ -118,8 +118,8 @@ target_include_directories(cetlib
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${Boost_INCLUDE_DIRS}
   )
+target_include_directories(cetlib SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(cetlib
   ${Boost_FILESYSTEM_LIBRARY}
   ${Boost_REGEX_LIBRARY}
