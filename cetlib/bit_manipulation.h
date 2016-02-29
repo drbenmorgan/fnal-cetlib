@@ -115,9 +115,10 @@ namespace cet {
     circ_lshift( U X, U n )
   {
     static  std::size_t const  nbits = bit_size<U>::value;
+    static  std::size_t const  mask = nbits - 1;
     n %= nbits;
     return  (X << n)
-         |  (X >> (nbits-n));
+         |  (X >> (nbits-n)&mask);
   }
 
 }  // namespace cet
