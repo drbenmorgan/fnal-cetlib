@@ -4,7 +4,7 @@
 #define BOOST_CHECK assert
 #else
 #define BOOST_TEST_MODULE ( regex test )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 #include "cetlib/LibraryManager.h"
 #endif
 

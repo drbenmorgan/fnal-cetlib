@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE ( maybe_ref test )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 
 #include "cetlib/maybe_ref.h"
 

@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE ( shlib_utils_t )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 
 #include "cetlib/shlib_utils.h"
 

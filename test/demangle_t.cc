@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE ( demangle test )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 
 #include "cetlib/demangle.h"
 

@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE ( search_path_test_3 test )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 
 #include <sstream>
 #include <fstream>

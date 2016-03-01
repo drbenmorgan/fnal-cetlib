@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE ( map_vector test )
 
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 #include <boost/test/output_test_stream.hpp>
 #include "cetlib/map_vector.h"
 #include <iostream>

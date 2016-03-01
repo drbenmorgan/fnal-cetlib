@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE ( lpad test )
 
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 #include "cetlib/lpad.h"
 #include <string>
 

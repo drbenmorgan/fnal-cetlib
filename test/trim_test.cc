@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE ( trim test )
 
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 #include "cetlib/trim.h"
 
 using cet::trim_left;

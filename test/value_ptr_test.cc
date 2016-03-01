@@ -5,7 +5,7 @@
 // ======================================================================
 
 #define BOOST_TEST_MODULE ( value_ptr test )
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 #include <string>
 
 #include "cetlib/value_ptr.h"

@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE (replace_all_test)
-#include "boost/test/auto_unit_test.hpp"
+#include "cetlib/quiet_unit_test.hpp"
 
 #include "cetlib/replace_all.h"
 
