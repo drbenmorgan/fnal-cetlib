@@ -1,6 +1,6 @@
 # - Toplevel CMake script for fnal::cetlib
 cmake_minimum_required(VERSION 3.3)
-project(cetlib VERSION 1.17.2)
+project(cetlib VERSION 1.17.3)
 
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.1.0 REQUIRED)
@@ -19,7 +19,7 @@ set(cetlib_COMPILE_FEATURES
 # - Filesystem
 # - Regex(? std::regex used elsewhere)
 # - Unit Test
-find_package(Boost 1.50.0 REQUIRED
+find_package(Boost 1.60.0 REQUIRED
   filesystem
   system
   regex

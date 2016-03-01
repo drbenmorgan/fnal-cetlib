@@ -39,6 +39,7 @@ set(cetlib_PUBLIC_HEADERS
   ostream_handle.h
   pow.h
   registry.h
+  quiet_unit_test.hpp
   registry_via_id.h
   replace_all.h
   rpad.h
