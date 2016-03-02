@@ -37,7 +37,7 @@ namespace cet {
   template< class FwdCont, class Func >
   inline auto
   for_all( FwdCont const & s, Func f )
-  { return std::for_each(cbegin(s), cend(s), f); }
+  { return std::for_each(cet::cbegin(s), cet::cend(s), f); }
 }
 
 // ----------------------------------------------------------------------
@@ -51,7 +51,7 @@ namespace cet {
   template< class FwdCont, class FwdIter >
   inline auto
   copy_all( FwdCont const & s, FwdIter it )
-  { return std::copy(cbegin(s), cend(s), it); }
+  { return std::copy(cet::cbegin(s), cet::cend(s), it); }
 }
 
 // ----------------------------------------------------------------------
@@ -65,7 +65,7 @@ namespace cet {
   template< class FwdCont, class FwdIter, class Pred >
   inline auto
   copy_if_all( FwdCont const & s, FwdIter it, Pred p )
-  { return std::copy_if(cbegin(s), cend(s), it, p); }
+  { return std::copy_if(cet::cbegin(s), cet::cend(s), it, p); }
 }
 
 // ----------------------------------------------------------------------
@@ -79,12 +79,12 @@ namespace cet {
   template< class FwdCont, class Datum >
   inline auto
   find_in_all( FwdCont const & s, Datum const & d )
-  { return std::find(cbegin(s), cend(s), d); }
+  { return std::find(cet::cbegin(s), cet::cend(s), d); }
 
   template< class FwdCont, class Datum >
   inline bool
   search_all( FwdCont const & s, Datum const & d )
-  { return std::find(cbegin(s), cend(s), d) != s.end(); }
+  { return std::find(cet::cbegin(s), cet::cend(s), d) != s.end(); }
 }
 
 // ----------------------------------------------------------------------
@@ -93,7 +93,7 @@ namespace cet {
   template< class FwdCont, class Datum >
   inline bool
   binary_search_all( FwdCont const & s, Datum const & d )
-  { return std::binary_search(cbegin(s), cend(s), d); }
+  { return std::binary_search(cet::cbegin(s), cet::cend(s), d); }
 }
 
 // ----------------------------------------------------------------------
@@ -102,7 +102,7 @@ namespace cet {
   template< class FwdCont, class Datum >
   inline auto
   lower_bound_all( FwdCont const & s, Datum const & d )
-  { return std::lower_bound(cbegin(s), cend(s), d); }
+  { return std::lower_bound(cet::cbegin(s), cet::cend(s), d); }
 
   template< class FwdCont, class Datum >
   inline auto
@@ -117,7 +117,7 @@ namespace cet {
   template< class FwdCont, class Datum, class Pred >
   inline auto
   lower_bound_all( FwdCont const & s, Datum const & d, Pred p )
-  { return std::lower_bound(cbegin(s), cend(s), d, p); }
+  { return std::lower_bound(cet::cbegin(s), cet::cend(s), d, p); }
 }
 
 // ----------------------------------------------------------------------
