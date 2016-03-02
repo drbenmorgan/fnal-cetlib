@@ -36,4 +36,10 @@ BOOST_AUTO_TEST_CASE ( fail )
                       "_ZN13Xrawfileparser13RawFileParserD1Ev");
 }
 
+BOOST_AUTO_TEST_CASE ( string )
+{
+  std::string foo {"foo"};
+  std::cout << typeid(foo).name() << " " << cet::demangle_symbol(typeid(foo).name()) << std::endl;
+}
+
 BOOST_AUTO_TEST_SUITE_END()
