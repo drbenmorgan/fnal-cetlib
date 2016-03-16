@@ -262,8 +262,9 @@ sub help_types {
 # Print help text for one particular plugin type.
 sub help_type {
   my ($plugin_type, $verbose) = @_;
+  $plugin_type = lc $plugin_type;
   check_plugin_type($plugin_type);
-  my $plugin = lc $plugin_types{$plugin_type};
+  my $plugin = $plugin_types{$plugin_type};
   print STDERR "* $plugin_type from ",
     plugin_product($plugin, "Unknown"), " version ",
       plugin_version($plugin, "Unknown"), " (",

@@ -8,7 +8,6 @@ perllib  product_dir
 # define product/version pairs
 product	version
 boost		v1_60_0
-gcc		v4_9_1		e6
 gcc		v4_9_2		e7
 gcc		v4_9_3		e9
 cetbuildtools	v4_18_04	-	only_for_build
@@ -17,9 +16,6 @@ end_product_list
 
 # Matrix of qualifiers versus dependent products
 qualifier	boost		gcc	compiler	notes
-e6:debug	e6:debug	-nq-	gcc
-e6:opt		e6:opt		-nq-	gcc
-e6:prof		e6:prof		-nq-	gcc
 e7:debug	e7:debug	-nq-	gcc
 e7:opt		e7:opt		-nq-	gcc
 e7:prof		e7:prof		-nq-	gcc
