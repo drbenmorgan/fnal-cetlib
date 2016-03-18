@@ -121,11 +121,9 @@ target_include_directories(cetlib
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-target_include_directories(cetlib SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(cetlib
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_REGEX_LIBRARY}
-  ${Boost_SYSTEM_LIBRARY}
+  Boost::filesystem
+  Boost::regex
   ${CMAKE_DL_LIBS}
   )
 
@@ -141,13 +139,11 @@ target_include_directories(cetlib-static
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    ${Boost_INCLUDE_DIRS}
   )
 
 target_link_libraries(cetlib-static
-  ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_REGEX_LIBRARY}
-  ${Boost_SYSTEM_LIBRARY}
+  Boost::filesystem
+  Boost::regex
   ${CMAKE_DL_LIBS}
   )
 set_target_properties(cetlib-static PROPERTIES OUTPUT_NAME cetlib)

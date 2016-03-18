@@ -6,6 +6,7 @@ project(cetlib VERSION 1.17.3)
 find_package(cetbuildtools2 0.1.0 REQUIRED)
 set(CMAKE_MODULE_PATH ${cetbuildtools2_MODULE_PATH})
 include(CetInstallDirs)
+include(CetCMakeSettings)
 include(CetCompilerSettings)
 
 # C++ Standard Config
@@ -26,13 +27,13 @@ find_package(Boost 1.60.0 REQUIRED
   unit_test_framework
   )
 
-# Make sure testign is enabled
-enable_testing()
-
 #-----------------------------------------------------------------------
 # Process components
 add_subdirectory(cetlib)
-add_subdirectory(test)
+
+if(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
 #add_subdirectory( perllib )          # Modular plugin skeleton generator
 #add_subdirectory( ups )              # ups files
 
