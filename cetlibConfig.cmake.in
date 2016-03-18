@@ -26,7 +26,7 @@ set_and_check(@PROJECT_NAME@_INCLUDEDIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 
 # - Refind Boost components needed, assert EXACT version as this
 # is default behaviour of UPS setups.
-find_package(Boost @Boost_VERSION@ EXACT REQUIRED
+find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@ EXACT REQUIRED
   regex filesystem system
   )
 
