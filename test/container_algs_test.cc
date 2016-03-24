@@ -7,9 +7,6 @@
 
 namespace {
 
-  //using cet::cbegin;
-  //using cet::cend;
-
   template <class T>
   struct A {
     A(T t) : t_(t) {}
@@ -61,30 +58,34 @@ BOOST_AUTO_TEST_CASE( copy_all ) {
 
 BOOST_AUTO_TEST_CASE( transform_all ) {
 
-  std::vector<int>  const v1 { 1, 2, 3, 4 };
-  std::vector<char> const v2 { 'a', 'b', 'c', 'd' };
+  using namespace std;
+  using namespace cet::container_helpers;
+
+  vector<int>  const v1 { 1, 2, 3, 4 };
+  vector<char> const v2 { 'a', 'b', 'c', 'd' };
 
   // One-input version
-  std::vector<A<int>> is1, is2;
-  std::vector<A<char>> cs1, cs2;
-  std::map<A<int>,A<char>> p1, p2;
+  vector<A<int>> is1, is2;
+  vector<A<char>> cs1, cs2;
+  map<A<int>,A<char>> p1, p2;
 
-  std::transform( cet::cbegin(v1), cet::cend(v1), std::back_inserter(is1), MakeA<int>() );
-  std::transform( cet::cbegin(v2), cet::cend(v2), std::back_inserter(cs1), MakeA<char>() );
-  std::transform( cet::cbegin(v1), cet::cend(v1), cet::cbegin(v2), std::inserter(p1, begin(p1)), MakeAPair<int,char>() );
 
-  cet::transform_all( v1, std::back_inserter(is2), MakeA<int>() );
-  cet::transform_all( v2, std::back_inserter(cs2), MakeA<char>() );
-  cet::transform_all( v1, v2, std::inserter(p2, begin(p2)), MakeAPair<int,char>() );
+  transform( cbegin(v1), cend(v1), back_inserter(is1), MakeA<int>() );
+  transform( cbegin(v2), cend(v2), back_inserter(cs1), MakeA<char>() );
+  transform( cbegin(v1), cend(v1), cbegin(v2), inserter(p1, begin(p1)), MakeAPair<int,char>() );
 
-  BOOST_CHECK_EQUAL_COLLECTIONS( cet::cbegin(is1), cet::cend(is1), cet::cbegin(is2), cet::cend(is2) );
-  BOOST_CHECK_EQUAL_COLLECTIONS( cet::cbegin(cs1), cet::cend(cs1), cet::cbegin(cs2), cet::cend(cs2) );
+  cet::transform_all( v1, back_inserter(is2), MakeA<int>() );
+  cet::transform_all( v2, back_inserter(cs2), MakeA<char>() );
+  cet::transform_all( v1, v2, inserter(p2, begin(p2)), MakeAPair<int,char>() );
+
+  BOOST_CHECK_EQUAL_COLLECTIONS( cbegin(is1), cend(is1), cbegin(is2), cend(is2) );
+  BOOST_CHECK_EQUAL_COLLECTIONS( cbegin(cs1), cend(cs1), cbegin(cs2), cend(cs2) );
 
   BOOST_CHECK_EQUAL( p1.size(), p2.size() );
 
-  auto p1_it = cet::cbegin(p1);
-  auto p2_it = cet::cbegin(p1);
-  for ( ; p1_it != cet::cend(p1) ; ++p1_it, ++p2_it ) {
+  auto p1_it = cbegin(p1);
+  auto p2_it = cbegin(p1);
+  for ( ; p1_it != cend(p1) ; ++p1_it, ++p2_it ) {
     BOOST_CHECK_EQUAL( p1_it->first.t_ , p2_it->first.t_ );
     BOOST_CHECK_EQUAL( p1_it->second.t_, p2_it->second.t_ );
   }

@@ -46,6 +46,10 @@
 # define CLANG_IS_AT_LEAST(major, minor, patch) \
   (CLANG_VERSION >= ((100000*(major)) + (1000*(minor)) + (patch)))
 
+#if ! ( GCC_IS_AT_LEAST(5,1,0) || CLANG_IS_AT_LEAST(3,6,0) )
+#define CET_NO_STD_CBEGIN_CEND
+#endif
+
 #endif /* cetlib_compiler_macros_h */
 
 // Local Variables:
