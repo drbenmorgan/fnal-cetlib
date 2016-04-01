@@ -29,7 +29,7 @@ public:
   virtual std::string
     operator () ( std::string const & filename );
 
-  virtual ~filepath_maker( ) noexcept;
+  virtual ~filepath_maker( ) noexcept = default;
 
 };  // filepath_maker
 
@@ -41,10 +41,8 @@ class cet::filepath_lookup
 public:
   filepath_lookup( std::string paths );
 
-  virtual std::string
-    operator () ( std::string const & filename );
-
-  virtual ~filepath_lookup( ) noexcept;
+  std::string
+    operator () ( std::string const & filename ) override;
 
 private:
   cet::search_path paths;
@@ -59,10 +57,8 @@ class cet::filepath_lookup_nonabsolute
 public:
   filepath_lookup_nonabsolute( std::string paths );
 
-  virtual std::string
-    operator () ( std::string const & filename );
-
-  virtual ~filepath_lookup_nonabsolute( ) noexcept;
+  std::string
+    operator () ( std::string const & filename ) override;
 
 private:
   cet::search_path paths;
@@ -77,13 +73,11 @@ class cet::filepath_lookup_after1
 public:
   filepath_lookup_after1( std::string paths );
 
-  virtual std::string
-    operator () ( std::string const & filename );
+  std::string
+    operator () ( std::string const & filename ) override;
 
   void
     reset( );
-
-  virtual ~filepath_lookup_after1( ) noexcept;
 
 private:
   bool             after1;

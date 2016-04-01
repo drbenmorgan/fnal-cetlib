@@ -35,7 +35,7 @@ public:
 
   virtual base *  clone( ) const = 0;
 
-  virtual ~base() { --n_alive; }
+  virtual ~base() noexcept { --n_alive; }
 
   bool operator==(base const& o) const { return i == o.i; }
   bool isSame(base const& o) const { return &o == this; }
@@ -64,9 +64,9 @@ public:
   derived() : i(0) { ++n_alive; ++n_born; }
   explicit derived(int i) : base(i), i(i) { ++n_alive; ++n_born; }
 
-  virtual derived *  clone( ) const { ++n_cloned; return new derived(*this); }
+  derived *  clone( ) const override { ++n_cloned; return new derived(*this); }
 
-  virtual ~derived() { --n_alive; }
+  ~derived() noexcept { --n_alive; }
 
   bool operator==(derived const& o) const { return this->base::operator==(o)
                                                 && i == o.i; }

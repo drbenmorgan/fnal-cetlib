@@ -19,9 +19,6 @@ std::string
   filepath_maker::operator () ( std::string const & filename )
 { return filename; }
 
-filepath_maker::~filepath_maker( ) noexcept
-{ }
-
 // ----------------------------------------------------------------------
 
 filepath_lookup::filepath_lookup( std::string paths )
@@ -34,9 +31,6 @@ std::string
 {
   return paths.find_file(filename);
 }
-
-filepath_lookup::~filepath_lookup( ) noexcept
-{ }
 
 // ----------------------------------------------------------------------
 
@@ -51,9 +45,6 @@ std::string
   return cet::is_absolute_filepath(filename) ? filename
                                              : paths.find_file(filename);
 }
-
-filepath_lookup_nonabsolute::~filepath_lookup_nonabsolute( ) noexcept
-{ }
 
 // ----------------------------------------------------------------------
 
@@ -73,8 +64,5 @@ std::string
 void
   filepath_lookup_after1::reset( )
 { after1 = false; }
-
-filepath_lookup_after1::~filepath_lookup_after1( ) noexcept
-{ }
 
 // ======================================================================

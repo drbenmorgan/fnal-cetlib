@@ -109,7 +109,7 @@ namespace cet {
 
     // --- inspectors:
 
-    virtual  char const *  what() const throw();
+    char const *  what() const throw() override;
     virtual  std::string   explain_self() const;
     std::string            category() const;
     CategoryList const &   history() const;

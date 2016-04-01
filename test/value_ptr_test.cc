@@ -17,13 +17,13 @@ using cet::default_clone;
 struct Base
 {
   virtual std::string  who( ) const  { return "Base"; }
-  virtual ~Base() { }
+  virtual ~Base() noexcept = default;
 };
 
 struct Derived
   : public Base
 {
-  virtual std::string  who( ) const  { return "Derived"; }
+  std::string  who( ) const override { return "Derived"; }
 };
 
 BOOST_AUTO_TEST_SUITE( value_ptr_test )

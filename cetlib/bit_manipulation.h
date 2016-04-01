@@ -79,8 +79,8 @@ namespace cet {
   typename std::enable_if<std::is_unsigned<U>::value, U>::type
   circ_lshift(U X, U n)
   {
-    static constexpr std::size_t nbits = bit_size<U>::value;
-    static constexpr std::size_t mask = nbits - 1ul;
+    constexpr std::size_t nbits = bit_size<U>::value;
+    constexpr std::size_t mask = nbits - 1ul;
     n %= nbits;
     return (X << n) | (X >> (nbits - n) & mask);
   }
