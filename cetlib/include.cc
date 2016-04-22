@@ -126,7 +126,7 @@ cet::include( std::istream      & in
                        );
       if( ! f ) {
         throw include_exception(cant_open) << fname
-                                           << "\nusing path: " << paths.to_string();
+                                           << "\nusing path: " << paths;
       }
       include(f, search_path_arg, result);
     }

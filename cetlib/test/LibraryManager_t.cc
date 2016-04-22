@@ -5,7 +5,7 @@
 
 #include "cetlib/exception.h"
 #include "cetlib/container_algorithms.h"
-#include "test/LibraryManagerTestFunc.h"
+#include "cetlib/test/LibraryManagerTestFunc.h"
 
 #include <algorithm>
 #include <iostream>
@@ -16,7 +16,6 @@ using namespace cet;
 struct LibraryManagerTestFixture {
 
   LibraryManagerTestFixture();
-  ~LibraryManagerTestFixture();
 
   LibraryManager lm;
   LibraryManager const & lm_ref;
@@ -26,10 +25,6 @@ LibraryManagerTestFixture::LibraryManagerTestFixture()
   :
   lm("cetlibtest"),
   lm_ref(lm)
-{
-}
-
-LibraryManagerTestFixture::~LibraryManagerTestFixture()
 {
 }
 

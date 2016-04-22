@@ -31,7 +31,7 @@ public:
     coded_exception( Code c );
   coded_exception( Code c, std::string const & m );
   coded_exception( Code c, std::string const & m, exception const & e );
-  virtual ~coded_exception( ) noexcept;
+  virtual ~coded_exception() = default;
 
   // --- inspectors:
   Code  categoryCode( ) const;
@@ -68,10 +68,6 @@ template< typename Code, std::string translate( Code ) >
                                                        )
 : exception( codeToString(c), m, e )
 , category_( c )
-{ }
-
-template< typename Code, std::string translate( Code ) >
-  cet::coded_exception<Code,translate>::~coded_exception( ) noexcept
 { }
 
 // ======================================================================

@@ -32,10 +32,9 @@ template< class K, class V >
   class cet::registry_via_id
 {
   // non-instantiable (and non-copyable, just in case):
-  registry_via_id( );
-  ~registry_via_id( );
-  registry_via_id( registry_via_id const & );
-  void  operator = ( registry_via_id const & );
+  registry_via_id() = delete;
+  registry_via_id(registry_via_id const&) = delete;
+  void operator=(registry_via_id const&) = delete;
 
 public:
   typedef  std::map<K const, V>                      collection_type;

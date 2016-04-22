@@ -41,7 +41,7 @@ namespace cet {
   class ostream_handle {
   public:
 
-    virtual ~ostream_handle(){}
+    virtual ~ostream_handle() = default;
 
     template <typename T>
     ostream_handle& operator<<(T const& t)

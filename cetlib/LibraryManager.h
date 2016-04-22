@@ -16,15 +16,14 @@ namespace cet {
 
 class cet::LibraryManager {
 public:
-  // Create a LibraryManager that searches through LD_LIBRARY_PATH
-  // for dynamically loadable libraries having the given lib_type.
-  // If LD_LIBRARY_PATH is not defined, then no libraries are found.
-  // Library names are expected to be of the form:
+  // Create a LibraryManager that searches through a
+  // platform-dependent search path specified by search_path for
+  // dynamically loadable libraries having the given lib_type. Library
+  // names are expected to be of the form:
   //      libaa_bb_cc_xyz_<lib_type>.<ext>
   //  and where <ext> is provided automatically as appropriate for
   // the platform.
-  explicit
-  LibraryManager(std::string lib_type);
+  explicit LibraryManager(std::string lib_type);
   LibraryManager(std::string lib_type,
                  std::string pattern);
 

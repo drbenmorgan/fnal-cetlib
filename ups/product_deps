@@ -1,4 +1,4 @@
-parent cetlib v1_17_03
+parent cetlib v1_17_04
 defaultqual e9
 #
 libdir	fq_dir lib
@@ -10,7 +10,7 @@ product	version
 boost		v1_60_0
 gcc		v4_9_2		e7
 gcc		v4_9_3		e9
-cetbuildtools	v4_19_02	-	only_for_build
+cetbuildtools	v5_00_01	-	only_for_build
 end_product_list
 
 

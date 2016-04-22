@@ -14,8 +14,6 @@ using namespace cet;
 
 struct PluginFactoryTestFixture {
   PluginFactoryTestFixture() : pf() { pf.setDiagReleaseVersion("ETERNAL"); }
-  ~PluginFactoryTestFixture() = default;
-
   BasicPluginFactory pf;
 
 };

@@ -36,10 +36,10 @@ set(cetlib_PUBLIC_HEADERS
   no_delete.h
   ntos.h
   nybbler.h
+  os_libpath.h
   ostream_handle.h
   pow.h
   registry.h
-  quiet_unit_test.hpp
   registry_via_id.h
   replace_all.h
   rpad.h
@@ -211,4 +211,10 @@ install(
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   )
 
+
+# ======================================================================
+# Testing
+if(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
 

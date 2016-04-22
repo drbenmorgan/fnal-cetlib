@@ -62,25 +62,6 @@ SHA1::SHA1()
     Reset();
 }
 
-/*
- *  ~SHA1
- *
- *  Description:
- *      This is the destructor for the sha1 class
- *
- *  Parameters:
- *      None.
- *
- *  Returns:
- *      Nothing.
- *
- *  Comments:
- *
- */
-SHA1::~SHA1()
-{
-    // The destructor does nothing
-}
 
 /*
  *  Reset

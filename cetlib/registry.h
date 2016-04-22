@@ -22,10 +22,9 @@ template< class K, class V >
   class cet::registry
 {
   // non-instantiable (and non-copyable, just in case):
-  registry( );
-  ~registry( );
-  registry( registry const & );
-  void  operator = ( registry const & );
+  registry() = delete;
+  registry(registry const&) = delete;
+  void  operator=(registry const&) = delete;
 
   // shorthand:
   typedef  std::map<K const, V>            reg_t;

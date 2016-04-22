@@ -54,5 +54,6 @@ int
     }
   }
 
+  ensure(23, search_path("a:bb:c.c").to_string() == std::string("a:bb:c.c"));
   return 0;
 }

@@ -1,6 +1,7 @@
 #include "cetlib/LibraryManager.h"
 
 #include "cetlib/exception.h"
+#include "cetlib/os_libpath.h"
 #include "cetlib/shlib_utils.h"
 #include "boost/filesystem.hpp"
 #include "boost/regex.hpp"
@@ -51,12 +52,7 @@ cet::LibraryManager::LibraryManager(std::string lib_type,
 {
   // TODO: We could also consider searching the ld.so.conf list, if
   // anyone asks for it.
-  static search_path const
-    ld_lib_path(
-#if __APPLE__ && __MACH__
-      "DY"
-#endif
-      "LD_LIBRARY_PATH");
+  static search_path const ld_lib_path { os_libpath() };
   std::vector<std::string> matches;
   ld_lib_path.find_files(shlib_prefix() + pattern_stem_ +
                          lib_type_ + dllExtPattern(),
@@ -258,11 +254,9 @@ getSymbolByLibspec_(std::string const & libspec,
                 std::ostream_iterator<std::string>(error_msg, "\n"));
     }
     else {
-      error_msg << " does not correspond to any library in " <<
-#if __APPLE__ && __MACH__
-        "DY"
-#endif
-        "LD_LIBRARY_PATH of type \""
+      error_msg << " does not correspond to any library in "
+                << os_libpath()
+                << " of type \""
                 << lib_type_
                 << "\"\n";
     }

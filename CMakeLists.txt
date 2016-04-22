@@ -1,6 +1,6 @@
 # - Toplevel CMake script for fnal::cetlib
 cmake_minimum_required(VERSION 3.3)
-project(cetlib VERSION 1.17.3)
+project(cetlib VERSION 1.17.4)
 
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.1.0 REQUIRED)
@@ -59,9 +59,6 @@ find_package(Boost 1.60.0 REQUIRED
 # Process components
 add_subdirectory(cetlib)
 
-if(BUILD_TESTING)
-  add_subdirectory(test)
-endif()
 #add_subdirectory( perllib )          # Modular plugin skeleton generator
 #add_subdirectory( ups )              # ups files
 
