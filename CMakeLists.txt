@@ -6,7 +6,6 @@ project(cetlib VERSION 1.18.2)
 find_package(cetbuildtools2 0.1.0 REQUIRED)
 set(CMAKE_MODULE_PATH ${cetbuildtools2_MODULE_PATH})
 include(CetInstallDirs)
-message(STATUS "CMAKE_INSTALL_CMAKEDIR : x${CMAKE_INSTALL_FHICLDIR}")
 include(CetCMakeSettings)
 include(CetCompilerSettings)
 
@@ -27,6 +26,14 @@ find_package(Boost 1.60.0 REQUIRED
   regex
   unit_test_framework
   )
+
+# Need OpenSSL on non-Apple for MD5/SHA1 implementations
+# On Apple, always use builtin CommonCrypto
+if(NOT APPLE)
+  find_package(OpenSSL REQUIRED)
+
+  # If we have CMake < 3.4, then will need to match imported targets
+endif()
 
 #-----------------------------------------------------------------------
 # Process components

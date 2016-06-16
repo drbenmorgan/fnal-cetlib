@@ -118,9 +118,10 @@ target_link_libraries(cetlib
   Boost::filesystem
   Boost::regex
   ${CMAKE_DL_LIBS}
-  -lcrypto
-  -lssl
   )
+if(NOT APPLE)
+  target_link_libraries(cetlib OpenSSL::SSL OpenSSL::Crypto)
+endif()
 
 # - Archive
 add_library(cetlib-static STATIC
@@ -139,9 +140,11 @@ target_link_libraries(cetlib-static
   Boost::filesystem
   Boost::regex
   ${CMAKE_DL_LIBS}
-  -lcrypto
-  -lssl
   )
+if(NOT APPLE)
+  target_link_libraries(cetlib-static OpenSSL::SSL OpenSSL::Crypto)
+endif()
+
 set_target_properties(cetlib-static PROPERTIES OUTPUT_NAME cetlib)
 
 #-----------------------------------------------------------------------
