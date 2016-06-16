@@ -26,7 +26,7 @@ public:
 private:
   std::string const message_;
 };
-#endif
+#endif /* cetlib_test_TestPluginBase_h */
 
 // Local Variables:
 // mode: c++

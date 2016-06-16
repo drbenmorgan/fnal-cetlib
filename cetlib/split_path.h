@@ -1,5 +1,5 @@
-#ifndef CETLIB_SPLIT_PATH_H
-#define CETLIB_SPLIT_PATH_H
+#ifndef cetlib_split_path_h
+#define cetlib_split_path_h
 
 // ======================================================================
 //
@@ -11,14 +11,15 @@
 #include <string>
 #include <vector>
 
-namespace cet
-{
-  void
-    split_path( std::string const        & path
-              , std::vector<std::string> & components
-              );
+namespace cet {
+  void split_path(std::string const& path,
+                  std::vector<std::string>& components);
 }
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_split_path_h */
+
+// Local Variables:
+// mode: c++
+// End:

@@ -1,5 +1,5 @@
-#ifndef CETLIB_STON_H
-#define CETLIB_STON_H
+#ifndef cetlib_ston_h
+#define cetlib_ston_h
 
 // ======================================================================
 //
@@ -170,4 +170,8 @@ catch( boost::bad_lexical_cast )
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_ston_h */
+
+// Local Variables:
+// mode: c++
+// End:

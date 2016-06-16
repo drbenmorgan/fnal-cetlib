@@ -1,5 +1,5 @@
-#ifndef MAYBE_REF_HH
-#define MAYBE_REF_HH
+#ifndef cetlib_maybe_ref_h
+#define cetlib_maybe_ref_h
 
 // ======================================================================
 //
@@ -86,4 +86,8 @@ inline void
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_maybe_ref_h */
+
+// Local Variables:
+// mode: c++
+// End:

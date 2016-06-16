@@ -1,5 +1,5 @@
-#ifndef CETLIB_CONTAINER_ALGORITHMS_H
-#define CETLIB_CONTAINER_ALGORITHMS_H
+#ifndef cetlib_container_algorithms_h
+#define cetlib_container_algorithms_h
 
 // ======================================================================
 //
@@ -318,7 +318,7 @@ cet::transform_all( Container1 const& in1,
   return transform(cbegin(in1), cend(in1), cbegin(in2), out, binary_op);
 }
 
-#endif
+#endif /* cetlib_container_algorithms_h */
 
 // Local variables:
 // mode: c++

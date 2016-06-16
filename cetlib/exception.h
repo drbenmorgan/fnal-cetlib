@@ -1,5 +1,5 @@
-#ifndef CETLIB_EXCEPTION_H
-#define CETLIB_EXCEPTION_H
+#ifndef cetlib_exception_h
+#define cetlib_exception_h
 
 // ======================================================================
 //
@@ -136,9 +136,6 @@ namespace cet {
     CategoryList                  category_;
     mutable std::string           what_;
 
-    virtual  std::exception *  clone() const;
-    virtual  void  rethrow();
-
   };  // exception
 
   template< class E >
@@ -170,8 +167,12 @@ namespace cet {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_exception_h */
 
 // Local variables
+// mode: c++
+// End:
+
+// Local Variables:
 // mode: c++
 // End:

@@ -118,27 +118,27 @@ namespace cet
   MD5Digest::MD5Digest() :
     context_()
   {
-    polarssl::md5_starts(&context_);
+    MD5_Init(&context_);
   }
 
   MD5Digest::MD5Digest(std::string const& s) :
     context_()
   {
-    polarssl::md5_starts(&context_);
+    MD5_Init(&context_);
     this->append(s);
   }
 
   void MD5Digest::append(std::string const& s)
   {
     using md5_byte_t = unsigned char;
-    const md5_byte_t* data = reinterpret_cast<const md5_byte_t*>(s.data());
-    polarssl::md5_update(&context_, const_cast<md5_byte_t*>(data), s.size());
+    md5_byte_t const* data = reinterpret_cast<md5_byte_t const*>(s.data());
+    MD5_Update(&context_, const_cast<md5_byte_t*>(data), s.size());
   }
 
   MD5Result MD5Digest::digest() const
   {
     MD5Result aDigest;
-    polarssl::md5_finish(&context_, aDigest.bytes);
+    MD5_Final(aDigest.bytes, &context_);
     return aDigest;
   }
 }

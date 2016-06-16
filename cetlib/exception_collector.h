@@ -1,5 +1,5 @@
-#ifndef CETLIB_EXCEPTION_COLLECTOR_H
-#define CETLIB_EXCEPTION_COLLECTOR_H
+#ifndef cetlib_exception_collector_h
+#define cetlib_exception_collector_h
 
 // ======================================================================
 //
@@ -59,4 +59,8 @@ namespace cet {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_exception_collector_h */
+
+// Local Variables:
+// mode: c++
+// End:

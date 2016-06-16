@@ -1,5 +1,5 @@
-#ifndef VALUE_PTR_H
-#define VALUE_PTR_H
+#ifndef cetlib_value_ptr_h
+#define cetlib_value_ptr_h
 
 // ======================================================================
 //
@@ -417,4 +417,8 @@ bool
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_value_ptr_h */
+
+// Local Variables:
+// mode: c++
+// End:

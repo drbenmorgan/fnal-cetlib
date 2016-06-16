@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef _SHA1_H_
-#define _SHA1_H_
+#ifndef cetlib_test_sha1_h
+#define cetlib_test_sha1_h
 
 namespace fhicl {
 
@@ -89,4 +89,8 @@ class SHA1
 
 } // end of namespace mf
 
-#endif
+#endif /* cetlib_test_sha1_h */
+
+// Local Variables:
+// mode: c++
+// End:

@@ -1,16 +1,19 @@
 #ifndef cetlib_MD5Digest_h
 #define cetlib_MD5Digest_h
 
-#include "polarssl/md5.h"
-
 #include <iosfwd>
 #include <string>
+#ifdef __APPLE__
+#define COMMON_DIGEST_FOR_OPENSSL
+#include <CommonCrypto/CommonDigest.h>
+#undef COMMON_DIGEST_FOR_OPENSSL
+#else
+#include <openssl/md5.h>
+#endif
 
-namespace cet
-{
+namespace cet {
 
-  struct MD5Result
-  {
+  struct MD5Result {
     // The default-constructed MD5Result is invalid; all others are
     // valid. The MD5 digest of the empty string is the value of the
     // default-constructed MD5Result.
@@ -34,7 +37,7 @@ namespace cet
   };
 
   bool operator==(MD5Result const& a, MD5Result const& b);
-  bool operator< (MD5Result const& a, MD5Result const& b);
+  bool operator<(MD5Result const& a, MD5Result const& b);
 
   inline bool operator!=(MD5Result const& a, MD5Result const& b)
   {
@@ -50,22 +53,21 @@ namespace cet
 
   // Digest creates an MD5 digest of the given string. The digest can
   // be updated by using 'append'.
-  class MD5Digest
-  {
+  class MD5Digest {
   public:
+
     MD5Digest();
     explicit MD5Digest(std::string const& s);
 
     void append(std::string const& s);
-
     MD5Result digest() const;
 
   private:
-    mutable polarssl::md5_context context_;
+    mutable MD5_CTX context_;
   };
 }
 
-#endif /* cet_Utilities_Digest_h */
+#endif /* cetlib_MD5Digest_h */
 
 // Local Variables:
 // mode: c++

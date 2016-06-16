@@ -1,5 +1,5 @@
-#ifndef CETLIB_FILEPATH_MAKER_H
-#define CETLIB_FILEPATH_MAKER_H
+#ifndef cetlib_filepath_maker_h
+#define cetlib_filepath_maker_h
 
 // ======================================================================
 //
@@ -87,4 +87,8 @@ private:
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_filepath_maker_h */
+
+// Local Variables:
+// mode: c++
+// End:

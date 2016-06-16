@@ -1,5 +1,5 @@
-#ifndef CETLIB_MAKE_UNIQUE_H
-#define CETLIB_MAKE_UNIQUE_H
+#ifndef cetlib_make_unique_h
+#define cetlib_make_unique_h
 
 #include <memory>
 #include <utility>
@@ -18,7 +18,7 @@ namespace cet
   }
 }
 
-#endif
+#endif /* cetlib_make_unique_h */
 
 // Local variables:
 // mode: c++

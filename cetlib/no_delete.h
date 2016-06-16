@@ -33,7 +33,7 @@ namespace cet {
   };
 }
 
-#endif
+#endif /* cetlib_no_delete_h */
 
 // Local variables:
 // mode: c++

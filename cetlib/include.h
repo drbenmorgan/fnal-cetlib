@@ -1,5 +1,5 @@
-#ifndef CETLIB_INCLUDE_H
-#define CETLIB_INCLUDE_H
+#ifndef cetlib_h
+#define cetlib_h
 
 // ======================================================================
 //
@@ -27,4 +27,8 @@ namespace cet {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_h */
+
+// Local Variables:
+// mode: c++
+// End:

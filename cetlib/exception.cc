@@ -45,18 +45,6 @@ namespace {
 
 } // anon. namespace
 
-std::exception *
-exception::clone() const
-{
-  return new exception(*this);
-}
-
-void
-exception::rethrow()
-{
-  throw *this;
-}
-
 // ======================================================================
 // c'tors, d'tors:
 

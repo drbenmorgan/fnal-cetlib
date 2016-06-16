@@ -678,7 +678,7 @@ sub header_includes {
            "\"${header_inc_loc}\""),
           (($options->{"use-boost-unit"} and
             $modes->{$mode} & $modes->{class_impl}) ?
-           ("<boost/test/included/unit_test.hpp>", "\n")
+           ("\"cetlib/quiet_unit_test.hpp\"", "\n")
            : ()),
           @local_headers,
           @system_headers)

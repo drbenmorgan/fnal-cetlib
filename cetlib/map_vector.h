@@ -1,5 +1,5 @@
-#ifndef CETLIB_MAP_VECTOR_H
-#define CETLIB_MAP_VECTOR_H
+#ifndef cetlib_map_vector_h
+#define cetlib_map_vector_h
 
 // ======================================================================
 //
@@ -404,7 +404,7 @@ bool
 
 // ======================================================================
 #endif /* GCCXML */
-#endif
+#endif /* cetlib_map_vector_h */
 
 // Local variables:
 // mode: c++

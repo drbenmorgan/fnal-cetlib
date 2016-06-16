@@ -1,5 +1,5 @@
-#ifndef art_Utilities_hard_cast_h
-#define art_Utilities_hard_cast_h
+#ifndef cetlib_hard_cast_h
+#define cetlib_hard_cast_h
 
 #include <cstring>
 
@@ -33,7 +33,7 @@ cet::hard_cast(void * src, PTR & dest)
 {
   memcpy(&dest, &src, sizeof(PTR));
 }
-#endif /* art_Utilities_hard_cast_h */
+#endif /* cetlib_hard_cast_h */
 
 // Local Variables:
 // mode: c++

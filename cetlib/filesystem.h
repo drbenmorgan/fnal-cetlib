@@ -1,5 +1,5 @@
-#ifndef CETLIB_FILESYSTEM_H
-#define CETLIB_FILESYSTEM_H
+#ifndef cetlib_filesystem_h
+#define cetlib_filesystem_h
 
 // ======================================================================
 //
@@ -24,4 +24,8 @@ namespace cet {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_filesystem_h */
+
+// Local Variables:
+// mode: c++
+// End:

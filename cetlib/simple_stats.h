@@ -1,5 +1,5 @@
-#ifndef CETLIB_SIMPLE_STATS_H
-#define CETLIB_SIMPLE_STATS_H
+#ifndef cetlib_simple_stats_h
+#define cetlib_simple_stats_h
 
 // ======================================================================
 //
@@ -87,4 +87,8 @@ std::basic_ostream<charT,traits> &
 
 // ======================================================================
 
-#endif  // CETLIB_SIMPLE_STATS_H
+#endif /* cetlib_simple_stats_h */
+
+// Local Variables:
+// mode: c++
+// End:

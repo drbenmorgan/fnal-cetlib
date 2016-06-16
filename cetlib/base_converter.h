@@ -1,5 +1,5 @@
-#ifndef CETLIB_BASE_CONVERTER_H
-#define CETLIB_BASE_CONVERTER_H
+#ifndef cetlib_base_converter_h
+#define cetlib_base_converter_h
 
 // ==================================================================
 // 
@@ -68,4 +68,8 @@ inline unsigned int
   cet::base_converter::get_target_base() const
 { return (unsigned int)target_base_set_.length(); }
 
-#endif
+#endif /* cetlib_base_converter_h */
+
+// Local Variables:
+// mode: c++
+// End:

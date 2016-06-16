@@ -62,7 +62,7 @@ makePlugin(std::string const & libspec,
   return call<RESULT_TYPE>(libspec, makerName_,
                            std::forward<ARGS>(args)...);
 }
-#endif
+#endif /* cetlib_BasicPluginFactory_h */
 
 // Local Variables:
 // mode: c++

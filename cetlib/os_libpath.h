@@ -1,5 +1,5 @@
-#ifndef CETLIB_OS_LIBPATH
-#define CETLIB_OS_LIBPATH
+#ifndef cetlib_os_libpath_h
+#define cetlib_os_libpath_h
 
 namespace cet {
   // Return the name of the environment variable that defines the
@@ -18,4 +18,8 @@ inline constexpr char const* cet::os_libpath() {
 #endif
 }
 
-#endif //  CETLIB_OS_LIBPATH
+#endif /* cetlib_os_libpath_h */
+
+// Local Variables:
+// mode: c++
+// End:

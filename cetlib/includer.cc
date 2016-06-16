@@ -64,21 +64,21 @@ namespace { namespace detail {
 
   std::string
   canonicalizePath(std::string const & path_str)
-  try {
-    bfs::path path(path_str);
-    // If specified path does not exist, complain later.
-    if (bfs::exists(path)) {
-      path = bfs::canonical(path);
+    try {
+      bfs::path path(path_str);
+      // If specified path does not exist, complain later.
+      if (bfs::exists(path)) {
+        path = bfs::canonical(path);
+      }
+      std::string result = path.native();
+      return result;
+    } catch (std::exception const & e) {
+      throw detail::inc_exception(detail::cant_open)
+        << "Exception while examining include specification \""
+        << path_str
+        << "\": "
+        << e.what();
     }
-    std::string result = path.native();
-    return result;
-  } catch (std::exception const & e) {
-    throw detail::inc_exception(detail::cant_open)
-      << "Exception while examining include specification \""
-      << path_str
-      << "\": "
-      << e.what();
-  }
 
 } // anonymous.
 
@@ -94,10 +94,10 @@ includer::includer( std::string const   & filename
   text  ( ),
   frames { frame(0, begin_string(), 0, text.size()) },
   recursion_stack ( )
-  {
-    include(0, filename, policy_filename);
-    frames.emplace_back(0, end_string(), 0, text.size());
-  }
+{
+  include(0, filename, policy_filename);
+  frames.emplace_back(0, end_string(), 0, text.size());
+}
 
 // ----------------------------------------------------------------------
 
@@ -108,10 +108,10 @@ includer::includer( std::istream        & is
   text  ( ),
   frames { frame(0, begin_string(), 0, text.size()) },
   recursion_stack ( )
-  {
-    include(is, policy_filename);
-    frames.emplace_back(0, end_string(), 0, text.size());
-  }
+{
+  include(is, policy_filename);
+  frames.emplace_back(0, end_string(), 0, text.size());
+}
 
 
 // ----------------------------------------------------------------------

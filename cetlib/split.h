@@ -1,5 +1,5 @@
-#ifndef CETLIB_SPLIT_H
-#define CETLIB_SPLIT_H
+#ifndef cetlib_split_h
+#define cetlib_split_h
 
 // ======================================================================
 //
@@ -86,7 +86,7 @@ cet::split_if( std::string const & s, Pred is_sep, OutIter dest )
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_split_h */
 
 // Local variables:
 // mode:c++

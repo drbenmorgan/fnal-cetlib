@@ -1,5 +1,5 @@
-#ifndef CETLIB_GETENV_H
-#define CETLIB_GETENV_H
+#ifndef cetlib_getenv_h
+#define cetlib_getenv_h
 
 // ======================================================================
 //
@@ -10,12 +10,13 @@
 #include <string>
 
 namespace cet {
-
-  std::string
-    getenv( std::string const & name );
-
+  std::string getenv(std::string const& name);
 }
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_getenv_h */
+
+// Local variables:
+// mode: c++
+// End:

@@ -1,5 +1,5 @@
-#ifndef CETLIB_NYBBLER_H
-#define CETLIB_NYBBLER_H
+#ifndef cetlib_nybbler_h
+#define cetlib_nybbler_h
 
 // ======================================================================
 //
@@ -46,7 +46,7 @@ private:
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_nybbler_h */
 
 // Local variables:
 // mode: c++

@@ -1,5 +1,5 @@
-#ifndef CETLIB_REPLACE_ALL_H
-#define CETLIB_REPLACE_ALL_H
+#ifndef cetlib_replace_all_h
+#define cetlib_replace_all_h
 
 #include <string>
 
@@ -18,7 +18,7 @@ namespace cet {
               std::string const & to);
 }
 
-#endif /* CETLIB_REPLACE_ALL_H */
+#endif /* cetlib_replace_all_h */
 
 // Local variables:
 // mode:c++

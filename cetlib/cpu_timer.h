@@ -1,5 +1,5 @@
-#ifndef CETLIB_CPU_TIMER_H
-#define CETLIB_CPU_TIMER_H
+#ifndef cetlib_cpu_timer_h
+#define cetlib_cpu_timer_h
 
 // ======================================================================
 //
@@ -18,10 +18,16 @@ namespace cet {
 class cet::cpu_timer
 {
 public:
-  // --- compiler generates d'tor
 
-  // --- default c'tor
-  cpu_timer();
+  cpu_timer() = default;
+
+  // Allow move
+  cpu_timer(cpu_timer&&) = default;
+  cpu_timer& operator=(cpu_timer&&) = default;
+
+  // Disable copy
+  cpu_timer(cpu_timer const&) = delete;
+  cpu_timer& operator=(cpu_timer const&) = delete;
 
   // --- accessors:
   bool    is_running() const;
@@ -31,9 +37,6 @@ public:
   double  accumulated_real_time() const;
   double  accumulated_cpu_time () const;
 
-  // --- function aliases for backwards compatibility with the
-  //     former art/Utilities/CPUTimer class
-
   inline double realTime() const { return accumulated_real_time(); }
   inline double cpuTime () const { return accumulated_cpu_time(); }
 
@@ -42,17 +45,15 @@ public:
   void stop();
   void reset();
 
+
 private:
-  // --- non-copyable:
-  cpu_timer( cpu_timer const & );
-  void  operator = ( cpu_timer const & );
 
   // --- state:
-  bool     is_running_;
-  timeval  start_real_time_;
-  timeval  start_cpu_time_;
-  double   accumulated_real_time_;
-  double   accumulated_cpu_time_;
+  bool     is_running_ {false};
+  timeval  start_real_time_ {0, 0};
+  timeval  start_cpu_time_ {0, 0};
+  double   accumulated_real_time_ {};
+  double   accumulated_cpu_time_ {};
 
 };  // cpu_timer
 
@@ -68,7 +69,7 @@ cet::cpu_timer::is_stopped() const
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_cpu_timer_h */
 
 // Local variables:
 // mode: c++

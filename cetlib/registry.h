@@ -1,5 +1,5 @@
-#ifndef CETLIB_REGISTRY_H
-#define CETLIB_REGISTRY_H
+#ifndef cetlib_registry_h
+#define cetlib_registry_h
 
 // ======================================================================
 //
@@ -95,4 +95,8 @@ catch( cet::exception const & )
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_registry_h */
+
+// Local Variables:
+// mode: c++
+// End:

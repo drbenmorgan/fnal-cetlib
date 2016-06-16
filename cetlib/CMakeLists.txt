@@ -61,13 +61,6 @@ set(cetlib_DETAIL_HEADERS
   detail/wrapLibraryManagerException.h
   )
 
-set(cetlib_POLARSSL_HEADERS
-  polarssl/config.h
-  polarssl/md5.h
-  polarssl/sha1.h
-  polarssl/version.h
-  )
-
 #-----------------------------------------------------------------------
 # Sources
 #
@@ -76,6 +69,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/shlib_utils.cc.in
   )
 set(cetlib_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc
+  MD5Digest.cc
   BasicPluginFactory.cc
   LibraryManager.cc
   MD5Digest.cc
@@ -83,6 +77,7 @@ set(cetlib_SOURCES
   base_converter.cc
   canonical_number.cc
   canonical_string.cc
+  column_width.cc
   cpu_timer.cc
   crc32.cc
   demangle.cc
@@ -98,12 +93,11 @@ set(cetlib_SOURCES
   replace_all.cc
   rpad.cc
   search_path.cc
+  sha1.cc
   simple_stats.cc
   split_by_regex.cc
   split_path.cc
   detail/wrapLibraryManagerException.cc
-  polarssl/md5.cc
-  polarssl/sha1.cc
   )
 
 #-----------------------------------------------------------------------
@@ -112,7 +106,6 @@ set(cetlib_SOURCES
 add_library(cetlib SHARED
   ${cetlib_PUBLIC_HEADERS}
   ${cetlib_DETAIL_HEADERS}
-  ${cetlib_POLARSSL_HEADERS}
   ${cetlib_SOURCES}
   )
 target_compile_features(cetlib PUBLIC ${cetlib_COMPILE_FEATURES})
@@ -125,13 +118,14 @@ target_link_libraries(cetlib
   Boost::filesystem
   Boost::regex
   ${CMAKE_DL_LIBS}
+  -lcrypto
+  -lssl
   )
 
 # - Archive
 add_library(cetlib-static STATIC
   ${cetlib_PUBLIC_HEADERS}
   ${cetlib_DETAIL_HEADERS}
-  ${cetlib_POLARSSL_HEADERS}
   ${cetlib_SOURCES}
   )
 target_compile_features(cetlib-static PUBLIC ${cetlib_COMPILE_FEATURES})
@@ -145,6 +139,8 @@ target_link_libraries(cetlib-static
   Boost::filesystem
   Boost::regex
   ${CMAKE_DL_LIBS}
+  -lcrypto
+  -lssl
   )
 set_target_properties(cetlib-static PROPERTIES OUTPUT_NAME cetlib)
 

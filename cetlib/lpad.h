@@ -1,5 +1,5 @@
-#ifndef LPAD_H
-#define LPAD_H
+#ifndef cetlib_lpad_h
+#define cetlib_lpad_h
 
 // ======================================================================
 //
@@ -17,4 +17,8 @@ namespace cet {
         );
 }
 
-#endif
+#endif /* cetlib_lpad_h */
+
+// Local Variables:
+// mode: c++
+// End:

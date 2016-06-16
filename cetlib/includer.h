@@ -1,5 +1,5 @@
-#ifndef CETLIB_INCLUDER_H
-#define CETLIB_INCLUDER_H
+#ifndef cetlib_includer_h
+#define cetlib_includer_h
 
 // ======================================================================
 //
@@ -86,7 +86,7 @@ private:
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_includer_h */
 
 // Local variables:
 // mode: c++

@@ -11,12 +11,11 @@
 
 // ======================================================================
 
-std::string
-  cet::getenv( std::string const & name )
+std::string cet::getenv(std::string const& name)
 {
   char const * p = std::getenv(name.c_str());
-  if( p == 0 )
-    throw cet::exception("getenv")
+  if(p == nullptr)
+    throw cet::exception{"getenv"}
       << "Can't find an environment variable named \"" << name << '\"';
   return p;
 }

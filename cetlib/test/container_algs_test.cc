@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE ( container_algorithms test )
 #include "cetlib/quiet_unit_test.hpp"
-#include "boost/test/test_tools.hpp"
 #include "cetlib/container_algorithms.h"
 #include <map>
 #include <utility>

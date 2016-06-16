@@ -1,5 +1,5 @@
-#ifndef CETLIB_TRIM_H
-#define CETLIB_TRIM_H
+#ifndef cetlib_trim_h
+#define cetlib_trim_h
 
 // ======================================================================
 //
@@ -66,7 +66,7 @@ cet::trim_copy( std::string source, std::string const& t )
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_trim_h */
 
 // Local variables:
 // mode: c++

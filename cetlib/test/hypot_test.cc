@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE ( hypot test )
 #include "cetlib/quiet_unit_test.hpp"
-#include "boost/test/floating_point_comparison.hpp"
 #include <cmath>
 #include <limits>
 

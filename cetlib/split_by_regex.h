@@ -1,5 +1,5 @@
-#ifndef cetlib_tokenize_h
-#define cetlib_tokenize_h
+#ifndef cetlib_split_by_regex_h
+#define cetlib_split_by_regex_h
 
 // ======================================================================
 //
@@ -36,7 +36,7 @@ namespace cet {
 
 }
 
-#endif
+#endif /* cetlib_split_by_regex_h */
 
 // Local variables:
 // mode: c++

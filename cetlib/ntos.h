@@ -1,5 +1,5 @@
-#ifndef CETLIB_NTOS_H
-#define CETLIB_NTOS_H
+#ifndef cetlib_ntos_h
+#define cetlib_ntos_h
 
 // ======================================================================
 //
@@ -74,4 +74,8 @@ inline std::string
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_ntos_h */
+
+// Local Variables:
+// mode: c++
+// End:

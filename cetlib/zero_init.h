@@ -1,5 +1,5 @@
-#ifndef CETLIB_ZERO_INIT_H
-#define CETLIB_ZERO_INIT_H
+#ifndef cetlib_zero_init_h
+#define cetlib_zero_init_h
 
 // ======================================================================
 //
@@ -80,4 +80,8 @@ private:
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_zero_init_h */
+
+// Local Variables:
+// mode: c++
+// End:

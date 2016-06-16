@@ -1,5 +1,5 @@
-#ifndef CETLIB_CANONICAL_NUMBER_H
-#define CETLIB_CANONICAL_NUMBER_H
+#ifndef cetlib_canonical_number_h
+#define cetlib_canonical_number_h
 
 // ======================================================================
 //
@@ -23,4 +23,8 @@ namespace cet {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_canonical_number_h */
+
+// Local Variables:
+// mode: c++
+// End:

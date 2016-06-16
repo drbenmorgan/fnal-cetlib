@@ -1,5 +1,5 @@
-#ifndef CETLIB_CANONICAL_STRING_H
-#define CETLIB_CANONICAL_STRING_H
+#ifndef cetlib_canonical_string_h
+#define cetlib_canonical_string_h
 
 // ======================================================================
 //
@@ -83,7 +83,7 @@ catch( ... ) {
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_canonical_string_h */
 
 // Local Variables:
 // mode: c++

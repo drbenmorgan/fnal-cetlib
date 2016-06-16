@@ -1,5 +1,5 @@
-#ifndef CETLIB_NAME_OF_H
-#define CETLIB_NAME_OF_H
+#ifndef cetlib_name_of_h
+#define cetlib_name_of_h
 
 // ======================================================================
 //
@@ -203,4 +203,8 @@ template<>
 
 // ======================================================================:
 
-#endif  // CETLIB_NAME_OF_H
+#endif /* cetlib_name_of_h */
+
+// Local Variables:
+// mode: c++
+// End:

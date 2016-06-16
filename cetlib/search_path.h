@@ -1,5 +1,5 @@
-#ifndef CETLIB_SEARCH_PATH_H
-#define CETLIB_SEARCH_PATH_H
+#ifndef cetlib_search_path_h
+#define cetlib_search_path_h
 
 // ======================================================================
 //
@@ -88,4 +88,8 @@ std::size_t cet::search_path::find_files(std::string const& pattern,
 }
 
 
-#endif
+#endif /* cetlib_search_path_h */
+
+// Local Variables:
+// mode: c++
+// End:

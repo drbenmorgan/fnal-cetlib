@@ -1,5 +1,5 @@
-#ifndef CETLIB_POW_H
-#define CETLIB_POW_H
+#ifndef cetlib_pow_h
+#define cetlib_pow_h
 
 // ======================================================================
 //
@@ -107,4 +107,8 @@ inline T
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_pow_h */
+
+// Local Variables:
+// mode: c++
+// End:

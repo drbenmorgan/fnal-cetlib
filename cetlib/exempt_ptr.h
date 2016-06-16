@@ -1,5 +1,5 @@
-#ifndef CETLIB_EXEMPT_PTR_H
-#define CETLIB_EXEMPT_PTR_H
+#ifndef cetlib_exempt_ptr_h
+#define cetlib_exempt_ptr_h
 
 // ======================================================================
 //
@@ -297,4 +297,8 @@ bool
 
 // ======================================================================
 
-#endif
+#endif /* cetlib_exempt_ptr_h */
+
+// Local Variables:
+// mode: c++
+// End:
