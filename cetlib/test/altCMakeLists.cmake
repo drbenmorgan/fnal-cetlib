@@ -29,7 +29,14 @@ cet_test(exempt_ptr_test)
 cet_test(filesystem_test)
 cet_test(getenv_test)
 cet_test(hypot_test USE_BOOST_UNIT)
-cet_test(inc-expand_test.sh PREBUILT DEPENDENCIES inc-expand)
+
+cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
+  # Use TEST_EXEC to use exact script without needing PATH...
+  TEST_EXEC ${CMAKE_CURRENT_SOURCE_DIR}/inc-expand_test.sh
+  # Script runs inc-expand, so ensure its location is in test env PATH
+  TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:inc-expand>:$ENV{PATH}
+  )
+
 cet_test(include_test)
 cet_test(includer_test USE_BOOST_UNIT LIBRARIES ${Boost_FILESYSTEM_LIBRARY})
 cet_test(is_absolute_filepath_t USE_BOOST_UNIT)
@@ -49,7 +56,14 @@ cet_test(registry_via_id_test_2 NO_AUTO) # for now -- see test's source
 cet_test(rpad_test USE_BOOST_UNIT)
 cet_test(search_path_test)
 cet_test(search_path_test_2 NO_AUTO)
-cet_test(search_path_test_2.sh PREBUILT DEPENDENCIES search_path_test_2)
+
+cet_test(search_path_test_2.sh HANDBUILT DEPENDENCIES search_path_test_2
+  # Use TEST_EXEC to use exact script without needing PATH...
+  TEST_EXEC ${CMAKE_CURRENT_SOURCE_DIR}/search_path_test_2.sh
+  # Script runs search_path_test_2, so ensure its location is in test env PATH
+  TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:search_path_test_2>:$ENV{PATH}
+  )
+
 cet_test(search_path_test_3 USE_BOOST_UNIT)
 cet_test(sha1_test)
 cet_test(sha1_test_2 SOURCES sha1_test_2.cc sha1.cpp)
