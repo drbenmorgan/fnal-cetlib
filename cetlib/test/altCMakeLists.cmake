@@ -1,8 +1,3 @@
-# ALT_CMAKE construct
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-else()
-
 # ======================================================================
 #
 # Testing
@@ -126,5 +121,3 @@ cet_test(regex_standalone_t
   DATAFILES regex.txt)
 
 set_target_properties(regex_standalone_t PROPERTIES COMPILE_DEFINITIONS STANDALONE_TEST)
-
-endif() # ALT_CMAKE
