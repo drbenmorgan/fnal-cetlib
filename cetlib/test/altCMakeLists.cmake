@@ -7,8 +7,30 @@
 include(CetTest)
 cet_enable_asserts()
 
+# TEST ENVIRONMENT
+# Configure dynamic loader path for tests
+# - cet_test_env helps propagate this to all tests.
+# - Could also use TEST_PROPERTIES in cet_test if more specific value are required.
+# - NB: Assumes standard build layout so that all dynamic libraries end up
+#       in the same directory. Hence we can derive this location from the
+#       main project target using a genexp. A genexp *also* helps to support
+#       multiconfig IDEs like Xcode as it will use the appropriate path for
+#       the config being tested (e.g. Release/Debug etc)
+# - NB: Won't work on OS X El Capitan, but this is due to underlying bug
+#       in cetlib (hardcodes use of DYLD_LIBRARY_PATH rather than allowing
+#       custom path).
+
+# - Have to distinguish between loader paths on different platforms, so abstract
+#   the name to a variable. Needs additions for other platforms as they become
+#   used.
+set(SYSTEM_LD_LIBRARY_PATH
+  $<$<PLATFORM_ID:Linux>:LD_LIBRARY_PATH>
+  $<$<PLATFORM_ID:Darwin>:DYLD_LIBRARY_PATH>
+  )
+cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_LD_LIBRARY_PATH}}")
+
 # Identify libraries to be linked:
-link_libraries( cetlib )
+link_libraries(cetlib)
 
 cet_test(bit_test)
 cet_test(base_converter_test)
@@ -34,6 +56,8 @@ cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
   # Use TEST_EXEC to use exact script without needing PATH...
   TEST_EXEC ${CMAKE_CURRENT_SOURCE_DIR}/inc-expand_test.sh
   # Script runs inc-expand, so ensure its location is in test env PATH
+  # Could also do this using cet_test_env, but better to be specific for
+  # this single case.
   TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:inc-expand>:$ENV{PATH}
   )
 
@@ -91,7 +115,7 @@ basic_plugin(TestPlugin "plugin" NO_INSTALL cetlib_test_TestPluginBase)
 
 cet_test(PluginFactory_t USE_BOOST_UNIT
   LIBRARIES cetlib cetlib_test_TestPluginBase
-)
+  )
 
 function(test_library LIBSPEC)
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${LIBSPEC}.cc
