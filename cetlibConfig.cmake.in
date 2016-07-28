@@ -32,7 +32,10 @@ find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@ EXACT REQUIRED
 
 # - Refind SSL on non-Apple platforms
 if(NOT APPLE)
-  find_package(OpenSSL @OPENSSL_VERSION@ EXACT REQUIRED)
+  # Strip trailing letters as find_package does not like these?
+  set(cetlib_REQUIRED_OPENSSL_VERSION @OPENSSL_VERSION@)
+  string(REGEX REPLACE "[a-z]+$" "" cetlib_REQUIRED_OPENSSL_VERSION "${cetlib_REQUIRED_OPENSSL_VERSION}")
+  find_package(OpenSSL ${cetlib_REQUIRED_OPENSSL_VERSION} EXACT REQUIRED)
 endif()
 
 # - Include our targets
