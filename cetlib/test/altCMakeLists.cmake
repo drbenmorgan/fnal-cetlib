@@ -22,11 +22,12 @@ cet_enable_asserts()
 
 # - Have to distinguish between loader paths on different platforms, so abstract
 #   the name to a variable. Needs additions for other platforms as they become
-#   used.
-set(SYSTEM_LD_LIBRARY_PATH
-  $<$<PLATFORM_ID:Linux>:LD_LIBRARY_PATH>
-  $<$<PLATFORM_ID:Darwin>:DYLD_LIBRARY_PATH>
-  )
+#   used. Genexps don't work as we need to call $ENV directly and that can't take
+#   a genexp as argument.
+set(SYSTEM_LD_LIBRARY_PATH LD_LIBRARY_PATH)
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  set(SYSTEM_LD_LIBRARY_PATH DYLD_LIBRARY_PATH)
+endif()
 cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_LD_LIBRARY_PATH}}")
 
 # Identify libraries to be linked:
