@@ -7,11 +7,15 @@ set(@PROJECT_NAME@_VERSION "@PROJECT_VERSION@")
 # - CMakePackageConfigHelpers Startup...
 @PACKAGE_INIT@
 
-# Don't *strictly* need include dir as linking to cetlib::cetlib
+# Don't *strictly* need include dir(s) as linking to cetlib::cetlib
 # target will propagate all needed requirements. However, it's
 # useful if we're using header-only parts and don't want to
 # have a binary linkage.
-set_and_check(@PROJECT_NAME@_INCLUDEDIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+# NB: Could also/Should be derived from INTERFACE_INCLUDE_DIRS
+# as this will add paths from deps (e.g Boost). However,
+# as that would involve a genexp its propagation needs thought.
+set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set(@PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_INCLUDE_DIR}")
 
 # - When needed, refind Boost targets here
 # At present, FindBoost does not support imported targets which
