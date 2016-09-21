@@ -6,7 +6,7 @@ Code to calculate a CRC32 checksum on a string.  This code is based
 on code copied from the web in the public domain.  The code was modified
 quite a bit to provide the interface we need, remove extraneous code
 related to NAACR records, convert from C to C++, and use a
-boost type for the 32 unsigned integers, but the essential features
+standard library type for the 32 unsigned integers, but the essential features
 of the CRC calculation are the same.  The array values, constants,
 and algorithmic steps are identical.  The comments in the header
 from the original code follow below to attribute the source.
@@ -53,7 +53,7 @@ from the original code follow below to attribute the source.
 /*                                                               */
 /*****************************************************************/
 
-#include "boost/cstdint.hpp"
+#include <cstdint>
 
 #include <string>
 
@@ -65,11 +65,11 @@ namespace cet {
 
     CRC32Calculator(std::string const& message);
 
-    boost::uint32_t checksum() { return checksum_; }
+    std::uint32_t checksum() { return checksum_; }
 
   private:
 
-    boost::uint32_t checksum_;
+    std::uint32_t checksum_;
   };
 }
 #endif /* cetlib_test_CRC32Calculator_h */

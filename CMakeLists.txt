@@ -47,7 +47,10 @@ cet_report_compiler_flags()
 
 find_ups_product (cetbuildtools v4_14_01)
 find_ups_boost(v1_50_0)
+find_ups_product(sqlite)
 
+# SQLite
+cet_find_library(SQLITE3 NAMES sqlite3_ups PATHS ENV SQLITE_LIB NO_DEFAULT_PATH)
 
 # ----------------------------------------------------------------------
 # Describe source tree layout:

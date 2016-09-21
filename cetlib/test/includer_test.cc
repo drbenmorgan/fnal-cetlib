@@ -16,6 +16,9 @@
 #include <regex>
 #include <sstream>
 
+#include <system_error>
+#include <unistd.h>
+
 namespace {
 
   std::string const file_a = "./a.txt";
@@ -108,7 +111,9 @@ namespace {
     std::ofstream x1(file_x1);  x1 << contents_x1;
     std::ofstream x2(file_x2);  x2 << contents_x2;
     std::ofstream x3(file_x3);  x3 << contents_x3;
-    boost::filesystem::create_symlink(".", "linked");
+    if (symlink(".", "linked") == -1) {
+      throw std::system_error(std::error_code(errno, std::system_category()));
+    }
   }
 
 

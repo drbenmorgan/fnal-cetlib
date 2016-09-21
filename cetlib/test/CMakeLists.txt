@@ -13,8 +13,9 @@ include(CetTest)
 cet_enable_asserts()
 
 # Identify libraries to be linked:
-link_libraries( cetlib )
+link_libraries(cetlib)
 
+add_subdirectory(Ntuple)
 cet_test(bit_test)
 cet_test(base_converter_test)
 cet_test(canonical_number_test)
@@ -48,6 +49,7 @@ cet_test(ntos_test USE_BOOST_UNIT)
 cet_test(nybbler_test)
 cet_test(os_libpath_t)
 cet_test(pow_test USE_BOOST_UNIT)
+cet_test(pow_constexpr_test)
 cet_test(registry_test)
 cet_test(registry_via_id_test)
 cet_test(registry_via_id_test_2 NO_AUTO) # for now -- see test's source

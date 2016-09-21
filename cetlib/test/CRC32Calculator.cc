@@ -6,10 +6,10 @@ namespace cet {
 
   namespace {
 
-    const boost::uint32_t CRC32_XINIT = 0xFFFFFFFFL;
-    const boost::uint32_t CRC32_XOROT = 0xFFFFFFFFL;
+    const std::uint32_t CRC32_XINIT = 0xFFFFFFFFL;
+    const std::uint32_t CRC32_XOROT = 0xFFFFFFFFL;
 
-    boost::uint32_t crctable[256] =
+    std::uint32_t crctable[256] =
     {
       0x00000000L, 0x77073096L, 0xEE0E612CL, 0x990951BAL,
       0x076DC419L, 0x706AF48FL, 0xE963A535L, 0x9E6495A3L,
