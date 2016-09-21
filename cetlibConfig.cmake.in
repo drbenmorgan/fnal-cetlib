@@ -42,6 +42,9 @@ if(NOT APPLE)
   find_package(OpenSSL ${cetlib_REQUIRED_OPENSSL_VERSION} EXACT REQUIRED)
 endif()
 
+# - Refind SQLite
+find_package(SQLite @SQLite_VERSION@ REQUIRED)
+
 # - Include our targets
 include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
 

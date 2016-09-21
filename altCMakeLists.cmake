@@ -1,6 +1,6 @@
 # - Toplevel CMake script for fnal::cetlib
 cmake_minimum_required(VERSION 3.3)
-project(cetlib VERSION 1.18.2)
+project(cetlib VERSION 1.20.0)
 
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.1.0 REQUIRED)
@@ -9,7 +9,7 @@ include(CetInstallDirs)
 include(CetCMakeSettings)
 include(CetCompilerSettings)
 
-# C++ Standard Config
+# C++ Standard Config (for 14)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(cetlib_COMPILE_FEATURES
   cxx_auto_type
@@ -34,6 +34,9 @@ if(NOT APPLE)
 
   # If we have CMake < 3.4, then will need to match imported targets
 endif()
+
+# SQLite for Ntuple
+find_package(SQLite 3.12.2 REQUIRED)
 
 #-----------------------------------------------------------------------
 # Process components

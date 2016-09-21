@@ -55,6 +55,16 @@ set(cetlib_PUBLIC_HEADERS
   trim.h
   value_ptr.h
   zero_init.h
+  Ntuple/Exception.h
+  Ntuple/Ntuple.h
+  Ntuple/Transaction.h
+  Ntuple/sqlite_DBmanager.h
+  Ntuple/sqlite_column.h
+  Ntuple/sqlite_helpers.h
+  Ntuple/sqlite_insert_impl.h
+  Ntuple/sqlite_query_impl.h
+  Ntuple/sqlite_result.h
+  Ntuple/sqlite_stringstream.h
   )
 
 set(cetlib_DETAIL_HEADERS
@@ -69,7 +79,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/shlib_utils.cc.in
   )
 set(cetlib_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc
-  MD5Digest.cc
   BasicPluginFactory.cc
   LibraryManager.cc
   MD5Digest.cc
@@ -98,6 +107,11 @@ set(cetlib_SOURCES
   split_by_regex.cc
   split_path.cc
   detail/wrapLibraryManagerException.cc
+  Ntuple/Exception.cc
+  Ntuple/Transaction.cc
+  Ntuple/sqlite_helpers.cc
+  Ntuple/sqlite_query_impl.cc
+  Ntuple/sqlite_result.cc
   )
 
 #-----------------------------------------------------------------------
@@ -117,6 +131,7 @@ target_include_directories(cetlib
 target_link_libraries(cetlib
   Boost::filesystem
   Boost::regex
+  SQLite::SQLite
   ${CMAKE_DL_LIBS}
   )
 if(NOT APPLE)
@@ -139,6 +154,7 @@ target_include_directories(cetlib-static
 target_link_libraries(cetlib-static
   Boost::filesystem
   Boost::regex
+  SQLite::SQLite
   ${CMAKE_DL_LIBS}
   )
 if(NOT APPLE)
@@ -166,6 +182,7 @@ install(TARGETS cetlib cetlib-static inc-expand
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.icc"
+  PATTERN "test" EXCLUDE
   )
 #-----------------------------------------------------------------------
 # Create exports file(s)

@@ -33,6 +33,8 @@ cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_
 # Identify libraries to be linked:
 link_libraries(cetlib)
 
+add_subdirectory(Ntuple)
+
 cet_test(bit_test)
 cet_test(base_converter_test)
 cet_test(canonical_number_test)
