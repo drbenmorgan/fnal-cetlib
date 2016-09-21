@@ -1,0 +1,36 @@
+Cetlib in a non-UPS world
+=========================
+
+
+
+```console
+$ ls
+CMakeLists.txt        altCMakeLists.cmake   perllib
+Doxyfile.in           cetlib                ups
+LICENSE               cetlibConfig.cmake.in
+README                doc
+$ mkdir build && cd build
+$ cmake -DALT_CMAKE=ON ..
+$ make
+$ make test
+```
+
+If you use UPS, then the system is fully compatible with the stack here.
+Simply set up what you need and build:
+
+```console
+$ setup gcc v4_9_3a
+# UPS gcc doesn't create the "cc -> gcc" softlink, so system gcc may be found first!
+$ export CC=gcc
+$ setup cmake v3_5_1
+$ setup boost v1_61_0 -q e10:prof
+...
+$ ls
+CMakeLists.txt        altCMakeLists.cmake   perllib
+Doxyfile.in           cetlib                ups
+LICENSE               cetlibConfig.cmake.in
+README                doc
+$ mkdir build && cd build
+$ cmake -DALT_CMAKE=ON -DCMAKE_PREFIX_PATH="$CBT2_PATH;$BOOST_FQ_DIR" ..
+$
+
