@@ -87,9 +87,7 @@ unsigned
   unsigned long result = stoul(s, &size);
   if( size < s.size() )
     throw std::invalid_argument("ston<unsigned long>");
-  if(    result < std::numeric_limits<unsigned>::min()
-      || std::numeric_limits<unsigned>::max() < result
-    )
+  if( std::numeric_limits<unsigned>::max() < result )
     throw std::out_of_range("ston<unsigned long>");
   return static_cast<unsigned>(result);
 }
