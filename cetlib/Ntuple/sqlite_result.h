@@ -1,5 +1,5 @@
-#ifndef art_Ntuple_sqlite_result_h
-#define art_Ntuple_sqlite_result_h
+#ifndef cetlib_Ntuple_sqlite_result_h
+#define cetlib_Ntuple_sqlite_result_h
 
 // =======================================================
 //
@@ -55,7 +55,7 @@ namespace sqlite {
 
 } //namespace sqlite
 
-#endif /* art_Ntuple_sqlite_helpers_h */
+#endif /* cetlib_Ntuple_sqlite_result_h */
 
 // Local Variables:
 // mode: c++

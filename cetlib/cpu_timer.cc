@@ -6,7 +6,7 @@
 
 #include "cetlib/cpu_timer.h"
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include <cerrno>
 #include <sys/resource.h>
 

@@ -27,6 +27,7 @@
 //
 // ======================================================================
 
+#include <ostream>
 #include <stdexcept>
 
 namespace cet {
@@ -36,6 +37,15 @@ namespace cet {
   template< class T >
   void
     swap( maybe_ref<T> &, maybe_ref<T> & );
+
+  template <class T>
+  bool
+  operator == (maybe_ref<T> const & left,
+               maybe_ref<T> const & right);
+
+  template <class T>
+  std::ostream &
+  operator << (std::ostream & os, maybe_ref<T> const & item);
 }
 
 // ======================================================================
@@ -52,7 +62,7 @@ public:
   // use compiler-generated copy c'tor, copy assignment, and d'tor
 
   bool  isValid( ) const  { return ptr_; }
-  operator bool( ) const  { return isValid(); }
+  explicit operator bool( ) const  { return isValid(); }
 
   void  reseat(       )  { ptr_ = 0; }
   void  reseat( T & p )  { ptr_ = &p; }
@@ -83,6 +93,24 @@ template< class T >
 inline void
   cet::swap( maybe_ref<T> & r1, maybe_ref<T> & r2 )
 { r1.swap(r2); }
+
+template <class T>
+inline
+bool
+cet::operator == (maybe_ref<T> const & left,
+                  maybe_ref<T> const & right)
+{
+  return (&left.ref()) == (&right.ref());
+}
+
+template <class T>
+inline
+std::ostream &
+cet::operator << (std::ostream & os, maybe_ref<T> const & item)
+{
+  os << &item.ref();
+  return os;
+}
 
 // ======================================================================
 

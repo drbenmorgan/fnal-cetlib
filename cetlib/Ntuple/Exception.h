@@ -3,11 +3,11 @@
 
 // ======================================================================
 //
-// Exception: sqlite-specific customizations for cetlib/coded_exception
+// Exception: sqlite-specific customizations for cetlib_except/coded_exception
 //
 // ======================================================================
 
-#include "cetlib/coded_exception.h"
+#include "cetlib_except/coded_exception.h"
 #include <string>
 
 // ----------------------------------------------------------------------
@@ -34,7 +34,7 @@ namespace sqlite {
 
 // ======================================================================
 
-#endif /* canvas_Utilities_Exception_h */
+#endif /* cetlib_Ntuple_Exception_h */
 
 // Local Variables:
 // mode: c++

@@ -58,7 +58,7 @@ int
 
 // =====================================
 
-    gettimeofday(&start, NULL);
+    gettimeofday(&start, nullptr);
 
     fhicl::SHA1 s;
     unsigned r[5];
@@ -68,7 +68,7 @@ int
       s.Result(r);
     }
 
-    gettimeofday(&end, NULL);
+    gettimeofday(&end, nullptr);
 
     start_ = start.tv_sec*1000000 + start.tv_usec;
     end_   = end.tv_sec*1000000 + end.tv_usec;
@@ -77,7 +77,7 @@ int
 
 // =====================================
 
-    gettimeofday(&start, NULL);
+    gettimeofday(&start, nullptr);
 
     sha1 c;
     digest_t d;
@@ -88,7 +88,7 @@ int
       d = c.digest();
     }
 
-    gettimeofday(&end, NULL);
+    gettimeofday(&end, nullptr);
 
     start_ = start.tv_sec*1000000 + start.tv_usec;
     end_   = end.tv_sec*1000000 + end.tv_usec;

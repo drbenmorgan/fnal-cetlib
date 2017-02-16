@@ -1,0 +1,158 @@
+% Multi-threading report for cetlib/Ntuple.
+% Chris Green.
+% 2016-10-12 (on commit 114f655).
+
+# Global notes #{-}
+
+* The header files in this directory would benefit from a refresh of their guards.
+
+* Some careful research must be done into our use of SQLite3, specifically with respect to multi-threaded access to a DB in the light of our removal of locking due to problematic behaviors vis a vis NFS-based files. We may have to require that DB files (and art ROOT data files containing DBs, which is of course all of them) not be written directly to NFS filesystems. {#sqliteFunc} 
+
+* By general tenor of the code therein (and lack of documentation explaining use), all `sqlite*.h` files should be in a `detail` directory, with all entities therein defined in a detail namespace, as the structs and functions appear to be "for expert use only" and may not be of general utility for purposes other than supporting the operation of `std::Ntuple`{.cpp}.
+
+# `Exception.{h,cc}` #
+
+## `sqlite::ExceptionDetail::translate()`{.cpp} ##
+
+No threading issues.
+
+# `Transaction.{h,cc}` #
+
+* Use of an `sqlite::Transaction`{.cpp} object must be single-threaded due to its interactions with the `sqlite3`{.cpp} database object. See [global notes], above.
+
+# `sqlite::Exception`{.cpp} #
+
+Alias for `cet::coded_exception<errors::ErrorCodes, ExceptionDetail::translate>`{.cpp} -- see analysis of `cetlib::coded_exception` for any threading issues.
+
+# `sqlite_column.h` #
+
+* `sqlite::column_base::name_`{.cpp} could be `const`{.cpp} if assignment is not required.
+
+* Use of external types and functions such as `std::array`{.cpp}, `std::tuple`{.cpp} appears to have no threading issues: classes have no non-`const`{.cpp} member functions and `sqlite::make_column_pack()`{.cpp} makes no non-const use of its arguments.
+
+# `sqlite_stringstream.h` #
+
+* Use of an `sqlite::stringstream`{.cpp} object must be single-threaded due to its public non-const functions access to the data member `std::deque<std:string> data_`{.cpp}.
+
+# `sqlite_result.{h,cc}` #
+
+* Use of an `sqlite::result`{.cpp} object must generally be single-threaded due to its public data members and its member
+functions' non-const access to the `data`{.cpp} public data member.
+
+## Non-thread-related observations ##
+
+* The polarity of `explicit sqlite::result::operator bool () const`{.cpp} would appear to be reversed.
+
+# `sqlite_insert_impl.h` #
+
+* Use of an object of type, `template <typename TUP> struct sqlite::IncompleteInsert`{.cpp} must generally be single-threaded due to its public data members and use thereof by public non-const member functions. See [global notes], above.
+
+* This entire header file is unused within `cetlib`. This is problematic due to its name:
+    a) suggesting internal use ("impl"); and
+
+    b) not matching the class or functions it provides (the aforementioned class `sqlite::IncompleteInsert`{.cpp} and the function `template <typename TUP, typename... C> auto insert_into(TUP& t, C const&... columns)`{.cpp}
+
+    If the function `sqlite::insert_into()` were intended to have been exposed via `sqlite_helpers.h`, then this header and contents should have been in the defined namespace, with an explicit exposure in `sqlite_helpers.h`:
+
+    ~~~~~cpp
+    namespace sqlite {
+      using detail::insert_into;
+    }
+    ~~~~~
+
+# `sqlite_query_impl.{h,cc}` #
+
+* The notes for `sqlite::IncompleteInsert`{.cpp} above apply equally to `sqlite::CompleteQuery`{.cpp} and `sqlite::IncompleteQuery`{.cpp}, defined herein, and for the same reasons.
+
+# `sqlite_helpers.{h,cc}` #
+
+* See [global notes] regarding `sqlite*.h`. Everything defined directly in `sqlite_helpers.h` is a function, therefore threading issues are confined to the caller of said functions having to worry about what they might do to non-const function arguments, and their interactions with SQLite3 functions.
+
+# `sqlite_DBManager.h` #
+
+* Both private data members of `sqlite::DBmanager`{.cpp} should probably be declared `const`{.cpp}:
+
+    ~~~~~cpp
+    sqlite3 * const db_;
+    bool const log_;
+    ~~~~~
+
+# `Ntuple.h` #
+
+## `template <class ... ARGS> class Ntuple`{.cpp} ##
+
+### Non-private data members. ###
+
+None.
+
+### Private data members: ###
+
+`sqlite3 * db_`{.cpp}
+
+: Pointer to an SQLite3 database: could / should be const, set at construction time.
+
+`std::string name_`{.cpp}
+
+: Table name: could / should be const, set at construction time.
+
+`std::size_t max_`{.cpp}
+
+: Maximum size: could / should be const, set at construction time.
+
+`std::vector<row_t> buffer_`{.cpp}
+
+: Table data buffer. See interactions with `flush()`{.cpp} and `flush_no_throw()`{.cpp}.
+
+`sqlite3_stmt * insert_statement`{.cpp}
+
+: Set in constructor with SQLite calls, used subsequently (check interface for const use of pointer). Should use RAII on this rather than explicit finalize call in destructor?
+
+`sqlite3_int64 last_rowid_`{.cpp}
+
+: SQLite3 table state. Significant threading issues, esp. races. Could be ameliorated by returning the last row from insert(). Having lastRowid() as a public function is dangerous. Rather than keeping this state, explore ways of having SQLite manage this.
+    
+### General threading comments. ###
+
+Need to examine external use with the following parameters:
+
+1) Is the row ID used at all?
+
+2) Is there any use of assignment (if not, several data members may be made `const`{.cpp})?
+
+3) Are the `flush()`{.cpp} functions used outside the class?
+
+From the point of view of multi-threaded access, the buffering is extremely problematic and should probably be removed entirely in favor of direct insert to SQLite3 and return of the last rowid. We cannot assume that a single `Ntuple`{.cpp} object has exclusive access to a particular DB table. At the very least, the flushing functions should be private such that their invocation circumstances are tightly controlled.
+
+Access to `insert()`{.cpp} will almost certainly need to be locked due to the mutating use of the `sqlite3_stmt`{.cpp}. Either that or we need to consider the use of multiple statements, with the performance issues that will arise therefrom.
+
+## Ancillary classes and functions. ##
+
+`bind_one_XXX()`{.cpp}
+
+: These functions should be protected better from external use: the detail namespace, perhaps. These may not be called concurrently because of the mutating nature of the operation on the `sqlite3_stmt *`{.cpp} argument (see note on `insert()`{.cpp}, above).
+
+`template <class TUP, size_t N>`{.cpp}
+
+: This template and its partial specializations have the same threading implications as the `bind_one_XXX()`{.cpp} functions treated above, and for the same reasons (use of `sqlite3_stmt`{.cpp}).
+
+### Non-thread-related observations. ###
+
+* The `static_assert`{.cpp} in the constructor should at least be in the class definition rather than the body of the constructor. It is anyway redundant except in the case that `std::tuple_size<row_t>::value`{.cpp} gives the wrong answer, which would indicate an irredeemably broken C++ standard library or an internal error in the definition of `row_t`{.cpp}.
+
+* The overload set `bind_one_parameter()`{.cpp} does not cover the pantheon of available basic types. The first time someone attempts to bind a non-supported parameter, a compile-time ambiguity is likely to arise.
+
+* The error message for `bind_one_null()`{.cpp} erroneously refers to "text" rather than "null."
+
+## Use of external code. ##
+
+* `sqlite::Exception`{.cpp}
+
+* `sqlite::Transaction`{.cpp}
+
+* Various SQLite3 functions.
+
+* C++ SQLite3 helper functions defined elsewhere in `cetlib/Ntuple`.
+
+<!-- Local Variables: -->
+<!-- mode: markdown -->
+<!-- End: -->

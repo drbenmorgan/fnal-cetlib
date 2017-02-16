@@ -1,5 +1,5 @@
-#ifndef art_Ntuple_Transaction_h
-#define art_Ntuple_Transaction_h
+#ifndef cetlib_Ntuple_Transaction_h
+#define cetlib_Ntuple_Transaction_h
 
 struct sqlite3;
 
@@ -36,7 +36,7 @@ namespace sqlite
   };
 }
 
-#endif /* art_Ntuple_Transaction_h */
+#endif /* cetlib_Ntuple_Transaction_h */
 
 // Local Variables:
 // mode: c++

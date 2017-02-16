@@ -1,5 +1,5 @@
-#ifndef cetlib_Utilities_detail_metaprogramming_h
-#define cetlib_Utilities_detail_metaprogramming_h
+#ifndef cetlib_detail_metaprogramming_h
+#define cetlib_detail_metaprogramming_h
 
 // Common metaprogramming utilities.
 
@@ -47,7 +47,7 @@ namespace cet {
 
   }
 }
-#endif /* cetlib_Utilities_detail_metaprogramming_h */
+#endif /* cetlib_detail_metaprogramming_h */
 
 // Local Variables:
 // mode: c++

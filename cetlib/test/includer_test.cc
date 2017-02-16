@@ -8,7 +8,7 @@
 #include "cetlib/quiet_unit_test.hpp"
 
 #include "boost/filesystem.hpp"
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include "cetlib/filepath_maker.h"
 #include "cetlib/includer.h"
 #include <fstream>

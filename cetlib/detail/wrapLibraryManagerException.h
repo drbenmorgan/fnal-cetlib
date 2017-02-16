@@ -1,7 +1,7 @@
 #ifndef cetlib_detail_wrapLibraryManagerException_h
 #define cetlib_detail_wrapLibraryManagerException_h
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 
 #include <string>
 

@@ -1,5 +1,5 @@
-#ifndef sqlite_helpers_h
-#define sqlite_helpers_h
+#ifndef cetlib_Ntuple_sqlite_query_impl_h
+#define cetlib_Ntuple_sqlite_query_impl_h
 
 #include "cetlib/Ntuple/sqlite_result.h"
 #include <string>
@@ -82,7 +82,7 @@ namespace sqlite {
 
 }
 
-#endif
+#endif /* cetlib_Ntuple_sqlite_query_impl_h */
 
 // Local variables:
 // mode: c++

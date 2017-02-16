@@ -1,5 +1,5 @@
-#ifndef sqlite_insert_impl_h
-#define sqlite_insert_impl_h
+#ifndef cetlib_Ntuple_sqlite_insert_impl_h
+#define cetlib_Ntuple_sqlite_insert_impl_h
 
 #include <initializer_list>
 #include <string>
@@ -36,7 +36,7 @@ namespace sqlite {
 
 }
 
-#endif
+#endif /* cetlib_Ntuple_sqlite_insert_impl_h */
 
 // Local variables:
 // mode: c++

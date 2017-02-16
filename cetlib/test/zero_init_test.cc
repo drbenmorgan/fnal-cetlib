@@ -34,7 +34,14 @@ BOOST_AUTO_TEST_CASE( copy_behavior ) {
     BOOST_CHECK_EQUAL( y, x );
     BOOST_CHECK_EQUAL( (y = x), x );
     BOOST_CHECK_EQUAL( (x = y), y );
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wliteral-conversion"
+#endif
     BOOST_CHECK_EQUAL( (x = 2.5), T(2) );
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
     BOOST_CHECK_EQUAL( (x = zero_init<double>(2.5)), T(2) );
   }
   { typedef  long  T;

@@ -74,7 +74,6 @@ class cet::search_path {
 
  private:
   std::vector<std::string> _dirs;
-  std::vector<std::string>::const_iterator _end;
 };  // search_path
 
 

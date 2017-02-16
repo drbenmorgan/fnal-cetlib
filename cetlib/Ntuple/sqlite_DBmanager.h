@@ -1,5 +1,5 @@
-#ifndef art_Ntuple_sqlite_DBmanager_h
-#define art_Ntuple_sqlite_DBmanager_h
+#ifndef cetlib_Ntuple_sqlite_DBmanager_h
+#define cetlib_Ntuple_sqlite_DBmanager_h
 
 #include "sqlite_helpers.h"
 
@@ -32,7 +32,7 @@ namespace sqlite {
   };
 
 } //namespace sqlite
-#endif /* art_Ntuple_sqlite_DBmanager_h */
+#endif /* cetlib_Ntuple_sqlite_DBmanager_h */
 
 // Local Variables:
 // mode: c++

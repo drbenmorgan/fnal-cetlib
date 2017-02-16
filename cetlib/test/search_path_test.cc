@@ -4,7 +4,7 @@
 //
 // ======================================================================
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include "cetlib/search_path.h"
 #include <cstdlib>
 #include <string>

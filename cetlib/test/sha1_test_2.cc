@@ -61,7 +61,7 @@ unsigned int
 int
   compare(unsigned * r, sha1::digest_t const & d)
 {
-  if(r==NULL) return -1;
+  if(r==nullptr) return -1;
 
   r[0] = byteswap(r[0]);
   r[1] = byteswap(r[1]);

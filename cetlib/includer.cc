@@ -8,7 +8,7 @@
 #include "cetlib/includer.h"
 
 #include "boost/filesystem.hpp"
-#include "cetlib/coded_exception.h"
+#include "cetlib_except/coded_exception.h"
 #include "cetlib/split_by_regex.h"
 #include "cetlib/trim.h"
 

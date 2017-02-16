@@ -9,7 +9,7 @@
 //
 // ======================================================================
 
-#include "cetlib/compiler_macros.h"
+#include "cetlib/cetconfig.h"
 
 #include <algorithm>
 #include <iterator>
@@ -22,13 +22,21 @@
 // should use the following idiom:
 //
 // {
-//   using namespace std;
-//   using namespace cet::container_helpers;
-//   // Use cbegin(), cend(), without expliict qualification.
+//   CET_USE_FREE_CBEGIN_CEND();
+//   // Use cbegin(), cend(), without explicit qualification.
 // }
+#ifdef CET_HAVE_STD_CBEGIN_CEND
+#define CET_USE_FREE_CBEGIN_CEND() \
+  using std::cbegin; \
+  using std::cend
+#else
+#define CET_USE_FREE_CBEGIN_CEND() \
+   using namespace cet::container_helpers
+#endif
+
 namespace cet {
   namespace container_helpers {
-#ifdef CET_NO_STD_CBEGIN_CEND
+#ifndef CET_HAVE_STD_CBEGIN_CEND
     template <class Container>
     auto cbegin(Container const& c)
     { return c.cbegin(); }
@@ -102,6 +110,11 @@ namespace cet {
   auto transform_all(Container1 &, Container2 &, OutputIt, BinaryOp);
   template <class Container1, class Container2, class OutputIt, class BinaryOp>
   auto transform_all(Container1 const &, Container2 const &, OutputIt, BinaryOp);
+
+  template <class FwdCont, class Func>
+  void for_all_with_index(FwdCont &, Func);
+  template <class FwdCont, class Func>
+  void for_all_with_index(FwdCont const &, Func);
 }
 
 // for_all().
@@ -109,18 +122,40 @@ template< class FwdCont, class Func >
 inline auto
 cet::for_all( FwdCont & s, Func f )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return for_each(begin(s), end(s), f);
+  using std::begin;
+  using std::end;
+  return std::for_each(begin(s), end(s), f);
 }
 
 template< class FwdCont, class Func >
 inline auto
 cet::for_all( FwdCont const & s, Func f )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return for_each(cbegin(s), cend(s), f);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::for_each(cbegin(s), cend(s), f);
+}
+
+// for_all_with_index().
+template <class FwdCont, class Func>
+inline void
+cet::for_all_with_index(FwdCont& s, Func f)
+{
+  std::size_t i{};
+  for (auto& e : s) {
+    f(i,e);
+    ++i;
+  }
+}
+
+template <class FwdCont, class Func>
+inline void
+cet::for_all_with_index(FwdCont const& s, Func f)
+{
+  std::size_t i{};
+  for (auto const& e : s) {
+    f(i,e);
+    ++i;
+  }
 }
 
 // copy_all().
@@ -128,17 +163,16 @@ template< class FwdCont, class FwdIter >
 inline auto
 cet::copy_all( FwdCont & s, FwdIter it )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return copy(begin(s), end(s), it);
+  using std::begin;
+  using std::end;
+  return std::copy(begin(s), end(s), it);
 }
 
 template< class FwdCont, class FwdIter >
 inline auto
 cet::copy_all( FwdCont const & s, FwdIter it )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
+  CET_USE_FREE_CBEGIN_CEND();
   return std::copy(cbegin(s), cend(s), it);
 }
 
@@ -147,18 +181,16 @@ template< class FwdCont, class FwdIter, class Pred >
 inline auto
 cet::copy_if_all( FwdCont & s, FwdIter it, Pred p)
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return copy_if(begin(s), end(s), it, p );
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::copy_if(begin(s), end(s), it, p );
 }
 
 template< class FwdCont, class FwdIter, class Pred >
 inline auto
 cet::copy_if_all( FwdCont const & s, FwdIter it, Pred p )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return copy_if(cbegin(s), cend(s), it, p);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::copy_if(cbegin(s), cend(s), it, p);
 }
 
 // Find_in_all().
@@ -166,18 +198,17 @@ template< class FwdCont, class Datum >
 inline auto
 cet::find_in_all( FwdCont & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return find(begin(s), end(s), d);
+  using std::begin;
+  using std::end;
+  return std::find(begin(s), end(s), d);
 }
 
 template< class FwdCont, class Datum >
 inline auto
 cet::find_in_all( FwdCont const & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return find(cbegin(s), cend(s), d);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::find(cbegin(s), cend(s), d);
 }
 
 // search_all().
@@ -185,9 +216,8 @@ template< class FwdCont, class Datum >
 inline bool
 cet::search_all( FwdCont const & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return find(cbegin(s), cend(s), d) != s.end();
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::find(cbegin(s), cend(s), d) != s.end();
 }
 
 // binary_search_all().
@@ -195,9 +225,8 @@ template< class FwdCont, class Datum >
 inline bool
 cet::binary_search_all( FwdCont const & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return binary_search(cbegin(s), cend(s), d);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::binary_search(cbegin(s), cend(s), d);
 }
 
 // lower_bound_all().
@@ -205,36 +234,34 @@ template< class FwdCont, class Datum >
 inline auto
 cet::lower_bound_all( FwdCont & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return lower_bound(begin(s), end(s), d);
+  using std::begin;
+  using std::end;
+  return std::lower_bound(begin(s), end(s), d);
 }
 
 template< class FwdCont, class Datum >
 inline auto
 cet::lower_bound_all( FwdCont const & s, Datum const & d )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return lower_bound(cbegin(s), cend(s), d);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::lower_bound(cbegin(s), cend(s), d);
 }
 
 template< class FwdCont, class Datum, class Pred >
 inline auto
 cet::lower_bound_all( FwdCont & s, Datum const & d, Pred p )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return lower_bound(begin(s), end(s), d, p);
+  using std::begin;
+  using std::end;
+  return std::lower_bound(begin(s), end(s), d, p);
 }
 
 template< class FwdCont, class Datum, class Pred >
 inline auto
 cet::lower_bound_all( FwdCont const & s, Datum const & d, Pred p )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return lower_bound(cbegin(s), cend(s), d, p);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::lower_bound(cbegin(s), cend(s), d, p);
 }
 
 // sort_all().
@@ -242,18 +269,18 @@ template< class RandCont >
 inline void
 cet::sort_all( RandCont & s )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  sort(begin(s), end(s));
+  using std::begin;
+  using std::end;
+  std::sort(begin(s), end(s));
 }
 
 template< class RandCont, class Pred >
 inline void
 cet::sort_all( RandCont & s, Pred p )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  sort(begin(s), end(s), p);
+  using std::begin;
+  using std::end;
+  std::sort(begin(s), end(s), p);
 }
 
 // stable_sort_all().
@@ -261,18 +288,18 @@ template< class RandCont >
 inline void
 cet::stable_sort_all( RandCont & s )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  stable_sort(begin(s), end(s));
+  using std::begin;
+  using std::end;
+  std::stable_sort(begin(s), end(s));
 }
 
 template< class RandCont, class Pred >
 inline void
 cet::stable_sort_all( RandCont & s, Pred p )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  stable_sort(begin(s), end(s), p);
+  using std::begin;
+  using std::end;
+  std::stable_sort(begin(s), end(s), p);
 }
 
 // transform_all().
@@ -281,9 +308,9 @@ inline auto
 cet::transform_all( Container & in,
                     OutputIt out, UnaryOp unary_op)
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return transform(begin(in), end(in), out, unary_op);
+  using std::begin;
+  using std::end;
+  return std::transform(begin(in), end(in), out, unary_op);
 }
 
 template< class Container, class OutputIt, class UnaryOp >
@@ -291,9 +318,8 @@ inline auto
 cet::transform_all( Container const& in,
                     OutputIt out, UnaryOp unary_op )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return transform(cbegin(in), cend(in), out, unary_op);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::transform(cbegin(in), cend(in), out, unary_op);
 }
 
 template< class Container1, class Container2, class OutputIt, class BinaryOp >
@@ -302,9 +328,9 @@ cet::transform_all( Container1 & in1,
                     Container2 & in2,
                     OutputIt out, BinaryOp binary_op)
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return transform(begin(in1), end(in1), begin(in2), out, binary_op);
+  using std::begin;
+  using std::end;
+  return std::transform(begin(in1), end(in1), begin(in2), out, binary_op);
 }
 
 template< class Container1, class Container2, class OutputIt, class BinaryOp >
@@ -313,9 +339,8 @@ cet::transform_all( Container1 const& in1,
                     Container2 const& in2,
                     OutputIt out, BinaryOp binary_op )
 {
-  using namespace std;
-  using namespace cet::container_helpers;
-  return transform(cbegin(in1), cend(in1), cbegin(in2), out, binary_op);
+  CET_USE_FREE_CBEGIN_CEND();
+  return std::transform(cbegin(in1), cend(in1), cbegin(in2), out, binary_op);
 }
 
 #endif /* cetlib_container_algorithms_h */

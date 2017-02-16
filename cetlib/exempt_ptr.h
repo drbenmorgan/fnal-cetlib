@@ -156,7 +156,7 @@ public:
   pointer   operator -> () const noexcept { return get(); }
   pointer   get() const noexcept { return p; }
   bool      empty() const noexcept { return get() == nullptr; }
-  explicit  operator bool() const noexcept { return get(); }
+  explicit  operator bool() const noexcept { return !empty(); }
 
   // modifiers:
   pointer release() noexcept { pointer old = get(); reset(); return old; }

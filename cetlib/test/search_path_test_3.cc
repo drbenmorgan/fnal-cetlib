@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include "cetlib/include.h"
 
 BOOST_AUTO_TEST_SUITE ( search_path_test_3 )

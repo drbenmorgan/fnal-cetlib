@@ -97,7 +97,6 @@ namespace cet {
   bool
     operator != ( value_ptr<E,C,D> const &, value_ptr<E,C,D> const & );
 
-#if defined CPP0X_HAS_NULLPTR
   template< class E, class C, class D >
   bool
     operator == ( value_ptr<E,C,D> const &, std::nullptr_t const & );
@@ -111,7 +110,6 @@ namespace cet {
   template< class E, class C, class D >
   bool
     operator != ( std::nullptr_t const &, value_ptr<E,C,D> const & );
-#endif  // CPP0X_HAS_NULLPTR
 
   template< class E, class C, class D >
   bool
@@ -244,7 +242,6 @@ public:
   { }
 
   // moving c'tors:
-#ifdef CPP0X_HAS_RVALUE_REFERENCES
   value_ptr( value_ptr && other ) noexcept
   : p( other.release() )
   { }
@@ -255,7 +252,6 @@ public:
              ) noexcept
   : p( other.release() )
   { }
-#endif // CPP0X_HAS_RVALUE_REFERENCES
 
   // d'tor:
   ~value_ptr( ) noexcept  { reset(); }
@@ -284,7 +280,6 @@ public:
   }
 
   // moving assignments:
-#ifdef CPP0X_HAS_RVALUE_REFERENCES
   value_ptr &  operator = ( value_ptr && other ) noexcept
   {
     value_ptr tmp( std::move(other) );
@@ -300,20 +295,13 @@ public:
     swap(tmp);
     return *this;
   }
-#endif // CPP0X_HAS_RVALUE_REFERENCES
 
   // observers:
   reference  operator *  ( ) const  { return *get(); }
   pointer    operator -> ( ) const noexcept  { return get(); }
   pointer    get         ( ) const noexcept  { return p; }
-#ifdef CPP0X_HAS_EXPLICIT_CONVERSION_OPERATORS
+
   explicit   operator bool ( ) const noexcept  { return get(); }
-#else
-private:
-  struct _safe_ { int _bool_; };
-public:
-  operator int _safe_::* ( ) const noexcept  { return get() ? & _safe_::_bool_ : 0; }
-#endif  // CPP0X_HAS_EXPLICIT_CONVERSION_OPERATORS
 
   // modifiers:
   pointer  release( ) noexcept  { pointer old = p; p = nullptr; return old; }
@@ -358,7 +346,6 @@ bool
   cet::operator != ( value_ptr<E,C,D> const & x, value_ptr<E,C,D> const & y )
 { return ! operator == (x, y); }
 
-#if defined CPP0X_HAS_NULLPTR
 template< class E, class C, class D >
 bool
   cet::operator == ( value_ptr<E,C,D> const & x, std::nullptr_t const & y )
@@ -378,7 +365,6 @@ template< class E, class C, class D >
 bool
   cet::operator != ( std::nullptr_t const & x, value_ptr<E,C,D> const & y )
 { return ! operator == (x, y); }
-#endif  // CPP0X_HAS_NULLPTR
 
 // ----------------------------------------------------------------------
 // non-member ordering:

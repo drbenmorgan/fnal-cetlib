@@ -1,5 +1,5 @@
-#ifndef art_Ntuple_Ntuple_h
-#define art_Ntuple_Ntuple_h
+#ifndef cetlib_Ntuple_Ntuple_h
+#define cetlib_Ntuple_Ntuple_h
 
 #include <array>
 #include "cetlib/Ntuple/sqlite_helpers.h"
@@ -223,7 +223,7 @@ ntuple::Ntuple<ARGS...>::flush()
     throw sqlite::Exception{sqlite::errors::SQLExecutionError, "SQLite step failure while flushing"};
 }
 
-#endif /* art_Ntuple_Ntuple_h */
+#endif /* cetlib_Ntuple_Ntuple_h */
 
 // Local Variables:
 // mode: c++

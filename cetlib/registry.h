@@ -7,7 +7,7 @@
 //
 // ======================================================================
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include <map>
 #include <stdexcept>
 #include <utility>

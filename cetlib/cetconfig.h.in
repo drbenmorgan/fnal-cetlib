@@ -1,0 +1,4 @@
+#ifndef cetlib_cetconfig_h_in
+#define cetlib_cetconfig_h_in
+#cmakedefine CET_HAVE_STD_CBEGIN_CEND
+#endif /* cetlib_cetconfig_h_in */

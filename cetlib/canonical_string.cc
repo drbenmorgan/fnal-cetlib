@@ -6,7 +6,7 @@
 
 #include "cetlib/canonical_string.h"
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 
 #include <cctype>
 

@@ -28,7 +28,7 @@ sha1::reset()
 sha1&
 sha1::operator<<(std::string const& mesg)
 {
-  uchar const* data = reinterpret_cast<uchar const*>(&mesg[0]);
+  auto data = reinterpret_cast<uchar const*>(&mesg[0]);
   SHA1_Update(&context, data, mesg.size());
   return *this;
 }
@@ -36,7 +36,7 @@ sha1::operator<<(std::string const& mesg)
 sha1&
 sha1::operator<<(char const mesg)
 {
-  uchar const* data = reinterpret_cast<uchar const*>(&mesg);
+  auto data = reinterpret_cast<uchar const*>(&mesg);
   SHA1_Update(&context, data, 1u);
   return *this;
 }
@@ -46,6 +46,5 @@ sha1::digest()
 {
   digest_t result;
   SHA1_Final(&result[0], &context);
-  std::memset(&context, 0, sizeof(SHA_CTX));
   return result;
 }

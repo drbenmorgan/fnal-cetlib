@@ -33,7 +33,7 @@ public:
 
   // Find and return a symbol named 'sym_name' in the library
   // identified by 'libspec'. The library is dynamically loaded if
-  // necessary. If more than one library matching libspec if found, an
+  // necessary. If more than one library matching libspec is found, an
   // exception is thrown. If the correct library cannot be found or
   // loaded, an exception is thrown. If the symbol specified cannot be
   // loaded, an exception is thrown unless the final argument to the
@@ -143,13 +143,13 @@ private:
   std::string const lib_type_; // eg _plugin.
   std::string const pattern_stem_; // Library search pattern stem.
   // Map of library filename -> full path.
-  lib_loc_map_t lib_loc_map_;
+  lib_loc_map_t lib_loc_map_ {};
   // Map of spec -> full path.
-  spec_trans_map_t spec_trans_map_;
+  spec_trans_map_t spec_trans_map_ {};
   // Map of only good translations.
-  good_spec_trans_map_t good_spec_trans_map_;
+  good_spec_trans_map_t good_spec_trans_map_ {};
   // Cache of already-loaded libraries.
-  mutable lib_ptr_map_t lib_ptr_map_;
+  mutable lib_ptr_map_t lib_ptr_map_ {};
 };
 
 inline
@@ -157,8 +157,7 @@ std::string
 cet::LibraryManager::
 dllExtPattern()
 {
-  static std::string const dllExtPatt =
-    std::string("\\") + shlib_suffix();
+  static std::string const dllExtPatt {"\\" + shlib_suffix()};
   return dllExtPatt;
 }
 
@@ -207,14 +206,10 @@ getSymbolByPath(std::string const & lib_loc,
 template <class OutIter>
 size_t cet::LibraryManager::getLoadableLibraries(OutIter dest) const
 {
-  size_t count = 0;
-  lib_loc_map_t::const_iterator
-  i = lib_loc_map_.begin(),
-  end_iter = lib_loc_map_.end();
-  for (;
-       i != end_iter;
-       ++i, ++count) {
-    *dest++ = i->second;
+  size_t count {};
+  for (auto const& lib_loc : lib_loc_map_) {
+    *dest++ = lib_loc.second;
+    ++count;
   }
   return count;
 }
@@ -269,14 +264,10 @@ getSymbolByPath(std::string const & lib_loc,
 template <class OutIter>
 size_t cet::LibraryManager::getLoadedLibraries(OutIter dest) const
 {
-  size_t count = 0;
-  lib_ptr_map_t::const_iterator
-  i = lib_ptr_map_.begin(),
-  end_iter = lib_ptr_map_.end();
-  for (;
-       i != end_iter;
-       ++i, ++count) {
-    *dest++ = i->first;
+  size_t count {};
+  for (auto const& lib_ptr : lib_ptr_map_) {
+    *dest++ = lib_ptr.first;
+    ++count;
   }
   return count;
 }
@@ -284,14 +275,10 @@ size_t cet::LibraryManager::getLoadedLibraries(OutIter dest) const
 template <class OutIter>
 size_t cet::LibraryManager::getValidLibspecs(OutIter dest) const
 {
-  size_t count = 0;
-  spec_trans_map_t::const_iterator
-  i = spec_trans_map_.begin(),
-  end_iter = spec_trans_map_.end();
-  for (;
-       i != end_iter;
-       ++i, ++count) {
-    *dest++ = i->first;
+  size_t count {};
+  for (auto const& spec_trans : spec_trans_map_) {
+    *dest++ = spec_trans.first;
+    ++count;
   }
   return count;
 }

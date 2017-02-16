@@ -6,7 +6,7 @@
 
 #include "cetlib/search_path.h"
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 #include "cetlib/filesystem.h"
 #include "cetlib/getenv.h"
 
@@ -24,7 +24,7 @@ string exception_category("search_path");
 // ----------------------------------------------------------------------
 // c'tors:
 
-search_path::search_path(string const& arg) : _dirs(), _end() {
+search_path::search_path(string const& arg) : _dirs() {
   if (!arg.empty())
     split(arg.find(':') == string::npos
               ? cet::getenv(arg)  // arg is an env var
@@ -33,8 +33,6 @@ search_path::search_path(string const& arg) : _dirs(), _end() {
           ':', back_inserter(_dirs));
 
   if (_dirs.empty()) _dirs.push_back(string());
-
-  _end = _dirs.end();
 }  // c'tor
 
 

@@ -1,5 +1,5 @@
-#ifndef art_Ntuple_sqlite_stringstream_h
-#define art_Ntuple_sqlite_stringstream_h
+#ifndef cetlib_Ntuple_sqlite_stringstream_h
+#define cetlib_Ntuple_sqlite_stringstream_h
 
 // =================================================================
 //
@@ -103,8 +103,24 @@ namespace sqlite {
 
     using data_container_t = std::deque<std::string>;
 
-    stringstream(stringstream&&) noexcept(std::is_nothrow_move_constructible<data_container_t>::value)= default;
-    stringstream& operator=(stringstream&&) noexcept(std::is_nothrow_move_assignable<data_container_t>::value)= default;
+    stringstream(stringstream&& s) noexcept(std::is_nothrow_move_constructible<data_container_t>::value)
+#ifdef __clang__
+    // See https://llvm.org/bugs/show_bug.cgi?id=23383
+    : data_(std::move(s.data_)) {}
+#else
+    = default;
+#endif
+
+    stringstream& operator=(stringstream&& rhs) noexcept(std::is_nothrow_move_assignable<data_container_t>::value)
+    // See https://llvm.org/bugs/show_bug.cgi?id=23383
+#ifdef __clang__
+      {
+        data_ = std::move(rhs.data_);
+        return *this;
+      }
+#else
+    = default;
+#endif
 
     // Disable copy c'tor/assignment
     stringstream(stringstream const&) = delete;
@@ -136,7 +152,7 @@ namespace sqlite {
 
 } // namespace sqlite
 
-#endif /* art_Ntuple_sqlite_stringstream_h */
+#endif /* cetlib_Ntuple_sqlite_stringstream_h */
 
 // Local variables:
 // mode: c++

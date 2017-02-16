@@ -7,7 +7,7 @@
 #include "cetlib/include.h"
 #include "cetlib/split_by_regex.h"
 
-#include "cetlib/coded_exception.h"
+#include "cetlib_except/coded_exception.h"
 #include "cetlib/filesystem.h"
 #include "cetlib/search_path.h"
 #include "cetlib/trim.h"

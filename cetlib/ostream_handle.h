@@ -8,82 +8,65 @@
 
    This is a handle for dealing with owning/non-owning ostream
    objects.  There are use cases when one needs an externally provided
-   stream (i.e. std::cout or std::cerr), and cases when one needs an
+   stream (e.g. std::cout or std::cerr), and cases when one needs an
    owned stream (std::ofstream).  This handle enables a consistent use
    of both.
 
-   Base class:     cet::ostream_handle (abstract)
+   For the 'std::ofstream' case, the destructor of ostream_handle
+   implicitly calls std::ofstream::close().
 
-   Concrete types: cet::ostream_owner
-                   cet::ostream_observer
+   Example:
 
-   Example use:
+     cet::ostream_handle os {std::cout};
+     cet::ostream_handle toFile {"myFile.txt"};
 
-     std::unique_ptr<cet::ostream_handle> osh;
-     if ( owned ) osh = std::make_unique<cet::ostream_owner>("filename.txt");
-     else         osh = std::make_unique<cet::ostream_observer>(std::cout);
-
-     // stream to output
-     *osh << 4 << "thirteen";
-     osh.stream() << 5 << "fourteen";
+     os     << 4 << "thirteen"; // write to STDOUT
+     toFile << 5 << "fourteen"; // write to "myFile.txt"
+     os = std::move(toFile);    // Reset 'os' to stream to "myFile.txt"
+     os     << 6 << "fifteen";  // write to "myFile.txt"
 
    ====================================================================
 */
 
-#include <fstream>
-#include <ostream>
-#include <string>
+#include "cetlib/detail/ostream_handle_impl.h"
+
+#include <memory>
 
 namespace cet {
-
-  // Interface
 
   class ostream_handle {
   public:
 
-    virtual ~ostream_handle() = default;
+    // Writes to (e.g.) cout, which is owned by the standard library.
+    ostream_handle(std::ostream& os)
+      : osh_{std::make_unique<detail::ostream_observer>(os)}
+    {}
+
+    // Writes to ofstream file.
+    ostream_handle(std::string const& fn,
+                   std::ios_base::openmode const mode = std::ios_base::out)
+      : osh_{std::make_unique<detail::ostream_owner>(fn, mode)}
+    {}
+
+    ostream_handle& operator<<(char const msg[])
+    {
+      osh_->stream() << msg;
+      return *this;
+    }
 
     template <typename T>
     ostream_handle& operator<<(T const& t)
     {
-      get_stream() << t;
+      osh_->stream() << t;
       return *this;
     }
 
-    std::ostream& stream() { return get_stream(); }
+    void flush() { osh_->stream().flush(); }
+    explicit operator bool() const { return static_cast<bool>(osh_->stream()); }
+    operator std::ostream&() { return osh_->stream(); }
 
   private:
-
-    virtual std::ostream& get_stream() = 0;
-
-  };
-
-  // Concrete types below
-
-  class ostream_observer : public ostream_handle {
-  public:
-
-    ostream_observer(std::ostream& os) : os_{os} {}
-
-  private:
-
-    std::ostream& os_;
-    std::ostream& get_stream() override { return os_; }
-
-  };
-
-  class ostream_owner : public ostream_handle {
-  public:
-
-    ostream_owner(std::string const& fn,
-                  std::ios_base::openmode const mode = std::ios_base::out) : ofs_{fn, mode} {}
-    ~ostream_owner() override { ofs_.close(); }
-
-  private:
-
-    std::ofstream ofs_;
-    std::ostream& get_stream() override { return ofs_; }
-
+    std::unique_ptr<detail::ostream_handle_base> osh_;
   };
 
 }
