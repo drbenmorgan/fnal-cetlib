@@ -17,6 +17,9 @@ set(@PROJECT_NAME@_VERSION "@PROJECT_VERSION@")
 set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 set(@PROJECT_NAME@_INCLUDE_DIRS "${@PROJECT_NAME@_INCLUDE_DIR}")
 
+# - Refind core cetlib_except dependency
+find_package(cetlib_except @cetlib_except_VERSION@ EXACT REQUIRED)
+
 # - When needed, refind Boost targets here
 # At present, FindBoost does not support imported targets which
 # allow fully relocatable config files (needs CMake 3.5 or better)
@@ -43,6 +46,9 @@ if(NOT APPLE)
 endif()
 
 # - Refind SQLite
+#   Relax version requirement to "at least" because it is
+#   a C-library and should have forward ABI compatibility
+#   (to be cross-checked!)
 find_package(SQLite @SQLite_VERSION@ REQUIRED)
 
 # - Include our targets

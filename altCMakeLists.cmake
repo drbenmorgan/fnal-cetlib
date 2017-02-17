@@ -1,6 +1,6 @@
 # - Toplevel CMake script for fnal::cetlib
 cmake_minimum_required(VERSION 3.3)
-project(cetlib VERSION 1.20.0)
+project(cetlib VERSION 2.2.0)
 
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.1.0 REQUIRED)
@@ -16,11 +16,14 @@ set(cetlib_COMPILE_FEATURES
   cxx_generic_lambdas
   )
 
+# Exceptions/demangling moved to lower cetlib_except package
+find_package(cetlib_except REQUIRED)
+
 # Need Boost for
 # - Filesystem
 # - Regex(? std::regex used elsewhere)
 # - Unit Test
-find_package(Boost 1.60.0 REQUIRED
+find_package(Boost 1.63.0 REQUIRED
   filesystem
   system
   regex
@@ -31,12 +34,11 @@ find_package(Boost 1.60.0 REQUIRED
 # On Apple, always use builtin CommonCrypto
 if(NOT APPLE)
   find_package(OpenSSL REQUIRED)
-
   # If we have CMake < 3.4, then will need to match imported targets
 endif()
 
 # SQLite for Ntuple
-find_package(SQLite 3.12.2 REQUIRED)
+find_package(SQLite 3.16.2 REQUIRED)
 
 #-----------------------------------------------------------------------
 # Process components
