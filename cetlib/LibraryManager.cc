@@ -34,23 +34,22 @@ namespace {
   }
 }
 
-cet::LibraryManager::LibraryManager(std::string lib_type)
-:
-  LibraryManager(std::move(lib_type), default_pattern_stem)
-{
-}
+cet::LibraryManager::LibraryManager(cet::search_path search_path,
+                                    std::string lib_type)
+  : LibraryManager(std::move(search_path),
+                   std::move(lib_type),
+                   default_pattern_stem)
+{}
 
-cet::LibraryManager::LibraryManager(std::string lib_type,
+cet::LibraryManager::LibraryManager(cet::search_path search_path,
+                                    std::string lib_type,
                                     std::string pattern)
   :
   lib_type_{std::move(lib_type)},
   pattern_stem_{std::move(pattern)}
 {
-  // TODO: We could also consider searching the ld.so.conf list, if
-  // anyone asks for it.
-  static search_path const ld_lib_path { os_libpath() };
   std::vector<std::string> matches;
-  ld_lib_path.find_files(shlib_prefix() + pattern_stem_ +
+  search_path.find_files(shlib_prefix() + pattern_stem_ +
                          lib_type_ + dllExtPattern(),
                          matches);
 
@@ -70,6 +69,19 @@ cet::LibraryManager::LibraryManager(std::string lib_type,
     good_spec_trans_map_inserter(p);
   }
 
+}
+
+cet::LibraryManager::LibraryManager(std::string lib_type)
+:
+  LibraryManager(std::move(lib_type), default_pattern_stem)
+{
+}
+
+cet::LibraryManager::LibraryManager(std::string lib_type,
+                                    std::string pattern)
+  :
+  LibraryManager(search_path { os_libpath() }, lib_type, pattern)
+{
 }
 
 size_t

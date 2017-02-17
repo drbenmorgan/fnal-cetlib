@@ -13,6 +13,27 @@
 
 using namespace cet;
 
+// LibraryManager tests are independent of how it's constructed
+// so make test fixture creation compile time generated.
+// This allows >1 test to be built
+#if defined(LIBRARY_MANAGER_SEARCH_PATH)
+// Construction using search_path
+struct LibraryManagerTestFixture {
+
+  LibraryManagerTestFixture();
+
+  LibraryManager lm;
+  LibraryManager const & lm_ref;
+};
+
+LibraryManagerTestFixture::LibraryManagerTestFixture()
+  :
+  lm(search_path{"LIBRARY_MANAGER_SEARCH_PATH"}, "cetlibtest"),
+  lm_ref(lm)
+{
+}
+#else
+// Default construction, should use system dynamic loader path
 struct LibraryManagerTestFixture {
 
   LibraryManagerTestFixture();
@@ -27,6 +48,7 @@ LibraryManagerTestFixture::LibraryManagerTestFixture()
   lm_ref(lm)
 {
 }
+#endif
 
 BOOST_FIXTURE_TEST_SUITE(LibraryManagerTests, LibraryManagerTestFixture)
 

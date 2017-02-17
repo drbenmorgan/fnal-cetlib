@@ -6,6 +6,12 @@
 #include <string>
 
 cet::PluginFactory::
+PluginFactory(cet::search_path search_path,
+              std::string const& suffix) :
+  lm_{search_path, suffix}
+{}
+
+cet::PluginFactory::
 PluginFactory(std::string const& suffix) :
   lm_{suffix}
 {}

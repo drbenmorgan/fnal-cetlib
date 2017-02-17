@@ -12,11 +12,24 @@
 
 using namespace cet;
 
+// PluginFactory tests are independent of how its search path
+// is constructed.
+// Make test fixture creation compile time generated so we
+// can generated one test for the system default, and one
+// for a user-supplied search path.
+#if defined(PLUGIN_FACTORY_SEARCH_PATH)
+struct PluginFactoryTestFixture {
+  PluginFactoryTestFixture() : pf(search_path{"PLUGIN_FACTORY_SEARCH_PATH"}) { pf.setDiagReleaseVersion("ETERNAL"); }
+  BasicPluginFactory pf;
+
+};
+#else
 struct PluginFactoryTestFixture {
   PluginFactoryTestFixture() : pf() { pf.setDiagReleaseVersion("ETERNAL"); }
   BasicPluginFactory pf;
 
 };
+#endif
 
 BOOST_FIXTURE_TEST_SUITE(PluginFactory_t, PluginFactoryTestFixture)
 

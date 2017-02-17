@@ -33,6 +33,8 @@ namespace cet {
 
 class cet::PluginFactory {
 public:
+  PluginFactory(cet::search_path search_path, std::string const & suffix = "plugin");
+
   explicit
   PluginFactory(std::string const & suffix = "plugin");
 

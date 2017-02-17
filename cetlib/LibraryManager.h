@@ -2,6 +2,7 @@
 #define cetlib_LibraryManager_h
 
 #include "cetlib/hard_cast.h"
+#include "cetlib/search_path.h"
 #include "cetlib/shlib_utils.h"
 
 #include <cstring>
@@ -17,12 +18,18 @@ namespace cet {
 class cet::LibraryManager {
 public:
   // Create a LibraryManager that searches through a
-  // platform-dependent search path specified by search_path for
+  // search path specified by search_path for
   // dynamically loadable libraries having the given lib_type. Library
   // names are expected to be of the form:
   //      libaa_bb_cc_xyz_<lib_type>.<ext>
   //  and where <ext> is provided automatically as appropriate for
   // the platform.
+  LibraryManager(cet::search_path search_path, std::string lib_type);
+  LibraryManager(cet::search_path search_path,
+                 std::string lib_type,
+                 std::string pattern);
+
+  // Use platform-dependent dynamic loader search path
   explicit LibraryManager(std::string lib_type);
   LibraryManager(std::string lib_type,
                  std::string pattern);

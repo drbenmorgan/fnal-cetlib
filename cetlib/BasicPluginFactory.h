@@ -25,6 +25,11 @@ namespace cet {
 
 class cet::BasicPluginFactory : public PluginFactory {
 public:
+  BasicPluginFactory(cet::search_path search_path,
+                     std::string const & suffix = "plugin",
+                     std::string const & makerName = "makePlugin",
+                     std::string const & pluginTypeFuncName = "pluginType");
+
   BasicPluginFactory(std::string const & suffix = "plugin",
                      std::string const & makerName = "makePlugin",
                      std::string const & pluginTypeFuncName = "pluginType");
