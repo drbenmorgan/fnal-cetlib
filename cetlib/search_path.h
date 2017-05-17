@@ -7,6 +7,7 @@
 //
 // ======================================================================
 
+#include "cetlib/container_algorithms.h"
 #include "cetlib/split.h"
 #include <algorithm>
 #include <cstdlib>
@@ -29,8 +30,12 @@ namespace cet {
 // ----------------------------------------------------------------------
 
 class cet::search_path {
- public:
+public:
   explicit search_path(std::string const& name_or_path);
+
+  // If an environment variable was used to create the search_path
+  // object, return it.  Otherwise, it will be empty.
+  std::string const& showenv() const { return env_; }
 
   // Return true if there are no directories in the path.
   bool empty() const;
@@ -73,16 +78,17 @@ class cet::search_path {
   std::string to_string() const;
 
  private:
-  std::vector<std::string> _dirs;
+  std::string const env_;
+  std::vector<std::string> dirs_{};
 };  // search_path
-
 
 template <class OutIter>
 std::size_t cet::search_path::find_files(std::string const& pattern,
-                                         OutIter dest) const {
+                                         OutIter dest) const
+{
   std::vector<std::string> results;
-  size_t nfound = find_files(pattern, results);
-  std::copy(results.begin(), results.end(), dest);
+  size_t const nfound{find_files(pattern, results)};
+  cet::copy_all(results, dest);
   return nfound;
 }
 

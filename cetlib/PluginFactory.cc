@@ -5,14 +5,13 @@
 
 #include <string>
 
-cet::PluginFactory::
-PluginFactory(std::string const& suffix) :
-  lm_{suffix}
+cet::PluginFactory::PluginFactory(cet::search_path const& search_path,
+                                  std::string const& suffix) :
+  lm_{search_path, suffix}
 {}
 
 std::string
-cet::PluginFactory::
-releaseVersion_() const
+cet::PluginFactory::releaseVersion_() const
 {
   std::string result;
   if (releaseVersionFunc_) {

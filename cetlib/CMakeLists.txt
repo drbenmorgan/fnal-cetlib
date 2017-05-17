@@ -34,11 +34,18 @@ cet_make_library(LIBRARY_NAME ${LIB_NAME}
   MD5Digest.cc
   BasicPluginFactory.cc
   LibraryManager.cc
-  Ntuple/Exception.cc
-  Ntuple/Transaction.cc
-  Ntuple/sqlite_helpers.cc
-  Ntuple/sqlite_query_impl.cc
-  Ntuple/sqlite_result.cc
+  sqlite/Connection.cc
+  sqlite/Exception.cc
+  sqlite/Transaction.cc
+  sqlite/detail/DefaultDatabaseOpenPolicy.cc
+  sqlite/detail/bind_parameters.cc
+  sqlite/detail/column_constraint.cc
+  sqlite/detail/normalize_statement.cc
+  sqlite/exec.cc
+  sqlite/helpers.cc
+  sqlite/query_result.cc
+  sqlite/select.cc
+  sqlite/statistics.cc
   PluginFactory.cc
   base_converter.cc
   canonical_number.cc
@@ -81,10 +88,9 @@ cet_make_exec(inc-expand
 # ----------------------------------------------------------------------
 # Install this project's headers and sources:
 
-install_headers(SUBDIRS detail Ntuple)
-install_source(SUBDIRS detail Ntuple)
+install_headers(SUBDIRS detail sqlite sqlite/detail)
+install_source(SUBDIRS detail sqlite sqlite/detail)
 
-#
 # ======================================================================
 # Testing
 add_subdirectory(test)

@@ -12,48 +12,53 @@
 
 using cet::search_path;
 
-
-void
-  ensure( int which, bool claim )
+void ensure(int const which, bool const claim)
 {
-  if( not claim )
+  if (!claim)
     std::exit(which);
 }
 
 
-int
-  main( )
+using namespace std::string_literals;
+
+int main()
 {
   {
-    //ensure( 1, search_path("xyzzy").size() == 1 );
-    ensure( 2, search_path(":xyzzy").size() == 1 );
-    ensure( 3, search_path(":xyzzy:").size() == 1 );
-    ensure( 4, search_path("xyzzy:plugh").size() == 2 );
-    ensure( 5, search_path("xyzzy:::plugh").size() == 2 );
-    ensure( 6, search_path("xyzzy:plugh:twisty:grue").size() == 4 );
+    auto const path = "xyzzy"s;
+    search_path const xyzzy{path};
+    ensure(1, xyzzy.size() == 1);
+    ensure(2, xyzzy.showenv() == path);
   }
 
   {
-    ensure( 11, ! search_path("").empty() );
-    ensure( 12, ! search_path(":").empty() );
-    ensure( 13, ! search_path("::").empty() );
-
-    ensure( 14, search_path("")  .size() == 1 );
-    ensure( 15, search_path(":") .size() == 1 );
-    ensure( 16, search_path("::").size() == 1 );
+    search_path const xyzzy{":xyzzy"};
+    ensure(3, xyzzy.size() == 1);
+    ensure(4, xyzzy.showenv().empty());
   }
+
+  ensure(5, search_path{":xyzzy:"}.size() == 1);
+  ensure(6, search_path{"xyzzy:plugh"}.size() == 2);
+  ensure(7, search_path{"xyzzy:::plugh"}.size() == 2);
+  ensure(8, search_path{"xyzzy:plugh:twisty:grue"}.size() == 4);
+
+  ensure(11, !search_path{""}.empty());
+  ensure(12, !search_path{":"}.empty());
+  ensure(13, !search_path{"::"}.empty());
+
+  ensure(14, search_path{""}.size() == 1);
+  ensure(15, search_path{":"}.size() == 1);
+  ensure(16, search_path{"::"}.size() == 1);
 
   {
     try {
-      search_path sp( ":/tmp:" );
+      search_path const sp{":/tmp:"};
       sp.find_file("");
-      ensure( 21, false );
+      ensure(21, false);
     }
-    catch( cet::exception const & e ) {
-      ensure( 22, e.category() == "search_path" );
+    catch (cet::exception const& e) {
+      ensure(22, e.category() == "search_path"s);
     }
   }
 
-  ensure(23, search_path("a:bb:c.c").to_string() == std::string("a:bb:c.c"));
-  return 0;
+  ensure(23, search_path{"a:bb:c.c"}.to_string() == "a:bb:c.c"s);
 }

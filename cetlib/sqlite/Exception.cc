@@ -1,8 +1,8 @@
-#include "cetlib/Ntuple/Exception.h"
+#include "cetlib/sqlite/Exception.h"
 
-using namespace sqlite;
+using namespace cet::sqlite;
 
-// Map an sqlite::errors::ErrorCodes into the appropriate string.
+// Map an cet::sqlite::errors::ErrorCodes into the appropriate string.
 std::string
 ExceptionDetail::translate(errors::ErrorCodes const code)
 {

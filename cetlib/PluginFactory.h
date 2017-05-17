@@ -33,21 +33,22 @@ namespace cet {
 
 class cet::PluginFactory {
 public:
-  explicit
-  PluginFactory(std::string const & suffix = "plugin");
+
+  explicit PluginFactory(cet::search_path const& search_path,
+                         std::string const& suffix = "plugin");
 
   // Provide a string or function giving the release and version of the
   // plugin (default "Unknown").
   void setDiagReleaseVersion(std::string const& rv);
-  void setDiagReleaseVersion(std::function<std::string ()> rvf);
+  void setDiagReleaseVersion(std::function<std::string()> rvf);
 
   // General function to find and call a named function from the
   // specified plugin library. RESULT_TYPE must be specified; ARGS may
   // be deduced.
   template <typename RESULT_TYPE, typename... ARGS>
-  RESULT_TYPE call(std::string const & libspec,
-                   std::string const & funcname,
-                   ARGS &&... args) const;
+  RESULT_TYPE call(std::string const& libspec,
+                   std::string const& funcname,
+                   ARGS&&... args) const;
 
   // Nothrow tag (see find(), below).
   static LibraryManager::nothrow_t nothrow;
@@ -57,14 +58,14 @@ public:
   // version of the function.
   template <typename RESULT_TYPE, typename... ARGS>
   auto
-  find(std::string const & funcname,
-       std::string const & libspec) const
+  find(std::string const& funcname,
+       std::string const& libspec) const
     -> RESULT_TYPE (*) (ARGS...);
 
   template <typename RESULT_TYPE, typename... ARGS>
   auto
-  find(std::string const & funcname,
-       std::string const & libspec,
+  find(std::string const& funcname,
+       std::string const& libspec,
        LibraryManager::nothrow_t) const
     -> RESULT_TYPE (*) (ARGS...);
 
@@ -90,21 +91,19 @@ private:
 
   LibraryManager lm_;
   std::string releaseVersionString_ {};
-  std::function<std::string ()> releaseVersionFunc_ {};
+  std::function<std::string()> releaseVersionFunc_ {};
 };
 
 inline
 void
-cet::PluginFactory::
-setDiagReleaseVersion(std::function<std::string ()> rvf)
+cet::PluginFactory::setDiagReleaseVersion(std::function<std::string()> rvf)
 {
   releaseVersionFunc_ = rvf;
 }
 
 inline
 void
-cet::PluginFactory::
-setDiagReleaseVersion(std::string const& rv)
+cet::PluginFactory::setDiagReleaseVersion(std::string const& rv)
 {
   releaseVersionString_ = rv;
 }
@@ -112,10 +111,9 @@ setDiagReleaseVersion(std::string const& rv)
 template <typename RESULT_TYPE, typename... ARGS>
 inline
 RESULT_TYPE
-cet::PluginFactory::
-call(std::string const & libspec,
-     std::string const & funcname,
-     ARGS &&... args) const
+cet::PluginFactory::call(std::string const& libspec,
+                         std::string const& funcname,
+                         ARGS&&... args) const
 {
   return (*find<RESULT_TYPE, ARGS...>(libspec, funcname))(std::forward<ARGS>(args)...);
 }
@@ -123,9 +121,8 @@ call(std::string const & libspec,
 template <typename FUNCTION_TYPE>
 inline
 std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, FUNCTION_TYPE*>
-cet::PluginFactory::
-find(std::string const& libspec,
-     std::string const& funcname) const
+cet::PluginFactory::find(std::string const& libspec,
+                         std::string const& funcname) const
 {
   FUNCTION_TYPE** symbol {nullptr};
   resolveSymbolOrThrow_(libspec, funcname, symbol);
@@ -135,9 +132,8 @@ find(std::string const& libspec,
 template <typename RESULT_TYPE, typename... ARGS>
 inline
 auto
-cet::PluginFactory::
-find(std::string const& libspec,
-     std::string const& funcname) const
+cet::PluginFactory::find(std::string const& libspec,
+                         std::string const& funcname) const
   -> RESULT_TYPE (*) (ARGS...)
 {
   RESULT_TYPE (*symbol) (ARGS...) = nullptr;
@@ -148,10 +144,9 @@ find(std::string const& libspec,
 template <typename RESULT_TYPE, typename... ARGS>
 inline
 auto
-cet::PluginFactory::
-find(std::string const & libspec,
-     std::string const & funcname,
-     LibraryManager::nothrow_t nothrow) const
+cet::PluginFactory::find(std::string const& libspec,
+                         std::string const& funcname,
+                         LibraryManager::nothrow_t nothrow) const
   -> RESULT_TYPE (*) (ARGS...)
 {
   return lm_.getSymbolByLibspec<RESULT_TYPE(*)(ARGS...)>(libspec, funcname, nothrow);
@@ -159,10 +154,9 @@ find(std::string const & libspec,
 
 template <typename T>
 void
-cet::PluginFactory::
-resolveSymbolOrThrow_(std::string const& libspec,
-                      std::string const& funcname,
-                      T& symbol) const
+cet::PluginFactory::resolveSymbolOrThrow_(std::string const& libspec,
+                                          std::string const& funcname,
+                                          T& symbol) const
 {
   try {
     lm_.getSymbolByLibspec(libspec, funcname, symbol);
