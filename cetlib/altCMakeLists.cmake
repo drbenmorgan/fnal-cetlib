@@ -24,18 +24,11 @@ set(cetlib_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc
   # Core
-  BasicPluginFactory.cc
-  BasicPluginFactory.h
-  LibraryManager.cc
-  LibraryManager.h
-  MD5Digest.cc
-  MD5Digest.h
-  PluginFactory.cc
-  PluginFactory.h
-  PluginTypeDeducer.h
-  SimultaneousFunctionSpawner.h
+  assert_only_one_thread.h
   base_converter.cc
   base_converter.h
+  BasicPluginFactory.cc
+  BasicPluginFactory.h
   bit_manipulation.h
   canonical_number.cc
   canonical_number.h
@@ -50,6 +43,10 @@ set(cetlib_SOURCES
   cpu_timer.h
   crc32.cc
   crc32.h
+  detail/metaprogramming.h
+  detail/ostream_handle_impl.h
+  detail/wrapLibraryManagerException.cc
+  detail/wrapLibraryManagerException.h
   exception.h
   exception_collector.h
   exempt_ptr.h
@@ -61,21 +58,30 @@ set(cetlib_SOURCES
   getenv.h
   hard_cast.h
   hypot.h
+  inc-expand.cc
   include.cc
   include.h
   includer.cc
   includer.h
+  LibraryManager.cc
+  LibraryManager.h
   lpad.cc
   lpad.h
   map_vector.h
   maybe_ref.h
+  MD5Digest.cc
+  MD5Digest.h
   name_of.h
   no_delete.h
   nybbler.cc
   nybbler.h
   os_libpath.h
   ostream_handle.h
+  PluginFactory.cc
+  PluginFactory.h
+  PluginTypeDeducer.h
   pow.h
+  propagate_const.h
   registry.h
   registry_via_id.h
   replace_all.cc
@@ -89,36 +95,48 @@ set(cetlib_SOURCES
   shlib_utils.h
   simple_stats.cc
   simple_stats.h
+  SimultaneousFunctionSpawner.h
   split.h
   split_by_regex.cc
   split_by_regex.h
   split_path.cc
   split_path.h
-  test_macros.h
+  sqlite/column.h
+  sqlite/Connection.cc
+  sqlite/Connection.h
+  #sqlite/ConnectionFactory.cc #Not used?
+  sqlite/ConnectionFactory.h
+  sqlite/create_table.h
+  sqlite/detail/bind_parameters.cc
+  sqlite/detail/bind_parameters.h
+  sqlite/detail/column_constraint.cc
+  sqlite/detail/column_constraint.h
+  sqlite/detail/convert.h
+  sqlite/detail/DefaultDatabaseOpenPolicy.cc
+  sqlite/detail/DefaultDatabaseOpenPolicy.h
+  sqlite/detail/extract.h
+  sqlite/detail/get_result.h
+  sqlite/detail/normalize_statement.cc
+  sqlite/detail/normalize_statement.h
+  sqlite/Exception.cc
+  sqlite/Exception.h
+  sqlite/exec.cc
+  sqlite/exec.h
+  sqlite/helpers.cc
+  sqlite/helpers.h
+  sqlite/insert.h
+  sqlite/Ntuple.h
+  sqlite/query_result.cc
+  sqlite/query_result.h
+  sqlite/select.cc
+  sqlite/select.h
+  sqlite/statistics.cc
+  sqlite/statistics.h
+  sqlite/Transaction.cc
+  sqlite/Transaction.h
   trim.h
   value_ptr.h
   zero_init.h
-  # Ntuple subsystem
-  Ntuple/Exception.cc
-  Ntuple/Exception.h
-  Ntuple/Ntuple.h
-  Ntuple/Transaction.cc
-  Ntuple/Transaction.h
-  Ntuple/sqlite_DBmanager.h
-  Ntuple/sqlite_column.h
-  Ntuple/sqlite_helpers.cc
-  Ntuple/sqlite_helpers.h
-  Ntuple/sqlite_insert_impl.h
-  Ntuple/sqlite_query_impl.cc
-  Ntuple/sqlite_query_impl.h
-  Ntuple/sqlite_result.cc
-  Ntuple/sqlite_result.h
-  Ntuple/sqlite_stringstream.h
-  # Impl details
-  detail/metaprogramming.h
-  detail/ostream_handle_impl.h
-  detail/wrapLibraryManagerException.cc
-  detail/wrapLibraryManagerException.h
   )
 
 #-----------------------------------------------------------------------

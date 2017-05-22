@@ -33,8 +33,11 @@ cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_
 # Identify libraries to be linked:
 link_libraries(cetlib)
 
-add_subdirectory(Ntuple)
+add_subdirectory(sqlite)
 
+cet_test(assert_only_one_thread_test
+  LIBRARIES pthread
+  TEST_PROPERTIES PASS_REGULAR_EXPRESSION "Failed assert--more than one thread accessing location")
 cet_test(bit_test)
 cet_test(base_converter_test)
 cet_test(canonical_number_test)
@@ -78,7 +81,7 @@ cet_test(registry_test)
 cet_test(registry_via_id_test)
 cet_test(registry_via_id_test_2 NO_AUTO) # for now -- see test's source
 cet_test(rpad_test USE_BOOST_UNIT)
-cet_test(search_path_test)
+cet_test(search_path_test TEST_PROPERTIES ENVIRONMENT xyzzy="")
 cet_test(search_path_test_2 NO_AUTO)
 
 cet_test(search_path_test_2.sh HANDBUILT DEPENDENCIES search_path_test_2
@@ -113,9 +116,18 @@ cet_make_library(LIBRARY_NAME cetlib_test_TestPluginBase SOURCE TestPluginBase.c
 include(BasicPlugin)
 basic_plugin(TestPlugin "plugin" NO_INSTALL cetlib_test_TestPluginBase)
 
+# Use default Plugin lookup
 cet_test(PluginFactory_t USE_BOOST_UNIT
   LIBRARIES cetlib cetlib_test_TestPluginBase
   )
+
+# Use custom Plugin lookup
+cet_test(PluginFactoryCustomSearchPath_t USE_BOOST_UNIT
+  SOURCES PluginFactory_t.cc
+  LIBRARIES cetlib cetlib_test_TestPluginBase
+  TEST_PROPERTIES ENVIRONMENT PLUGIN_FACTORY_SEARCH_PATH=$<TARGET_FILE_DIR:cetlib_test_TestPlugin_plugin>
+  )
+target_compile_definitions(PluginFactoryCustomSearchPath_t PRIVATE PLUGIN_FACTORY_SEARCH_PATH=1)
 
 function(test_library LIBSPEC)
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${LIBSPEC}.cc
@@ -136,11 +148,22 @@ test_library(1_1_3)
 test_library(1_2_3)
 test_library(2_1_5)
 
+# Use default library search path
 cet_test(LibraryManager_t USE_BOOST_UNIT
   LIBRARIES
   ${Boost_FILESYSTEM_LIBRARY}
   ${CMAKE_DL_LIBS}
   )
+
+# Use custom library search path
+cet_test(LibraryManagerCustomSearchPath_t USE_BOOST_UNIT
+  SOURCES LibraryManager_t.cc
+  LIBRARIES
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${CMAKE_DL_LIBS}
+  TEST_PROPERTIES ENVIRONMENT LIBRARY_MANAGER_SEARCH_PATH=$<TARGET_FILE_DIR:1_1_1_cetlibtest>
+  )
+target_compile_definitions(LibraryManagerCustomSearchPath_t PRIVATE LIBRARY_MANAGER_SEARCH_PATH=1)
 
 cet_test(replace_all_test USE_BOOST_UNIT
   LIBRARIES
