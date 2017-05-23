@@ -42,7 +42,7 @@ namespace cet {
 //==================================================================
 // Implementation below
 
-template <typename T = double>
+template <typename T>
 T
 cet::sqlite::min(sqlite3* const db, std::string const& table_name, std::string const& column_name)
 {
@@ -51,7 +51,7 @@ cet::sqlite::min(sqlite3* const db, std::string const& table_name, std::string c
   return unique_value(r);
 }
 
-template <typename T = double>
+template <typename T>
 T
 cet::sqlite::max(sqlite3* const db, std::string const& table_name, std::string const& column_name)
 {
