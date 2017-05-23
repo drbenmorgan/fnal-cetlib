@@ -117,9 +117,6 @@
 namespace cet {
   namespace sqlite {
 
-    template <typename T, typename... Constraints>
-    using column = sqlite::column<T, Constraints...>;
-
     template <typename... Args>
     class Ntuple {
     public:
