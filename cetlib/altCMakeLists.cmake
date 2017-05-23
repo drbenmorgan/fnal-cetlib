@@ -58,7 +58,6 @@ set(cetlib_SOURCES
   getenv.h
   hard_cast.h
   hypot.h
-  inc-expand.cc
   include.cc
   include.h
   includer.cc
@@ -182,6 +181,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/" "${CMAKE_CURRENT_BINARY_DIR}/"
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.icc"
   PATTERN "test" EXCLUDE
+  PATTERN "CMakeFiles" EXCLUDE
   )
 
 
