@@ -1,4 +1,4 @@
-parent cetlib v2_03_00
+parent cetlib v3_00_00
 defaultqual e14
 #
 incdir fq_dir include
@@ -13,7 +13,7 @@ gcc		v4_9_3a		e10
 gcc		v6_2_0		e12
 gcc		v6_3_0		e14
 sqlite		v3_16_02_00a
-cetlib_except   v1_01_00
+cetlib_except   v1_01_01
 cetbuildtools	v5_08_00	-	only_for_build
 end_product_list
 
