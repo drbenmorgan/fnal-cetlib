@@ -1,12 +1,21 @@
+#include "catch/catch.hpp"
+
 #include "cetlib/crc32.h"
+
 #include <cstdlib>
+#include <iostream>
 #include <string>
 
 #include "CRC32Calculator.h"
 
-#define TESTA  "abc"
-#define TESTB  "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
-#define TESTC  "\
+using namespace std::string_literals;
+
+using cet::crc32;
+
+namespace {
+  auto const TESTA = "abc"s;
+  auto const TESTB = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"s;
+  auto const TESTC = "\
 1 First God made heaven & earth \
 2 The earth was without form and void, and darkness was upon the face of the deep; and the Spirit of God was moving over the face of the waters. \
 3 And God said, \"Let there be light\"; and there was light. \
@@ -38,70 +47,106 @@
 29 And God said, \"Behold, I have given you every plant yielding seed which is upon the face of all the earth, and every tree with seed in its fruit; you shall have them for food. \
 30 And to every beast of the earth, and to every bird of the air, and to everything that creeps on the earth, everything that has the breath of life, I have given every green plant for food.\" And it was so. \
 31 And God saw everything that he had made, and behold, it was very good. And there was evening and there was morning, a sixth day.\
-"
-
-using cet::crc32;
-
-
-void
-  ensure( int which, bool claim )
-{
-  if( not claim )
-    std::exit(which);
+"s;
 }
 
-
-int
-  main( )
+SCENARIO("We can produce CRC32 checksums accurately")
 {
-  typedef  crc32::digest_t  digest_t;
+  crc32 crc;
 
+  GIVEN("We have a short string")
   {
-    crc32 c1;
-    c1 << TESTA;
-    digest_t  d1 = c1.digest();
+    WHEN("We create CRC32 digests in two different ways")
+    {
+      crc << TESTA;
+      cet::CRC32Calculator const refMaker(TESTA);
 
-    cet::CRC32Calculator s1(TESTA);
-    unsigned r1 = s1.checksum();
+      auto const digest = crc.digest();
+      auto const ref = refMaker.checksum();
 
-    ensure( 1, r1 == d1 );
+      THEN("The checksums compare equal")
+      {
+        CHECK(digest == ref);
+      }
+    }
   }
 
+  GIVEN("We have a longer string")
   {
-    crc32 c2;
-    c2 << TESTB;
-    digest_t  d2 = c2.digest();
+    WHEN("We create CRC32 digests in two different ways")
+    {
+      crc << TESTB;
+      cet::CRC32Calculator const refMaker(TESTB);
 
-    cet::CRC32Calculator s2(TESTB);
-    unsigned r2 = s2.checksum();
+      auto const digest = crc.digest();
+      auto const ref = refMaker.checksum();
 
-    ensure( 2, r2 == d2 );
+      THEN("The checksums compare equal")
+      {
+        CHECK(digest == ref);
+      }
+    }
   }
 
+  GIVEN("We have a *much* longer string")
   {
-    crc32 c3;
-    c3 << TESTC;
-    digest_t  d3 = c3.digest();
+    WHEN("We create CRC32 digests in two different ways")
+    {
+      crc << TESTC;
+      cet::CRC32Calculator const refMaker(TESTC);
 
-    cet::CRC32Calculator s3(TESTC);
-    unsigned r3 = s3.checksum();
+      auto const digest = crc.digest();
+      auto const ref = refMaker.checksum();
 
-    ensure( 3, r3 == d3 );
+      THEN("The checksums compare equal")
+      {
+        CHECK(digest == ref);
+      }
+    }
   }
 
+  GIVEN("We have a string with a known, externally calculated CRC32 checksum")
   {
-    crc32 c4("type_label_instance_process");
+    WHEN("We create CRC32 digests in two different ways")
+    {
+      auto const testString = "type_label_instance"s;
+      auto const process_suffix = "_process"s;
+      auto const knownResult = 1215348599u;
 
-    // This known result was calculated using python as a cross check
-    unsigned int  knownResult = 1215348599;
-    ensure( 4, c4.digest() == knownResult);
+      crc << (testString + process_suffix);
+      cet::CRC32Calculator const refMaker(testString + process_suffix);
+
+      auto const digest = crc.digest();
+      auto const ref = refMaker.checksum();
+
+      THEN("All three checksums compare equal")
+      {
+        CHECK(digest == knownResult);
+        CHECK(digest == ref);
+      }
+      WHEN("We insert more text before calculating a digest")
+      {
+        crc32 crc_insert(testString);
+        crc_insert << process_suffix;
+
+        THEN("We get the same answer")
+        {
+          CHECK(crc_insert.digest() == knownResult);
+        }
+      }
+    }
   }
 
+  GIVEN("We have an empty string")
   {
-    crc32 emptyString_crc32("");
-    ensure( 5, emptyString_crc32.digest() == 0);
+    WHEN("We calculate its CRC32 checksum")
+    {
+      crc << "";
+
+      THEN("It should be 0")
+      {
+        CHECK(crc.digest() == 0);
+      }
+    }
   }
-
-  return 0;
-
-}  // main()
+}

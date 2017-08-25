@@ -100,7 +100,7 @@ namespace cet {
       std::string ddl_;
     };
 
-    auto insert_into(sqlite3* const db, std::string const& tablename)
+    inline auto insert_into(sqlite3* const db, std::string const& tablename)
     {
       std::string result {"insert into "+tablename};
       return IncompleteInsert{db, std::move(result)};

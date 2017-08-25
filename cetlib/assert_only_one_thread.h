@@ -92,7 +92,7 @@ namespace cet {
 #define CET_ASSERT_ONLY_ONE_THREAD() ((void)0)
 #endif
 
-#endif
+#endif /* cetlib_assert_only_one_thread_h */
 
 // Local variables:
 // mode: c++

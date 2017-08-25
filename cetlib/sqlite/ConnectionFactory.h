@@ -19,9 +19,9 @@
 // The typical use case is:
 //
 //   ConnectionFactory factory;
-//   auto c1 = factory->get(":memory:");
-//   auto c2 = factory->get<MyDBOpenPolicy>("a.db", openPolicyArgs...);
-//   auto c3 = factory->get(":memory:");
+//   auto c1 = factory.make(":memory:");
+//   auto c2 = factory.make<MyDBOpenPolicy>("a.db", openPolicyArgs...);
+//   auto c3 = factory.make(":memory:");
 //
 // In the above, c1 and c3 will refer to the same in-memory database.
 // To enable thread-safe insertion of data into the DB, consider using

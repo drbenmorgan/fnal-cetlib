@@ -21,7 +21,6 @@ cet_test(assert_only_one_thread_test
   TEST_PROPERTIES PASS_REGULAR_EXPRESSION "Failed assert--more than one thread accessing location")
 cet_test(bit_test)
 cet_test(base_converter_test)
-cet_test(canonical_number_test)
 cet_test(canonical_string_test USE_BOOST_UNIT)
 cet_test(column_width_test USE_BOOST_UNIT)
 cet_test(container_algs_test USE_BOOST_UNIT)
@@ -29,11 +28,9 @@ cet_test(cpu_timer_test USE_BOOST_UNIT
   TEST_PROPERTIES RUN_SERIAL true
   OPTIONAL_GROUPS LOAD_SENSITIVE
   )
-cet_test(crc32_test SOURCES crc32_test.cc CRC32Calculator.cc)
 cet_test(exempt_ptr_test)
 cet_test(filesystem_test)
 cet_test(getenv_test)
-cet_test(hypot_test USE_BOOST_UNIT)
 cet_test(inc-expand_test.sh PREBUILT DEPENDENCIES inc-expand)
 cet_test(include_test)
 cet_test(includer_test USE_BOOST_UNIT LIBRARIES ${Boost_FILESYSTEM_LIBRARY})
@@ -147,5 +144,21 @@ cet_test(regex_standalone_t
   DATAFILES regex.txt)
 
 set_target_properties(regex_standalone_t PROPERTIES COMPILE_DEFINITIONS STANDALONE_TEST)
+
+########################################################################
+# Demonstration of Catch unit tests.
+
+# Simple test (standard TEST_CASE usage).
+cet_test(canonical_number_test USE_CATCH_MAIN)
+
+# Simple test (BDD-style usage) with test details turned on.
+cet_test(crc32_test USE_CATCH_MAIN SOURCES crc32_test.cc CRC32Calculator.cc TEST_ARGS -s)
+
+# Use ParseAndAddCatchTests to generate a test for each test case.
+cet_test(hypot_test USE_CATCH_MAIN NO_AUTO)
+list(APPEND CMAKE_MODULE_PATH $ENV{CATCH_DIR}/share/cmake/catch)
+include(ParseAndAddCatchTests)
+set(AdditionalCatchParameters -s)
+ParseAndAddCatchTests(hypot_test)
 
 endif() # ALT_CMAKE

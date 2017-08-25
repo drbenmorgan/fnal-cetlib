@@ -24,3 +24,7 @@ namespace cet {
 }
 
 #endif /* cetlib_sqlite_detail_normalize_statement_h */
+
+// Local Variables:
+// mode: c++
+// End:

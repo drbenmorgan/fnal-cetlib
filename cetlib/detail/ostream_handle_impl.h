@@ -26,14 +26,13 @@ namespace cet {
       std::ostream& get_stream() override { return os_; }
     };
 
+    template <typename OSTREAM, typename = std::enable_if_t<std::is_base_of<std::ostream, OSTREAM>::value>>
     class ostream_owner : public ostream_handle_base {
     public:
-      ostream_owner(std::string const& fn,
-                    std::ios_base::openmode const mode = std::ios_base::out) : ofs_{fn, mode} {}
-      ~ostream_owner() override { ofs_.close(); }
+      ostream_owner(OSTREAM && os) : os_(std::move(os)) { }
     private:
-      std::ofstream ofs_;
-      std::ostream& get_stream() override { return ofs_; }
+      OSTREAM os_;
+      std::ostream& get_stream() override { return os_; }
     };
   }
 

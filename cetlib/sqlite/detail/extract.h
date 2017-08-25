@@ -44,3 +44,7 @@ namespace cet {
 } // cet
 
 #endif /* cetlib_sqlite_detail_extract_h */
+
+// Local Variables:
+// mode: c++
+// End:
