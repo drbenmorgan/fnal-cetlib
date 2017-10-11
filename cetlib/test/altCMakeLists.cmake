@@ -34,13 +34,11 @@ cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_
 link_libraries(cetlib)
 
 add_subdirectory(sqlite)
-
 cet_test(assert_only_one_thread_test
   LIBRARIES pthread
   TEST_PROPERTIES PASS_REGULAR_EXPRESSION "Failed assert--more than one thread accessing location")
 cet_test(bit_test)
 cet_test(base_converter_test)
-cet_test(canonical_number_test)
 cet_test(canonical_string_test USE_BOOST_UNIT)
 cet_test(column_width_test USE_BOOST_UNIT)
 cet_test(container_algs_test USE_BOOST_UNIT)
@@ -48,12 +46,9 @@ cet_test(cpu_timer_test USE_BOOST_UNIT
   TEST_PROPERTIES RUN_SERIAL true
   OPTIONAL_GROUPS LOAD_SENSITIVE
   )
-cet_test(crc32_test SOURCES crc32_test.cc CRC32Calculator.cc)
 cet_test(exempt_ptr_test)
 cet_test(filesystem_test)
 cet_test(getenv_test)
-cet_test(hypot_test USE_BOOST_UNIT)
-
 cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
   # Use TEST_EXEC to use exact script without needing PATH...
   TEST_EXEC ${CMAKE_CURRENT_SOURCE_DIR}/inc-expand_test.sh
@@ -62,7 +57,6 @@ cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
   # this single case.
   TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:inc-expand>:$ENV{PATH}
   )
-
 cet_test(include_test)
 cet_test(includer_test USE_BOOST_UNIT LIBRARIES ${Boost_FILESYSTEM_LIBRARY})
 cet_test(is_absolute_filepath_t USE_BOOST_UNIT)
@@ -83,14 +77,12 @@ cet_test(registry_via_id_test_2 NO_AUTO) # for now -- see test's source
 cet_test(rpad_test USE_BOOST_UNIT)
 cet_test(search_path_test TEST_PROPERTIES ENVIRONMENT xyzzy="")
 cet_test(search_path_test_2 NO_AUTO)
-
 cet_test(search_path_test_2.sh HANDBUILT DEPENDENCIES search_path_test_2
   # Use TEST_EXEC to use exact script without needing PATH...
   TEST_EXEC ${CMAKE_CURRENT_SOURCE_DIR}/search_path_test_2.sh
   # Script runs search_path_test_2, so ensure its location is in test env PATH
   TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:search_path_test_2>:$ENV{PATH}
   )
-
 cet_test(search_path_test_3 USE_BOOST_UNIT)
 cet_test(simultaneous_function_spawner_t USE_BOOST_UNIT LIBRARIES pthread )
 cet_test(sha1_test)
@@ -182,3 +174,19 @@ cet_test(regex_standalone_t
   DATAFILES regex.txt)
 
 set_target_properties(regex_standalone_t PROPERTIES COMPILE_DEFINITIONS STANDALONE_TEST)
+
+########################################################################
+# Demonstration of Catch unit tests.
+
+# Simple test (standard TEST_CASE usage).
+cet_test(canonical_number_test USE_CATCH_MAIN)
+
+# Simple test (BDD-style usage) with test details turned on.
+cet_test(crc32_test USE_CATCH_MAIN SOURCES crc32_test.cc CRC32Calculator.cc TEST_ARGS -s)
+
+# Use ParseAndAddCatchTests to generate a test for each test case.
+#cet_test(hypot_test USE_CATCH_MAIN NO_AUTO)
+#list(APPEND CMAKE_MODULE_PATH $ENV{CATCH_DIR}/share/cmake/catch)
+#include(ParseAndAddCatchTests)
+#set(AdditionalCatchParameters -s)
+#ParseAndAddCatchTests(hypot_test)
