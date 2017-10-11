@@ -7,10 +7,8 @@
 try_compile(CET_HAVE_STD_CBEGIN_CEND
   ${CMAKE_CURRENT_BINARY_DIR}/config
   ${CMAKE_CURRENT_SOURCE_DIR}/config/test-cbegin.cc
-  # Needed until cetbuuldtools2 supports CXX standard selection
-  # via explicit epoch numbers.
   # See also https://gitlab.kitware.com/cmake/cmake/issues/16456
-  CMAKE_FLAGS "-DCMAKE_CXX_STANDARD=14"
+  CMAKE_FLAGS "-DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}"
   )
 configure_file(cetconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h @ONLY)
 
@@ -24,11 +22,22 @@ set(cetlib_SOURCES
   ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc
   # Core
+  BasicPluginFactory.cc
+  BasicPluginFactory.h
+  HorizontalRule.h
+  LibraryManager.cc
+  LibraryManager.h
+  MD5Digest.cc
+  MD5Digest.h
+  PluginFactory.cc
+  PluginFactory.h
+  PluginTypeDeducer.h
+  ProvideFilePathMacro.cc
+  ProvideFilePathMacro.h
+  SimultaneousFunctionSpawner.h
   assert_only_one_thread.h
   base_converter.cc
   base_converter.h
-  BasicPluginFactory.cc
-  BasicPluginFactory.h
   bit_manipulation.h
   canonical_number.cc
   canonical_number.h
@@ -43,10 +52,6 @@ set(cetlib_SOURCES
   cpu_timer.h
   crc32.cc
   crc32.h
-  detail/metaprogramming.h
-  detail/ostream_handle_impl.h
-  detail/wrapLibraryManagerException.cc
-  detail/wrapLibraryManagerException.h
   exception.h
   exception_collector.h
   exempt_ptr.h
@@ -62,23 +67,17 @@ set(cetlib_SOURCES
   include.h
   includer.cc
   includer.h
-  LibraryManager.cc
-  LibraryManager.h
   lpad.cc
   lpad.h
   map_vector.h
   maybe_ref.h
-  MD5Digest.cc
-  MD5Digest.h
+  metaprogramming.h
   name_of.h
   no_delete.h
   nybbler.cc
   nybbler.h
   os_libpath.h
   ostream_handle.h
-  PluginFactory.cc
-  PluginFactory.h
-  PluginTypeDeducer.h
   pow.h
   propagate_const.h
   registry.h
@@ -94,55 +93,60 @@ set(cetlib_SOURCES
   shlib_utils.h
   simple_stats.cc
   simple_stats.h
-  SimultaneousFunctionSpawner.h
   split.h
   split_by_regex.cc
   split_by_regex.h
   split_path.cc
   split_path.h
-  sqlite/column.h
+  test_macros.h
+  trim.h
+  value_ptr.h
+  zero_init.h
+  # Detail
+  detail/ostream_handle_impl.h
+  detail/wrapLibraryManagerException.cc
+  detail/wrapLibraryManagerException.h
+  # SQLite
   sqlite/Connection.cc
   sqlite/Connection.h
-  #sqlite/ConnectionFactory.cc #Not used?
+  # Not used - doesn't appear in CMakeLists.txt, header only impl?
+  #sqlite/ConnectionFactory.cc
   sqlite/ConnectionFactory.h
-  sqlite/create_table.h
-  sqlite/detail/bind_parameters.cc
-  sqlite/detail/bind_parameters.h
-  sqlite/detail/column_constraint.cc
-  sqlite/detail/column_constraint.h
-  sqlite/detail/convert.h
-  sqlite/detail/DefaultDatabaseOpenPolicy.cc
-  sqlite/detail/DefaultDatabaseOpenPolicy.h
-  sqlite/detail/extract.h
-  sqlite/detail/get_result.h
-  sqlite/detail/normalize_statement.cc
-  sqlite/detail/normalize_statement.h
   sqlite/Exception.cc
   sqlite/Exception.h
+  sqlite/Ntuple.h
+  sqlite/Transaction.cc
+  sqlite/Transaction.h
+  sqlite/column.h
+  sqlite/create_table.h
   sqlite/exec.cc
   sqlite/exec.h
   sqlite/helpers.cc
   sqlite/helpers.h
   sqlite/insert.h
-  sqlite/Ntuple.h
   sqlite/query_result.cc
   sqlite/query_result.h
   sqlite/select.cc
   sqlite/select.h
   sqlite/statistics.cc
   sqlite/statistics.h
-  sqlite/Transaction.cc
-  sqlite/Transaction.h
-  trim.h
-  value_ptr.h
-  zero_init.h
+  sqlite/detail/DefaultDatabaseOpenPolicy.cc
+  sqlite/detail/DefaultDatabaseOpenPolicy.h
+  sqlite/detail/bind_parameters.cc
+  sqlite/detail/bind_parameters.h
+  sqlite/detail/column_constraint.cc
+  sqlite/detail/column_constraint.h
+  sqlite/detail/convert.h
+  sqlite/detail/extract.h
+  sqlite/detail/get_result.h
+  sqlite/detail/normalize_statement.cc
+  sqlite/detail/normalize_statement.h
   )
 
 #-----------------------------------------------------------------------
 # Create libraries and properties
 # - Dynamic
 add_library(cetlib SHARED ${cetlib_SOURCES})
-target_compile_features(cetlib PUBLIC ${cetlib_COMPILE_FEATURES})
 target_include_directories(cetlib
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
