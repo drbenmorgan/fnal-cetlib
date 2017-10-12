@@ -33,7 +33,8 @@ find_package(cetlib_except @cetlib_except_VERSION@ EXACT REQUIRED)
 
 # - Refind Boost components needed, assert EXACT version as this
 # is default behaviour of UPS setups.
-find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@ EXACT REQUIRED
+# Use of SUBMINOR version os probably CMake version dependent, so needs review!
+find_package(Boost @Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@ EXACT REQUIRED
   regex filesystem system
   )
 
