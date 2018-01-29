@@ -29,6 +29,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(SYSTEM_LD_LIBRARY_PATH DYLD_LIBRARY_PATH)
 endif()
 cet_test_env("${SYSTEM_LD_LIBRARY_PATH}=$<TARGET_FILE_DIR:cetlib>:$ENV{${SYSTEM_LD_LIBRARY_PATH}}")
+cet_test_env(CURRENT_DIR=${CMAKE_CURRENT_SOURCE_DIR})
 
 # Identify libraries to be linked:
 link_libraries(cetlib)
@@ -47,6 +48,11 @@ cet_test(cpu_timer_test USE_BOOST_UNIT
   OPTIONAL_GROUPS LOAD_SENSITIVE
   )
 cet_test(exempt_ptr_test)
+cet_test(filepath_maker_test USE_BOOST_UNIT
+  TEST_PROPERTIES
+  ENVIRONMENT FILEPATH_MAKER_TEST_FILES=${CMAKE_CURRENT_SOURCE_DIR}/filepath_maker-files
+  DATAFILES
+  filepath_maker_test.txt)
 cet_test(filesystem_test)
 cet_test(getenv_test)
 cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
@@ -58,7 +64,7 @@ cet_test(inc-expand_test.sh HANDBUILT DEPENDENCIES inc-expand
   TEST_PROPERTIES ENVIRONMENT PATH=$<TARGET_FILE_DIR:inc-expand>:$ENV{PATH}
   )
 cet_test(include_test)
-cet_test(includer_test USE_BOOST_UNIT LIBRARIES ${Boost_FILESYSTEM_LIBRARY})
+cet_test(includer_test USE_BOOST_UNIT LIBRARIES)
 cet_test(is_absolute_filepath_t USE_BOOST_UNIT)
 cet_test(lpad_test USE_BOOST_UNIT)
 cet_test(map_vector_test USE_BOOST_UNIT)

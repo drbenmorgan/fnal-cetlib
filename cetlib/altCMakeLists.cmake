@@ -2,16 +2,6 @@
 # Configure generated sources
 #
 
-# - Is cebin/cend available in std:: namespace?
-#   Create public config header to hold result
-try_compile(CET_HAVE_STD_CBEGIN_CEND
-  ${CMAKE_CURRENT_BINARY_DIR}/config
-  ${CMAKE_CURRENT_SOURCE_DIR}/config/test-cbegin.cc
-  # See also https://gitlab.kitware.com/cmake/cmake/issues/16456
-  CMAKE_FLAGS "-DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}"
-  )
-configure_file(cetconfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h @ONLY)
-
 # - Configure shared library interfaces for build platform
 configure_file(shlib_utils.cc.in ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc @ONLY)
 
@@ -19,7 +9,6 @@ configure_file(shlib_utils.cc.in ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc @ONL
 # List sources and headers
 set(cetlib_SOURCES
   # Generated
-  ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc
   # Core
   BasicPluginFactory.cc
@@ -32,8 +21,8 @@ set(cetlib_SOURCES
   PluginFactory.cc
   PluginFactory.h
   PluginTypeDeducer.h
-  ProvideFilePathMacro.cc
   ProvideFilePathMacro.h
+  ProvideMakePluginMacros.h
   SimultaneousFunctionSpawner.h
   assert_only_one_thread.h
   base_converter.cc
@@ -109,7 +98,7 @@ set(cetlib_SOURCES
   # SQLite
   sqlite/Connection.cc
   sqlite/Connection.h
-  # Not used - doesn't appear in CMakeLists.txt, header only impl?
+  # Seems to not be used...
   #sqlite/ConnectionFactory.cc
   sqlite/ConnectionFactory.h
   sqlite/Exception.cc
