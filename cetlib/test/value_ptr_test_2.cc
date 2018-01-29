@@ -9,31 +9,50 @@
 
 #include "cetlib/compiler_macros.h"
 
-class simple
-{
+class simple {
   int i;
 
 public:
   static int n_alive;
   static int n_born;
 
-  simple() : i(0) { ++n_alive; ++n_born; }
-  explicit simple(int j) : i(j) { ++n_alive; ++n_born; }
+  simple() : i(0)
+  {
+    ++n_alive;
+    ++n_born;
+  }
+  explicit simple(int j) : i(j)
+  {
+    ++n_alive;
+    ++n_born;
+  }
 
-  simple(simple const& s) : i(s.i) { ++n_alive; ++n_born; }
+  simple(simple const& s) : i(s.i)
+  {
+    ++n_alive;
+    ++n_born;
+  }
 
   ~simple() { --n_alive; }
 
-  bool operator==(simple const& o) const { return i == o.i; }
-  bool isSame(simple const& o) const {return &o == this; }
+  bool
+  operator==(simple const& o) const
+  {
+    return i == o.i;
+  }
+  bool
+  isSame(simple const& o) const
+  {
+    return &o == this;
+  }
 
-};  // simple
+}; // simple
 
 int simple::n_alive = 0;
 int simple::n_born = 0;
 
-
-int main()
+int
+main()
 {
   assert(simple::n_alive == 0);
   {
@@ -46,7 +65,7 @@ int main()
       assert(simple::n_born == 2);
       assert(simple::n_alive == 2);
 
-      assert(*a==*b);
+      assert(*a == *b);
       assert(a->isSame(*b) == false);
     } // b destroyed
     assert(simple::n_born == 2);
@@ -69,21 +88,24 @@ int main()
     assert(e.operator->() == pc);
 
     cet::value_ptr<simple> f;
-    if (f) assert(0);
-    else   { }
+    if (f)
+      assert(0);
+    else {
+    }
     f.reset(d.release());
     assert(d.get() == 0);
     assert(*e == *f);
     assert(f.operator->() == pd);
-    if (f) { }
-    else   assert(0);
+    if (f) {
+    } else
+      assert(0);
 
     assert(simple::n_alive == 2);
     assert(simple::n_born == 4);
 
-    std::map<cet::value_ptr<simple>, int>  m;
+    std::map<cet::value_ptr<simple>, int> m;
     m[f] = 0;
-#if GCC_IS_AT_LEAST(4,8,1) || defined(__ICC) || defined(__clang__)
+#if GCC_IS_AT_LEAST(4, 8, 1) || defined(__ICC) || defined(__clang__)
     // Avoids a copy of f.
     assert(simple::n_born == 5);
 #else
@@ -91,7 +113,7 @@ int main()
 #endif
   }
   assert(simple::n_alive == 0);
-#if GCC_IS_AT_LEAST(4,8,1) || defined(__ICC) || defined(__clang__)
+#if GCC_IS_AT_LEAST(4, 8, 1) || defined(__ICC) || defined(__clang__)
   assert(simple::n_born == 5);
 #else
   assert(simple::n_born == 6);

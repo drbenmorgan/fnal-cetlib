@@ -7,10 +7,10 @@
 
 namespace cet {
   namespace detail {
-    void wrapLibraryManagerException(cet::exception const &e,
-                                     std::string const &item_type,
-                                     std::string const &libspec,
-                                     std::string const &release);
+    void wrapLibraryManagerException(cet::exception const& e,
+                                     std::string const& item_type,
+                                     std::string const& libspec,
+                                     std::string const& release);
   }
 }
 

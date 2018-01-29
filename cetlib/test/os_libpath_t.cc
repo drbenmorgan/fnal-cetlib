@@ -1,12 +1,14 @@
 #include "cetlib/os_libpath.h"
 
 #include <assert.h>
-#include <string.h>
 #include <iostream>
+#include <string.h>
 
 #include <sys/utsname.h>
 
-int main() {
+int
+main()
+{
   utsname name;
   if (uname(&name) != 0) {
     std::cerr << "uname call failed\n";
@@ -16,11 +18,9 @@ int main() {
   std::string expected;
   if (osname == "Darwin") {
     expected = "DYLD_LIBRARY_PATH";
-  }
-  else if (osname == "Linux") {
+  } else if (osname == "Linux") {
     expected = "LD_LIBRARY_PATH";
-  }
-  else {
+  } else {
     std::cerr << "Unrecognized operating system name from uname\n";
     return 1;
   }

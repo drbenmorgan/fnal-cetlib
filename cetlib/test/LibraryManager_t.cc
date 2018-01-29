@@ -1,11 +1,11 @@
 #include "cetlib/LibraryManager.h"
 
-#define BOOST_TEST_MODULE ( LibraryManager Test )
+#define BOOST_TEST_MODULE (LibraryManager Test)
 #include "cetlib/quiet_unit_test.hpp"
 
-#include "cetlib_except/exception.h"
 #include "cetlib/container_algorithms.h"
 #include "cetlib/test/LibraryManagerTestFunc.h"
+#include "cetlib_except/exception.h"
 
 #include <algorithm>
 #include <iostream>
@@ -26,9 +26,8 @@ struct LibraryManagerTestFixture {
   LibraryManager const& lm_ref;
 };
 
-LibraryManagerTestFixture::LibraryManagerTestFixture() :
-  lm{search_path{"LIBRARY_MANAGER_SEARCH_PATH"}, "cetlibtest"},
-  lm_ref{lm}
+LibraryManagerTestFixture::LibraryManagerTestFixture()
+  : lm{search_path{"LIBRARY_MANAGER_SEARCH_PATH"}, "cetlibtest"}, lm_ref{lm}
 {}
 #else
 // Default construction, should use system dynamic loader path
@@ -40,9 +39,8 @@ struct LibraryManagerTestFixture {
   LibraryManager const& lm_ref;
 };
 
-LibraryManagerTestFixture::LibraryManagerTestFixture() :
-  lm{"cetlibtest"},
-  lm_ref{lm}
+LibraryManagerTestFixture::LibraryManagerTestFixture()
+  : lm{"cetlibtest"}, lm_ref{lm}
 {}
 #endif
 
@@ -74,14 +72,13 @@ BOOST_AUTO_TEST_CASE(libListIter)
 
 BOOST_AUTO_TEST_CASE(getSymbolLong)
 {
-  BOOST_REQUIRE(lm_ref.getSymbolByLibspec<void*>("2/1/5",
-                "idString") != nullptr);
+  BOOST_REQUIRE(lm_ref.getSymbolByLibspec<void*>("2/1/5", "idString") !=
+                nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(getSymbolShort)
 {
-  BOOST_REQUIRE(lm_ref.getSymbolByLibspec<void*>("5",
-                "idString") != nullptr);
+  BOOST_REQUIRE(lm_ref.getSymbolByLibspec<void*>("5", "idString") != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE(getSymbolPathPrecedence)
@@ -91,15 +88,15 @@ BOOST_AUTO_TEST_CASE(getSymbolPathPrecedence)
 
 BOOST_AUTO_TEST_CASE(getSymbolAmbiguity)
 {
-  BOOST_CHECK_EXCEPTION(lm_ref.getSymbolByLibspec<void*>("3", "idString"),
-                        cet::exception,
-                        [](cet::exception const & e) {
-                          return e.category() == "Configuration";
-                        });
+  BOOST_CHECK_EXCEPTION(
+    lm_ref.getSymbolByLibspec<void*>("3", "idString"),
+    cet::exception,
+    [](cet::exception const& e) { return e.category() == "Configuration"; });
 }
 
 namespace {
-  void verify(std::string libspec, cettest::idString_t idString)
+  void
+  verify(std::string libspec, cettest::idString_t idString)
   {
     std::size_t pos{};
     while ((pos = libspec.find_first_of('/', pos)) != std::string::npos) {
@@ -114,11 +111,17 @@ BOOST_AUTO_TEST_CASE(getSymbolNoAmbiguity1)
   std::string const libspecA{"1/2/3"};
   std::string const libspecB{"1/1/3"};
   cettest::idString_t idString{nullptr};
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
   verify(libspecA, idString);
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecB, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecB, "idString"));
   verify(libspecB, idString);
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
   verify(libspecA, idString);
 }
 
@@ -127,11 +130,17 @@ BOOST_AUTO_TEST_CASE(getSymbolNoAmbiguity2)
   std::string const libspecA{"1/1/3"};
   std::string const libspecB{"1/2/3"};
   cettest::idString_t idString{nullptr};
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
   verify(libspecA, idString);
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecB, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecB, "idString"));
   verify(libspecB, idString);
-  BOOST_CHECK_NO_THROW(idString = lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
+  BOOST_CHECK_NO_THROW(
+    idString =
+      lm_ref.getSymbolByLibspec<cettest::idString_t>(libspecA, "idString"));
   verify(libspecA, idString);
 }
 

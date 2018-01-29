@@ -9,17 +9,14 @@ namespace cet {
   // when using dlopen, dlsym, etc. and a void * must be cast to a
   // function pointer.
   template <typename PTR_T>
-  PTR_T
-  hard_cast(void * src);
+  PTR_T hard_cast(void* src);
   template <typename PTR_T>
-  void
-  hard_cast(void * src, PTR_T & dest);
+  void hard_cast(void* src, PTR_T& dest);
 }
 
 template <typename PTR_T>
-inline
-PTR_T
-cet::hard_cast(void * src)
+inline PTR_T
+cet::hard_cast(void* src)
 {
   PTR_T dest;
   hard_cast(src, dest);
@@ -27,9 +24,8 @@ cet::hard_cast(void * src)
 }
 
 template <typename PTR_T>
-inline
-void
-cet::hard_cast(void * src, PTR_T & dest)
+inline void
+cet::hard_cast(void* src, PTR_T& dest)
 {
   memcpy(&dest, &src, sizeof(PTR_T));
 }

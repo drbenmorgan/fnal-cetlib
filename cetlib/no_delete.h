@@ -29,7 +29,9 @@
 
 namespace cet {
   struct no_delete {
-    void operator()(void const*) const {}
+    void
+    operator()(void const*) const
+    {}
   };
 }
 

@@ -15,53 +15,54 @@
 // ----------------------------------------------------------------------
 
 namespace cet {
-  template< class T >
-  std::enable_if_t<std::is_arithmetic<T>::value,T>
-  hypot( T x, T y );
+  template <class T>
+  std::enable_if_t<std::is_arithmetic<T>::value, T> hypot(T x, T y);
 
-  template< class T >
-  std::enable_if_t<std::is_arithmetic<T>::value,T>
-  unchecked_hypot( T x, T y );
+  template <class T>
+  std::enable_if_t<std::is_arithmetic<T>::value, T> unchecked_hypot(T x, T y);
 
-  template< class T >
-  std::enable_if_t<std::is_arithmetic<T>::value,T>
-  checked_hypot( T x, T y );
+  template <class T>
+  std::enable_if_t<std::is_arithmetic<T>::value, T> checked_hypot(T x, T y);
 }
 
 // ----------------------------------------------------------------------
 // unchecked_hypot<>:
 
-template< class T >
-inline std::enable_if_t<std::is_arithmetic<T>::value,T>
-cet::unchecked_hypot( T x, T y )
-{ return std::hypot(x, y); }
+template <class T>
+inline std::enable_if_t<std::is_arithmetic<T>::value, T>
+cet::unchecked_hypot(T x, T y)
+{
+  return std::hypot(x, y);
+}
 
 // ----------------------------------------------------------------------
 // checked_hypot<>:
 
-template< class T >
-std::enable_if_t<std::is_arithmetic<T>::value,T>
-cet::checked_hypot( T x, T y )
+template <class T>
+std::enable_if_t<std::is_arithmetic<T>::value, T>
+cet::checked_hypot(T x, T y)
 {
 
-  if( std::isinf(x) || std::isinf(y) )
+  if (std::isinf(x) || std::isinf(y))
     return std::numeric_limits<T>::infinity();
-  else if( std::isnan(x) || std::isnan(y) )
+  else if (std::isnan(x) || std::isnan(y))
     return std::numeric_limits<T>::quiet_NaN();
   else
     return unchecked_hypot(x, y);
 
-}  // checked_hypot<>(,)
+} // checked_hypot<>(,)
 
 // ----------------------------------------------------------------------
 // hypot<>:
 
-template< class T >
-inline std::enable_if_t<std::is_arithmetic<T>::value,T>
-cet::hypot( T x, T y )
-{ return checked_hypot(x, y); }
+template <class T>
+inline std::enable_if_t<std::is_arithmetic<T>::value, T>
+cet::hypot(T x, T y)
+{
+  return checked_hypot(x, y);
+}
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_hypot_h */
 

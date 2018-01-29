@@ -67,17 +67,29 @@
 #include <tuple>
 #include <vector>
 
-#include "cetlib/sqlite/Exception.h"
 #include "cetlib/container_algorithms.h"
+#include "cetlib/sqlite/Exception.h"
 
 namespace cet {
   namespace sqlite {
 
     template <typename... Args>
     struct query_result {
-      bool empty() const { return data.empty(); }
-      auto begin() const { return data.begin(); }
-      auto end() const { return data.end(); }
+      bool
+      empty() const
+      {
+        return data.empty();
+      }
+      auto
+      begin() const
+      {
+        return data.begin();
+      }
+      auto
+      end() const
+      {
+        return data.end();
+      }
       explicit operator bool() const { return !empty(); }
 
       std::vector<std::string> columns;
@@ -85,21 +97,23 @@ namespace cet {
     };
 
     template <typename T>
-    inline T unique_value(query_result<T> const& r)
+    inline T
+    unique_value(query_result<T> const& r)
     {
       if (r.data.size() != 1ull) {
         throw sqlite::Exception{sqlite::errors::SQLExecutionError}
-        << "unique_value expected of non-unique query.";
+          << "unique_value expected of non-unique query.";
       }
       return std::get<T>(r.data[0]);
     }
 
     template <typename... Args>
-    std::ostream& operator<<(std::ostream& os, query_result<Args...> const& res)
+    std::ostream&
+    operator<<(std::ostream& os, query_result<Args...> const& res)
     {
       using size_t = decltype(res.columns.size());
       auto const ncolumns = res.columns.size();
-      for (size_t i{}; i!= ncolumns ; ++i) {
+      for (size_t i{}; i != ncolumns; ++i) {
         os << res.columns[i] << ' ';
       }
       os << "\n--------------------------------\n";

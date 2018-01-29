@@ -30,7 +30,6 @@ namespace cet {
 
     class Connection {
     public:
-
       // It is permitted to create an invalid Connection object
       // through default construction.  However, any connections to an
       // SQLite database must be retrieved through the
@@ -38,11 +37,16 @@ namespace cet {
       explicit Connection() = default;
       ~Connection() noexcept;
 
-      sqlite3* get() const { return db_; }
+      sqlite3*
+      get() const
+      {
+        return db_;
+      }
       operator sqlite3*() { return db_; }
 
       template <std::size_t NColumns, typename Row>
-      int flush_no_throw(std::vector<Row> const& buffer, sqlite3_stmt*& insertStmt);
+      int flush_no_throw(std::vector<Row> const& buffer,
+                         sqlite3_stmt*& insertStmt);
 
       // Non-copyable
       Connection(Connection const&) = delete;
@@ -52,16 +56,18 @@ namespace cet {
       Connection& operator=(Connection&&) noexcept;
 
     private:
-
       template <typename DatabaseOpenPolicy>
-      explicit Connection(std::string const& file_name, std::shared_ptr<std::mutex> m, DatabaseOpenPolicy);
+      explicit Connection(std::string const& file_name,
+                          std::shared_ptr<std::mutex> m,
+                          DatabaseOpenPolicy);
       friend class ConnectionFactory;
 
       sqlite3* db_{nullptr};
-      std::shared_ptr<std::mutex> m_{nullptr}; // Shared with other connections to the same database
+      std::shared_ptr<std::mutex> m_{
+        nullptr}; // Shared with other connections to the same database
     };
 
-  } //namespace sqlite
+  } // namespace sqlite
 } // cet
 
 template <typename DatabaseOpenPolicy>
@@ -75,18 +81,17 @@ cet::sqlite::Connection::Connection(std::string const& file_name,
   db_ = policy.open(file_name);
 }
 
-
-
 template <std::size_t NColumns, typename Row>
 int
-cet::sqlite::Connection::flush_no_throw(std::vector<Row> const& buffer, sqlite3_stmt*& insertStmt)
+cet::sqlite::Connection::flush_no_throw(std::vector<Row> const& buffer,
+                                        sqlite3_stmt*& insertStmt)
 {
   // Guard against concurrent updates to the same database.
-  std::lock_guard<decltype((*m_))> hold {*m_};
-  sqlite::Transaction txn {db_};
+  std::lock_guard<decltype((*m_))> hold{*m_};
+  sqlite::Transaction txn{db_};
   for (auto const& r : buffer) {
     sqlite::detail::bind_parameters<Row, NColumns>::bind(insertStmt, r);
-    int const rc {sqlite3_step(insertStmt)};
+    int const rc{sqlite3_step(insertStmt)};
     if (rc != SQLITE_DONE) {
       return rc;
     }

@@ -35,7 +35,11 @@ public:
 
   // If an environment variable was used to create the search_path
   // object, return it.  Otherwise, it will be empty.
-  std::string const& showenv() const { return env_; }
+  std::string const&
+  showenv() const
+  {
+    return env_;
+  }
 
   // Return true if there are no directories in the path.
   bool empty() const;
@@ -77,21 +81,20 @@ public:
   // Return the string format (colon-delimited) of the search path.
   std::string to_string() const;
 
- private:
+private:
   std::string const env_;
   std::vector<std::string> dirs_{};
-};  // search_path
+}; // search_path
 
 template <class OutIter>
-std::size_t cet::search_path::find_files(std::string const& pattern,
-                                         OutIter dest) const
+std::size_t
+cet::search_path::find_files(std::string const& pattern, OutIter dest) const
 {
   std::vector<std::string> results;
   size_t const nfound{find_files(pattern, results)};
   cet::copy_all(results, dest);
   return nfound;
 }
-
 
 #endif /* cetlib_search_path_h */
 

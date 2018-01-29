@@ -25,7 +25,8 @@
 //   res << select("id","name").from(db,"workers");
 //
 // The query is NOT executed until, the operator<< function is called.
-// If a user attempts to execute a query with an incorrectly formed select statement (e.g.):
+// If a user attempts to execute a query with an incorrectly formed select
+// statement (e.g.):
 //
 //   res << select("id","name");
 //
@@ -53,7 +54,8 @@
 // For complicated querying statements that cannot be represented by
 // the type-safe interface, the cet::sqlite::query can be used (e.g.):
 //
-//   auto r = query<double, int>(db, "SELECT ... "); // ==> query_result<double,int>
+//   auto r = query<double, int>(db, "SELECT ... "); // ==>
+//   query_result<double,int>
 //
 // Although quite flexible, use of query is prone to typographical
 // errors that are less likely when using the type-safe interface.
@@ -70,11 +72,14 @@ namespace cet {
   namespace sqlite {
 
     template <typename... Args>
-    query_result<Args...> query(sqlite3* db, std::string const& ddl)
+    query_result<Args...>
+    query(sqlite3* db, std::string const& ddl)
     {
       query_result<Args...> res;
-      char* errmsg {nullptr};
-      if (sqlite3_exec(db, ddl.c_str(), detail::get_result<Args...>, &res, &errmsg) != SQLITE_OK) {
+      char* errmsg{nullptr};
+      if (sqlite3_exec(
+            db, ddl.c_str(), detail::get_result<Args...>, &res, &errmsg) !=
+          SQLITE_OK) {
         std::string msg{errmsg};
         sqlite3_free(errmsg);
         throw sqlite::Exception{sqlite::errors::SQLExecutionError} << msg;
@@ -83,26 +88,31 @@ namespace cet {
     }
 
     struct SelectStmt {
-      SelectStmt(std::string&& ddl, sqlite3* const db) : ddl_{std::move(ddl)}, db_{db} {}
+      SelectStmt(std::string&& ddl, sqlite3* const db)
+        : ddl_{std::move(ddl)}, db_{db}
+      {}
       std::string ddl_;
       sqlite3* db_;
 
-      auto where(std::string const& cond) &&
+      auto
+      where(std::string const& cond) &&
       {
         ddl_ += " where ";
         ddl_ += cond;
         return SelectStmt{std::move(ddl_), db_};
       }
 
-      auto order_by(std::string const& column, std::string const& clause = {}) &&
+      auto
+      order_by(std::string const& column, std::string const& clause = {}) &&
       {
         ddl_ += " order by ";
         ddl_ += column;
-        ddl_ += " "+clause;
+        ddl_ += " " + clause;
         return SelectStmt{std::move(ddl_), db_};
       }
 
-      auto limit(int const num) &&
+      auto
+      limit(int const num) &&
       {
         ddl_ += " limit ";
         ddl_ += std::to_string(num);
@@ -114,44 +124,53 @@ namespace cet {
 
       IncompleteSelectStmt(std::string&& ddl) : ddl_{std::move(ddl)} {}
 
-      auto from(sqlite3* const db, std::string const& tablename) &&
+      auto
+      from(sqlite3* const db, std::string const& tablename) &&
       {
         ddl_ += " from ";
         ddl_ += tablename;
         return SelectStmt{std::move(ddl_), db};
       }
       std::string ddl_;
-
     };
 
     namespace detail {
-      inline std::string concatenate() { return ""; }
+      inline std::string
+      concatenate()
+      {
+        return "";
+      }
 
       template <typename H, typename... T>
-      std::string concatenate(H const& h, T const&... t)
+      std::string
+      concatenate(H const& h, T const&... t)
       {
-        return sizeof...(t) != 0u ? std::string{h}+","+concatenate(t...) : std::string{h};
+        return sizeof...(t) != 0u ? std::string{h} + "," + concatenate(t...) :
+                                    std::string{h};
       }
     }
 
     template <typename... T>
-    auto select(T const&... t)
+    auto
+    select(T const&... t)
     {
-      std::string result {"select "+detail::concatenate(t...)};
+      std::string result{"select " + detail::concatenate(t...)};
       return IncompleteSelectStmt{std::move(result)};
     }
 
     template <typename... T>
-    auto select_distinct(T const&... t)
+    auto
+    select_distinct(T const&... t)
     {
-      std::string result {"select distinct "+detail::concatenate(t...)};
+      std::string result{"select distinct " + detail::concatenate(t...)};
       return IncompleteSelectStmt{std::move(result)};
     }
 
     template <typename... Args>
-    void operator<<(query_result<Args...>& r, SelectStmt const& cq)
+    void
+    operator<<(query_result<Args...>& r, SelectStmt const& cq)
     {
-      r = query<Args...>(cq.db_, cq.ddl_+";");
+      r = query<Args...>(cq.db_, cq.ddl_ + ";");
     }
 
   } // sqlite

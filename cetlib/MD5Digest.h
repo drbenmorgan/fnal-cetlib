@@ -39,13 +39,14 @@ namespace cet {
   bool operator==(MD5Result const& a, MD5Result const& b);
   bool operator<(MD5Result const& a, MD5Result const& b);
 
-  inline bool operator!=(MD5Result const& a, MD5Result const& b)
+  inline bool
+  operator!=(MD5Result const& a, MD5Result const& b)
   {
-    return !(a==b);
+    return !(a == b);
   }
 
-  inline
-  std::ostream& operator<< (std::ostream& os, MD5Result const& r)
+  inline std::ostream&
+  operator<<(std::ostream& os, MD5Result const& r)
   {
     os << r.toString();
     return os;
@@ -55,7 +56,6 @@ namespace cet {
   // be updated by using 'append'.
   class MD5Digest {
   public:
-
     MD5Digest();
     explicit MD5Digest(std::string const& s);
 

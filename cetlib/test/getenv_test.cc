@@ -10,28 +10,26 @@
 #include <cstdlib>
 #include <string>
 
-
 void
-  ensure( int which, bool claim )
+ensure(int which, bool claim)
 {
-  if( not claim )
+  if (not claim)
     std::exit(which);
 }
 
-
 int
-  main( )
+main()
 {
-  ensure( 1, cet::getenv("USER").size() > 0 );
+  ensure(1, cet::getenv("USER").size() > 0);
 
   try {
     std::string s = cet::getenv("XYZZY_PLUGH");
-    ensure( 11, false );
+    ensure(11, false);
   }
-  catch( cet::exception const & e ) {
-    ensure( 12, e.category() == "getenv" );
+  catch (cet::exception const& e) {
+    ensure(12, e.category() == "getenv");
   }
 
   return 0;
 
-}  // main()
+} // main()

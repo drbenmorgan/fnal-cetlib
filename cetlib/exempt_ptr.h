@@ -37,61 +37,49 @@
 
 namespace cet {
 
-  template< class Element >
+  template <class Element>
   class exempt_ptr;
 
-  template< class E >
-  void
-  swap(exempt_ptr<E>&, exempt_ptr<E>&) noexcept;
+  template <class E>
+  void swap(exempt_ptr<E>&, exempt_ptr<E>&) noexcept;
 
-  template< class E >
-  exempt_ptr<E>
-  make_exempt_ptr(E*) noexcept;
+  template <class E>
+  exempt_ptr<E> make_exempt_ptr(E*) noexcept;
 
-  template< class E >
-  bool
-  operator == (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator==(exempt_ptr<E> const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator != (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator!=(exempt_ptr<E> const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator == (exempt_ptr<E> const&, std::nullptr_t const&);
+  template <class E>
+  bool operator==(exempt_ptr<E> const&, std::nullptr_t const&);
 
-  template< class E >
-  bool
-  operator != (exempt_ptr<E> const&, std::nullptr_t const&);
+  template <class E>
+  bool operator!=(exempt_ptr<E> const&, std::nullptr_t const&);
 
-  template< class E >
-  bool
-  operator == ( std::nullptr_t const &, exempt_ptr<E> const&);
+  template <class E>
+  bool operator==(std::nullptr_t const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator != ( std::nullptr_t const &, exempt_ptr<E> const&);
+  template <class E>
+  bool operator!=(std::nullptr_t const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator < (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator<(exempt_ptr<E> const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator > (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator>(exempt_ptr<E> const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator <= (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator<=(exempt_ptr<E> const&, exempt_ptr<E> const&);
 
-  template< class E >
-  bool
-  operator >= (exempt_ptr<E> const&, exempt_ptr<E> const&);
+  template <class E>
+  bool operator>=(exempt_ptr<E> const&, exempt_ptr<E> const&);
 }
 
 // ======================================================================
 
-template<class Element>
+template <class Element>
 class cet::exempt_ptr {
 public:
   // --- publish our template parameter and variations thereof:
@@ -100,9 +88,10 @@ public:
   using reference = std::add_lvalue_reference_t<Element>;
 
 private:
-  template<class P>
-  struct is_compatible : public std::is_convertible<std::add_pointer_t<P>, pointer>
-  {};
+  template <class P>
+  struct is_compatible
+    : public std::is_convertible<std::add_pointer_t<P>, pointer> {
+  };
 
 public:
   // --- default c'tor:
@@ -110,30 +99,30 @@ public:
 
   // pointer-accepting c'tors:
   constexpr exempt_ptr(std::nullptr_t) noexcept : p{nullptr} {}
-  explicit  exempt_ptr(pointer other) noexcept : p{other}  {}
+  explicit exempt_ptr(pointer other) noexcept : p{other} {}
 
-  template<class E2>
-  exempt_ptr(E2* other, std::enable_if_t<is_compatible<E2>::value>* = nullptr) noexcept
+  template <class E2>
+  exempt_ptr(E2* other,
+             std::enable_if_t<is_compatible<E2>::value>* = nullptr) noexcept
     : p{other}
   {}
 
   // copying c'tors:
   // use compiler-generated copy c'tor
-  template<class E2>
+  template <class E2>
   exempt_ptr(exempt_ptr<E2> const& other,
              std::enable_if_t<is_compatible<E2>::value>* = nullptr) noexcept
     : p{other.get()}
   {}
 
   // pointer-accepting assignments:
-  exempt_ptr&
-  operator=(std::nullptr_t) noexcept
+  exempt_ptr& operator=(std::nullptr_t) noexcept
   {
     reset(nullptr);
     return *this;
   }
 
-  template<class E2>
+  template <class E2>
   std::enable_if_t<is_compatible<E2>::value, exempt_ptr&>
   operator=(E2* other) noexcept
   {
@@ -143,7 +132,7 @@ public:
 
   // copying assignments:
   // use compiler-generated copy assignment
-  template<class E2>
+  template <class E2>
   std::enable_if_t<is_compatible<E2>::value, exempt_ptr&>
   operator=(exempt_ptr<E2> const& other) noexcept
   {
@@ -152,21 +141,43 @@ public:
   }
 
   // observers:
-  reference operator *  () const noexcept { return *get(); }
-  pointer   operator -> () const noexcept { return get(); }
-  pointer   get() const noexcept { return p; }
-  bool      empty() const noexcept { return get() == nullptr; }
-  explicit  operator bool() const noexcept { return !empty(); }
+  reference operator*() const noexcept { return *get(); }
+  pointer operator->() const noexcept { return get(); }
+  pointer
+  get() const noexcept
+  {
+    return p;
+  }
+  bool
+  empty() const noexcept
+  {
+    return get() == nullptr;
+  }
+  explicit operator bool() const noexcept { return !empty(); }
 
   // modifiers:
-  pointer release() noexcept { pointer old = get(); reset(); return old; }
-  void    reset(pointer t = nullptr) noexcept { p = t; }
-  void    swap(exempt_ptr& other) noexcept { std::swap(p, other.p); }
+  pointer
+  release() noexcept
+  {
+    pointer old = get();
+    reset();
+    return old;
+  }
+  void
+  reset(pointer t = nullptr) noexcept
+  {
+    p = t;
+  }
+  void
+  swap(exempt_ptr& other) noexcept
+  {
+    std::swap(p, other.p);
+  }
 
 private:
-  pointer  p;
+  pointer p;
 
-};  // exempt_ptr<>
+}; // exempt_ptr<>
 
 // ======================================================================
 // non-member functions:
@@ -174,7 +185,7 @@ private:
 // ----------------------------------------------------------------------
 // non-member swap:
 
-template< class E >
+template <class E>
 inline void
 cet::swap(exempt_ptr<E>& x, exempt_ptr<E>& y) noexcept
 {
@@ -184,7 +195,7 @@ cet::swap(exempt_ptr<E>& x, exempt_ptr<E>& y) noexcept
 // ----------------------------------------------------------------------
 // non-member make_exempt_ptr:
 
-template< class E >
+template <class E>
 cet::exempt_ptr<E>
 cet::make_exempt_ptr(E* p) noexcept
 {
@@ -194,81 +205,82 @@ cet::make_exempt_ptr(E* p) noexcept
 // ----------------------------------------------------------------------
 // non-member (in)equality comparison:
 
-template< class E >
+template <class E>
 bool
 cet::operator==(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
   return x.get() == y.get();
 }
 
-template< class E >
+template <class E>
 bool
 cet::operator!=(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
   return !operator==(x, y);
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator==(exempt_ptr<E> const & x, std::nullptr_t const& y)
+cet::operator==(exempt_ptr<E> const& x, std::nullptr_t const& y)
 {
   return x.get() == y;
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator!=(exempt_ptr<E> const & x, std::nullptr_t const& y)
+cet::operator!=(exempt_ptr<E> const& x, std::nullptr_t const& y)
 {
   return !operator==(x, y);
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator==(std::nullptr_t const & x, exempt_ptr<E> const& y)
+cet::operator==(std::nullptr_t const& x, exempt_ptr<E> const& y)
 {
   return x == y.get();
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator!=(std::nullptr_t const & x, exempt_ptr<E> const& y)
+cet::operator!=(std::nullptr_t const& x, exempt_ptr<E> const& y)
 {
-  return ! operator == (x, y);
+  return !operator==(x, y);
 }
 
 // ----------------------------------------------------------------------
 // non-member ordering:
 
-template< class E >
+template <class E>
 bool
-cet::operator < (cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
+cet::operator<(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
-  using CT = std::common_type_t<typename exempt_ptr<E>::pointer, typename exempt_ptr<E>::pointer>;
+  using CT = std::common_type_t<typename exempt_ptr<E>::pointer,
+                                typename exempt_ptr<E>::pointer>;
   return std::less<CT>{}(x.get(), y.get());
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator > (cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
+cet::operator>(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
   return y < x;
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator <= (cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
+cet::operator<=(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
   return !(y < x);
 }
 
-template< class E >
+template <class E>
 bool
-cet::operator >= (cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
+cet::operator>=(cet::exempt_ptr<E> const& x, cet::exempt_ptr<E> const& y)
 {
   return !(x < y);
 }
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_exempt_ptr_h */
 

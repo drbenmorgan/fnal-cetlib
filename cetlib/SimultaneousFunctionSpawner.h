@@ -38,21 +38,22 @@
 namespace cet {
 
   template <typename F>
-  auto repeated_task(std::size_t const nInstances, F func)
+  auto
+  repeated_task(std::size_t const nInstances, F func)
   {
     return std::vector<F>(nInstances, func);
   }
 
   class SimultaneousFunctionSpawner {
   public:
-
     template <typename FunctionToSpawn>
-    SimultaneousFunctionSpawner(std::vector<FunctionToSpawn> const& fs) :
-      counter_{fs.size()}
+    SimultaneousFunctionSpawner(std::vector<FunctionToSpawn> const& fs)
+      : counter_{fs.size()}
     {
       auto execute = [this](auto f) {
         --counter_;
-        while (counter_ != 0);
+        while (counter_ != 0)
+          ;
         f();
       };
 
@@ -68,7 +69,6 @@ namespace cet {
   private:
     std::atomic<std::size_t> counter_;
   };
-
 }
 
 #endif /* cetlib_SimultaneousFunctionSpawner_h */

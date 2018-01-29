@@ -4,24 +4,24 @@
 //
 // ======================================================================
 
-#include "cetlib_except/exception.h"
 #include "cetlib/search_path.h"
+#include "cetlib_except/exception.h"
 #include <cstdlib>
 #include <string>
 
-
 using cet::search_path;
 
-void ensure(int const which, bool const claim)
+void
+ensure(int const which, bool const claim)
 {
   if (!claim)
     std::exit(which);
 }
 
-
 using namespace std::string_literals;
 
-int main()
+int
+main()
 {
   {
     auto const path = "xyzzy"s;

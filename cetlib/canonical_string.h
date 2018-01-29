@@ -12,60 +12,50 @@
 namespace cet {
 
   // Escape a string.
-  std::string escape(std::string const & str);
+  std::string escape(std::string const& str);
 
   // Unescape a string.
-  std::string unescape(std::string const & str);
+  std::string unescape(std::string const& str);
 
   // Check quoting for string.
-  bool is_single_quoted_string(std::string const & str);
-  bool is_double_quoted_string(std::string const & str);
-  bool is_quoted_string(std::string const & str); // Either single or double.,
+  bool is_single_quoted_string(std::string const& str);
+  bool is_double_quoted_string(std::string const& str);
+  bool is_quoted_string(std::string const& str); // Either single or double.,
 
   // Cannot throw; returns false on error or empty.
   // N.B. appends to result.
-  bool canonical_string(std::string const & str,
-                        std::string & result);
+  bool canonical_string(std::string const& str, std::string& result);
 
   // Throw on error; returns empty string on empty.
-  std::string canonical_string(std::string const & str);
+  std::string canonical_string(std::string const& str);
 
   // Underlying function for internal use:
   namespace detail {
     // Check if string is quoted by the specified character.
-    bool is_quoted_string(std::string const &s, char quot);
+    bool is_quoted_string(std::string const& s, char quot);
   }
-
 }
 
-inline
-bool
-cet::is_single_quoted_string(std::string const & str)
+inline bool
+cet::is_single_quoted_string(std::string const& str)
 {
   return detail::is_quoted_string(str, '\'');
 }
 
-inline
-bool
-cet::is_double_quoted_string(std::string const & str)
+inline bool
+cet::is_double_quoted_string(std::string const& str)
 {
   return detail::is_quoted_string(str, '"');
 }
 
-inline
-bool
-cet::is_quoted_string(std::string const & str)
+inline bool
+cet::is_quoted_string(std::string const& str)
 {
-  return is_single_quoted_string(str) ||
-    is_double_quoted_string(str);
+  return is_single_quoted_string(str) || is_double_quoted_string(str);
 }
 
-inline
-bool
-cet::canonical_string(std::string const & s,
-                      std::string & result)
-try
-{
+inline bool
+cet::canonical_string(std::string const& s, std::string& result) try {
   bool success = false;
   if (!s.empty()) {
     result.append(canonical_string(s));
@@ -73,12 +63,11 @@ try
   }
   return success;
 }
-catch( ... ) {
+catch (...) {
   return false;
-}  // canonical_string()
+} // canonical_string()
 
-
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_canonical_string_h */
 

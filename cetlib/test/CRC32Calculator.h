@@ -61,9 +61,12 @@ namespace cet {
 
   class CRC32Calculator {
   public:
-
     explicit CRC32Calculator(std::string const& message);
-    std::uint32_t checksum() const { return checksum_; }
+    std::uint32_t
+    checksum() const
+    {
+      return checksum_;
+    }
 
   private:
     std::uint32_t checksum_;

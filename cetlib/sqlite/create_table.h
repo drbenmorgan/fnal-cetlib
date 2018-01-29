@@ -57,7 +57,9 @@ using namespace std::string_literals;
 namespace cet {
   namespace sqlite {
     template <typename... Cols>
-    void create_table(sqlite3* const db,  std::string const& tablename, Cols const&... cols);
+    void create_table(sqlite3* const db,
+                      std::string const& tablename,
+                      Cols const&... cols);
 
     void create_table_as(std::string const& tablename, SelectStmt const& stmt);
   }
@@ -74,8 +76,9 @@ namespace cet {
       struct constraints_info_impl;
 
       template <typename H, typename... T>
-      struct constraints_info_impl<H,T...> {
-        static std::string generate_snippet()
+      struct constraints_info_impl<H, T...> {
+        static std::string
+        generate_snippet()
         {
           return H::snippet() + constraints_info_impl<T...>::generate_snippet();
         }
@@ -83,49 +86,64 @@ namespace cet {
 
       template <>
       struct constraints_info_impl<> {
-        static std::string generate_snippet() { return {}; }
+        static std::string
+        generate_snippet()
+        {
+          return {};
+        }
       };
 
       template <typename... T>
-      std::string constraints_info()
+      std::string
+      constraints_info()
       {
         return constraints_info_impl<T...>::generate_snippet();
       }
 
       template <typename T, typename... Constraints>
-      std::string column_info(column<T, Constraints...> const& col)
+      std::string
+      column_info(column<T, Constraints...> const& col)
       {
-        std::string info {col.name() + col.sqlite_type()};
+        std::string info{col.name() + col.sqlite_type()};
         info += constraints_info<Constraints...>();
         return info;
       }
 
-      inline std::string columns() { return ""; }
-
-      template <typename H, typename... T>
-      inline std::string columns(H const& h, T const&... t)
+      inline std::string
+      columns()
       {
-        return (sizeof...(T) != 0u) ? column_info(h) + ", " + columns(t...) : column_info(h);
+        return "";
       }
 
-      inline std::string create_table(std::string const& tablename)
+      template <typename H, typename... T>
+      inline std::string
+      columns(H const& h, T const&... t)
       {
-        return "CREATE TABLE "s+tablename;
+        return (sizeof...(T) != 0u) ? column_info(h) + ", " + columns(t...) :
+                                      column_info(h);
+      }
+
+      inline std::string
+      create_table(std::string const& tablename)
+      {
+        return "CREATE TABLE "s + tablename;
       }
 
       template <typename... Cols>
-      std::string create_table_ddl(std::string const& tablename, Cols const&... cols)
+      std::string
+      create_table_ddl(std::string const& tablename, Cols const&... cols)
       {
-        std::string ddl {create_table(tablename)};
+        std::string ddl{create_table(tablename)};
         ddl += "( ";
         ddl += columns(cols...);
         ddl += " )";
         return ddl;
       }
 
-      inline std::string create_table_as_ddl(std::string const& tablename, SelectStmt const& stmt)
+      inline std::string
+      create_table_as_ddl(std::string const& tablename, SelectStmt const& stmt)
       {
-        std::string ddl {create_table(tablename)};
+        std::string ddl{create_table(tablename)};
         ddl += " AS ";
         ddl += stmt.ddl_;
         return ddl;
@@ -134,19 +152,19 @@ namespace cet {
     } // detail
 
     template <typename... Cols>
-    void create_table(sqlite3* const db,
-                      std::string const& tablename,
-                      Cols const&... cols)
+    void
+    create_table(sqlite3* const db,
+                 std::string const& tablename,
+                 Cols const&... cols)
     {
       auto const& ddl = detail::create_table_ddl(tablename, cols...);
       sqlite::exec(db, ddl);
     }
 
-    inline
-    void create_table_as(std::string const& tablename,
-                         SelectStmt const& stmt)
+    inline void
+    create_table_as(std::string const& tablename, SelectStmt const& stmt)
     {
-      std::string ddl {detail::create_table_as_ddl(tablename, stmt)};
+      std::string ddl{detail::create_table_as_ddl(tablename, stmt)};
       sqlite::exec(stmt.db_, ddl);
     }
 

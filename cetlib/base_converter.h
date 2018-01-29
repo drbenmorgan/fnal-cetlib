@@ -15,8 +15,7 @@ namespace cet {
 
 // ==================================================================
 
-class cet::base_converter
-{
+class cet::base_converter {
 public:
   std::string const& get_source_base_set() const;
   std::string const& get_target_base_set() const;
@@ -34,7 +33,6 @@ public:
   std::string convert(std::string value) const;
 
 private:
-
   static unsigned int divide(std::string const& baseDigits,
                              std::string& x,
                              unsigned int y);
@@ -46,9 +44,21 @@ private:
                               unsigned int value);
 
 private:
-  static constexpr char const* binary_set() { return "01"; }
-  static constexpr char const* decimal_set() { return "0123456789"; }
-  static constexpr char const* hex_set() { return "0123456789ABCDEF"; }
+  static constexpr char const*
+  binary_set()
+  {
+    return "01";
+  }
+  static constexpr char const*
+  decimal_set()
+  {
+    return "0123456789";
+  }
+  static constexpr char const*
+  hex_set()
+  {
+    return "0123456789ABCDEF";
+  }
 
   std::string source_base_set_;
   std::string target_base_set_;
@@ -56,19 +66,27 @@ private:
 
 inline std::string const&
 cet::base_converter::get_source_base_set() const
-{ return source_base_set_; }
+{
+  return source_base_set_;
+}
 
 inline std::string const&
 cet::base_converter::get_target_base_set() const
-{ return target_base_set_; }
+{
+  return target_base_set_;
+}
 
 inline unsigned int
 cet::base_converter::get_source_base() const
-{ return (unsigned int)source_base_set_.length(); }
+{
+  return (unsigned int)source_base_set_.length();
+}
 
 inline unsigned int
 cet::base_converter::get_target_base() const
-{ return (unsigned int)target_base_set_.length(); }
+{
+  return (unsigned int)target_base_set_.length();
+}
 
 #endif /* cetlib_base_converter_h */
 

@@ -14,7 +14,8 @@ using cet::crc32;
 
 namespace {
   auto const TESTA = "abc"s;
-  auto const TESTB = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"s;
+  auto const TESTB =
+    "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"s;
   auto const TESTC = "\
 1 First God made heaven & earth \
 2 The earth was without form and void, and darkness was upon the face of the deep; and the Spirit of God was moving over the face of the waters. \
@@ -64,10 +65,7 @@ SCENARIO("We can produce CRC32 checksums accurately")
       auto const digest = crc.digest();
       auto const ref = refMaker.checksum();
 
-      THEN("The checksums compare equal")
-      {
-        CHECK(digest == ref);
-      }
+      THEN("The checksums compare equal") { CHECK(digest == ref); }
     }
   }
 
@@ -81,10 +79,7 @@ SCENARIO("We can produce CRC32 checksums accurately")
       auto const digest = crc.digest();
       auto const ref = refMaker.checksum();
 
-      THEN("The checksums compare equal")
-      {
-        CHECK(digest == ref);
-      }
+      THEN("The checksums compare equal") { CHECK(digest == ref); }
     }
   }
 
@@ -98,10 +93,7 @@ SCENARIO("We can produce CRC32 checksums accurately")
       auto const digest = crc.digest();
       auto const ref = refMaker.checksum();
 
-      THEN("The checksums compare equal")
-      {
-        CHECK(digest == ref);
-      }
+      THEN("The checksums compare equal") { CHECK(digest == ref); }
     }
   }
 
@@ -143,10 +135,7 @@ SCENARIO("We can produce CRC32 checksums accurately")
     {
       crc << "";
 
-      THEN("It should be 0")
-      {
-        CHECK(crc.digest() == 0);
-      }
+      THEN("It should be 0") { CHECK(crc.digest() == 0); }
     }
   }
 }

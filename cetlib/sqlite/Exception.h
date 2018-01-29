@@ -23,17 +23,18 @@ namespace cet {
         Unknown
       };
 
-    }  // errors
+    } // errors
 
     namespace ExceptionDetail {
       std::string translate(errors::ErrorCodes);
     }
 
-    using Exception = cet::coded_exception<errors::ErrorCodes, ExceptionDetail::translate>;
-  }  // sqlite
-} //cet
+    using Exception =
+      cet::coded_exception<errors::ErrorCodes, ExceptionDetail::translate>;
+  } // sqlite
+} // cet
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_sqlite_Exception_h */
 

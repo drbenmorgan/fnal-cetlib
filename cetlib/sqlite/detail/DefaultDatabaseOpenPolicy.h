@@ -11,7 +11,7 @@
 
 #include <string>
 
-class sqlite3;
+struct sqlite3;
 
 namespace cet {
   namespace sqlite {

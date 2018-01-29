@@ -1,5 +1,5 @@
 #define _GLIBCXX_USE_NANOSLEEP 1
-#define BOOST_TEST_MODULE ( cpu_timer_test 2 )
+#define BOOST_TEST_MODULE (cpu_timer_test 2)
 #include "cetlib/quiet_unit_test.hpp"
 
 #include "cetlib/cpu_timer.h"
@@ -13,7 +13,9 @@
 #include <sys/resource.h>
 
 struct CPUTimerTtestFixture {
-  cet::cpu_timer &timer() {
+  cet::cpu_timer&
+  timer()
+  {
     static cet::cpu_timer t_s;
     return t_s;
   }
@@ -31,36 +33,36 @@ double const small_cputime = 1.5e-3;
 // from two consecutive calls to the timer. Time in seconds.
 double const small_realtime = 1.5e-3;
 
-
 // Return the difference between the total time (user+system) in the two
 // rusage structs.
 inline double
 time_diff(rusage const& a, rusage const& b)
 {
-  double const sec      = (a.ru_utime.tv_sec  - b.ru_utime.tv_sec)
-    +                     (a.ru_stime.tv_sec  - b.ru_stime.tv_sec);
-  double const microsec = (a.ru_utime.tv_usec - b.ru_utime.tv_usec)
-    +                     (a.ru_stime.tv_usec - b.ru_stime.tv_usec);
+  double const sec = (a.ru_utime.tv_sec - b.ru_utime.tv_sec) +
+                     (a.ru_stime.tv_sec - b.ru_stime.tv_sec);
+  double const microsec = (a.ru_utime.tv_usec - b.ru_utime.tv_usec) +
+                          (a.ru_stime.tv_usec - b.ru_stime.tv_usec);
   return sec + 1e-6 * microsec;
 }
 
 // Make a busy-loop for 'dur' seconds.
-double busy_loop(double dur)
+double
+busy_loop(double dur)
 {
   double x = 3.14;
   rusage start_time, ru;
-  getrusage(RUSAGE_SELF, &start_time) ;
+  getrusage(RUSAGE_SELF, &start_time);
   do {
-   for (int i = 0; i < 1000; ++i) x = sin(x);
+    for (int i = 0; i < 1000; ++i)
+      x = sin(x);
     getrusage(RUSAGE_SELF, &ru);
-  }
-  while (time_diff(ru, start_time) < dur);
+  } while (time_diff(ru, start_time) < dur);
   return x;
 }
 
 //----------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_SUITE(CPUTimer_t,CPUTimerTtestFixture)
+BOOST_FIXTURE_TEST_SUITE(CPUTimer_t, CPUTimerTtestFixture)
 
 BOOST_AUTO_TEST_CASE(init)
 {
@@ -81,7 +83,8 @@ BOOST_AUTO_TEST_CASE(timer1)
   timer().stop();
 
   BOOST_CHECK_CLOSE(timer().realTime(), 0.050, 5.0); // difference in percentage
-  std::cout << "timer1 cpu: " << timer().cpuTime() << " real: " << timer().realTime() << std::endl;
+  std::cout << "timer1 cpu: " << timer().cpuTime()
+            << " real: " << timer().realTime() << std::endl;
   BOOST_CHECK_SMALL(timer().cpuTime(), small_cputime);
 }
 
@@ -130,7 +133,7 @@ BOOST_AUTO_TEST_CASE(doubleStop)
   timer().stop();
 
   BOOST_CHECK_EQUAL(timer().realTime(), real);
-  BOOST_CHECK_EQUAL(timer().cpuTime(),  cpu);
+  BOOST_CHECK_EQUAL(timer().cpuTime(), cpu);
 }
 
 BOOST_AUTO_TEST_CASE(reset)
@@ -147,7 +150,6 @@ BOOST_AUTO_TEST_CASE(reset)
   BOOST_CHECK_EQUAL(timer().realTime(), 0.0);
   BOOST_CHECK_EQUAL(timer().cpuTime(), 0.0);
 }
-
 
 BOOST_AUTO_TEST_CASE(checkUsage)
 {

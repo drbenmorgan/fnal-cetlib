@@ -9,10 +9,11 @@ using cet::replace_all;
 using std::string;
 
 namespace {
-  void testit(std::string start,
-              std::string const find,
-              std::string const replace,
-              std::string const ref)
+  void
+  testit(std::string start,
+         std::string const find,
+         std::string const replace,
+         std::string const ref)
   {
     replace_all(start, find, replace);
     BOOST_CHECK_EQUAL(start, ref);

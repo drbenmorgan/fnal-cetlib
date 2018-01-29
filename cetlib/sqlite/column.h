@@ -32,8 +32,8 @@
 
 #include <array>
 #include <string>
-#include <utility>
 #include <tuple>
+#include <utility>
 
 namespace cet {
   namespace sqlite {
@@ -44,7 +44,12 @@ namespace cet {
     class column_base {
     public:
       column_base(std::string const& n) : name_{n} {}
-      auto const& name() const { return name_; }
+      auto const&
+      name() const
+      {
+        return name_;
+      }
+
     private:
       std::string name_;
     };
@@ -63,63 +68,99 @@ namespace cet {
     struct column<double, Constraints...> : column_base {
       using column_base::column_base;
       using type = double;
-      std::string sqlite_type() const { return " numeric"; }
+      std::string
+      sqlite_type() const
+      {
+        return " numeric";
+      }
     };
 
     template <typename... Constraints>
     struct column<float, Constraints...> : column_base {
       using column_base::column_base;
       using type = float;
-      std::string sqlite_type() const { return " numeric"; }
+      std::string
+      sqlite_type() const
+      {
+        return " numeric";
+      }
     };
 
     template <typename... Constraints>
     struct column<int, Constraints...> : column_base {
       using column_base::column_base;
       using type = int;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<long, Constraints...> : column_base {
       using column_base::column_base;
       using type = long;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<long long, Constraints...> : column_base {
       using column_base::column_base;
       using type = long long;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<unsigned int, Constraints...> : column_base {
       using column_base::column_base;
       using type = int;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<unsigned long, Constraints...> : column_base {
       using column_base::column_base;
       using type = long;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<unsigned long long, Constraints...> : column_base {
       using column_base::column_base;
       using type = long long;
-      std::string sqlite_type() const { return " integer"; }
+      std::string
+      sqlite_type() const
+      {
+        return " integer";
+      }
     };
 
     template <typename... Constraints>
     struct column<std::string, Constraints...> : column_base {
       using column_base::column_base;
       using type = std::string;
-      std::string sqlite_type() const { return " text"; }
+      std::string
+      sqlite_type() const
+      {
+        return " text";
+      }
     };
 
     //=============================================================================
@@ -144,7 +185,8 @@ namespace cet {
     };
 
     template <typename T, typename... Constraints>
-    struct permissive_column<column<T,Constraints...>> : permissive_column<T, Constraints...> {
+    struct permissive_column<column<T, Constraints...>>
+      : permissive_column<T, Constraints...> {
       using permissive_column<T, Constraints...>::permissive_column;
     };
 

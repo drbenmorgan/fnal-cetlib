@@ -82,7 +82,8 @@
 //    langs.flush();
 //
 //    query_result<string> ch;
-//    ch << select("Languange").from(c, "europe").where("Country='Switzerland'");
+//    ch << select("Languange").from(c,
+//    "europe").where("Country='Switzerland'");
 //    // see cet::sqlite::select documentation regarding using query_result.
 //
 // -----------------------------------------------------------
@@ -120,11 +121,11 @@ namespace cet {
     template <typename... Args>
     class Ntuple {
     public:
-
       // Elements of row are unique_ptr's so that it is possible to bind
       // to a null parameter.
       template <typename T>
-      using element_t = std::unique_ptr<typename sqlite::permissive_column<T>::element_type>;
+      using element_t =
+        std::unique_ptr<typename sqlite::permissive_column<T>::element_type>;
 
       using row_t = std::tuple<element_t<Args>...>;
       static constexpr auto nColumns = std::tuple_size<row_t>::value;
@@ -138,7 +139,11 @@ namespace cet {
 
       ~Ntuple() noexcept;
 
-      std::string const& name() const { return name_; }
+      std::string const&
+      name() const
+      {
+        return name_;
+      }
 
       void insert(Args const...);
       void flush();
@@ -148,7 +153,6 @@ namespace cet {
       Ntuple& operator=(Ntuple const&) = delete;
 
     private:
-
       static constexpr auto iSequence = std::make_index_sequence<nColumns>();
 
       // This is the c'tor that does all of the work.  It exists so that
@@ -166,9 +170,9 @@ namespace cet {
       Connection& connection_;
       std::string name_;
       std::size_t max_;
-      std::vector<row_t> buffer_ {};
-      sqlite3_stmt* insert_statement_ {nullptr};
-      std::recursive_mutex mutex_ {};
+      std::vector<row_t> buffer_{};
+      sqlite3_stmt* insert_statement_{nullptr};
+      std::recursive_mutex mutex_{};
     };
 
   } // sqlite
@@ -181,10 +185,8 @@ cet::sqlite::Ntuple<Args...>::Ntuple(Connection& connection,
                                      name_array const& cnames,
                                      bool const overwriteContents,
                                      std::size_t const bufsize,
-                                     std::index_sequence<I...>) :
-  connection_{connection},
-  name_{name},
-  max_{bufsize}
+                                     std::index_sequence<I...>)
+  : connection_{connection}, name_{name}, max_{bufsize}
 {
   assert(connection);
 
@@ -193,21 +195,20 @@ cet::sqlite::Ntuple<Args...>::Ntuple(Connection& connection,
                               name,
                               sqlite::permissive_column<Args>{cnames[I]}...);
 
-  std::string sql {"INSERT INTO "};
+  std::string sql{"INSERT INTO "};
   sql += name;
   sql += " VALUES (?";
-  for (std::size_t i = 1; i < nColumns; ++i) { sql += ",?"; }
+  for (std::size_t i = 1; i < nColumns; ++i) {
+    sql += ",?";
+  }
   sql += ")";
-  int const rc {sqlite3_prepare_v2(connection_,
-                                   sql.c_str(),
-                                   sql.size(),
-                                   &insert_statement_,
-                                   nullptr)};
+  int const rc{sqlite3_prepare_v2(
+    connection_, sql.c_str(), sql.size(), &insert_statement_, nullptr)};
   if (rc != SQLITE_OK) {
     auto const ec = sqlite3_step(insert_statement_);
     throw sqlite::Exception{sqlite::errors::SQLExecutionError}
-    << "Failed to prepare insertion statement.\n"
-         << "Return code: " << ec << '\n';
+      << "Failed to prepare insertion statement.\n"
+      << "Return code: " << ec << '\n';
   }
 
   buffer_.reserve(bufsize);
@@ -218,8 +219,8 @@ cet::sqlite::Ntuple<Args...>::Ntuple(Connection& connection,
                                      std::string const& name,
                                      name_array const& cnames,
                                      bool const overwriteContents,
-                                     std::size_t const bufsize) :
-  Ntuple{connection, name, cnames, overwriteContents, bufsize, iSequence}
+                                     std::size_t const bufsize)
+  : Ntuple{connection, name, cnames, overwriteContents, bufsize, iSequence}
 {}
 
 template <typename... Args>
@@ -235,7 +236,7 @@ template <typename... Args>
 void
 cet::sqlite::Ntuple<Args...>::insert(Args const... args)
 {
-  std::lock_guard<decltype(mutex_)> lock {mutex_};
+  std::lock_guard<decltype(mutex_)> lock{mutex_};
   if (buffer_.size() == max_) {
     flush();
   }
@@ -248,8 +249,9 @@ cet::sqlite::Ntuple<Args...>::flush_no_throw()
 {
   // Guard against any modifications to the buffer, which is about to
   // be flushed to the database.
-  std::lock_guard<decltype(mutex_)> lock {mutex_};
-  int const rc {connection_.flush_no_throw<nColumns>(buffer_, insert_statement_)};
+  std::lock_guard<decltype(mutex_)> lock{mutex_};
+  int const rc{
+    connection_.flush_no_throw<nColumns>(buffer_, insert_statement_)};
   if (rc != SQLITE_DONE) {
     return rc;
   }
@@ -264,7 +266,7 @@ cet::sqlite::Ntuple<Args...>::flush()
   // No lock here -- lock held by flush_no_throw;
   if (flush_no_throw() != SQLITE_OK) {
     throw sqlite::Exception{sqlite::errors::SQLExecutionError}
-    << "SQLite step failure while flushing.";
+      << "SQLite step failure while flushing.";
   }
 }
 

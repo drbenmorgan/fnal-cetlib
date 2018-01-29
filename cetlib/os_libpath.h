@@ -8,7 +8,9 @@ namespace cet {
   constexpr char const* os_libpath();
 }
 
-inline constexpr char const* cet::os_libpath() {
+inline constexpr char const*
+cet::os_libpath()
+{
 #if __linux__
   return "LD_LIBRARY_PATH";
 #elif __APPLE__ && __MACH__

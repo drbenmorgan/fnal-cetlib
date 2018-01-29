@@ -24,7 +24,6 @@ namespace cet {
 
     class Transaction {
     public:
-
       explicit Transaction(sqlite3* db);
       ~Transaction() noexcept;
 

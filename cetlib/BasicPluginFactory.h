@@ -25,15 +25,16 @@ namespace cet {
 
 class cet::BasicPluginFactory : public PluginFactory {
 public:
+  explicit BasicPluginFactory(
+    cet::search_path const& search_path,
+    std::string const& suffix = "plugin",
+    std::string const& makerName = "makePlugin",
+    std::string const& pluginTypeFuncName = "pluginType");
 
-  explicit BasicPluginFactory(cet::search_path const& search_path,
-                              std::string const& suffix = "plugin",
-                              std::string const& makerName = "makePlugin",
-                              std::string const& pluginTypeFuncName = "pluginType");
-
-  explicit BasicPluginFactory(std::string const& suffix = "plugin",
-                              std::string const& makerName = "makePlugin",
-                              std::string const& pluginTypeFuncName = "pluginType");
+  explicit BasicPluginFactory(
+    std::string const& suffix = "plugin",
+    std::string const& makerName = "makePlugin",
+    std::string const& pluginTypeFuncName = "pluginType");
 
   // Find and call the makePlugin() function in the plugin library.
   template <typename RESULT_TYPE, typename... ARGS>
@@ -41,7 +42,8 @@ public:
   makePlugin(std::string const& libspec, ARGS&&... args);
 
   template <typename FUNCTION_TYPE>
-  std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, std::function<FUNCTION_TYPE>>
+  std::enable_if_t<std::is_function<FUNCTION_TYPE>::value,
+                   std::function<FUNCTION_TYPE>>
   makePlugin(std::string const& libspec);
 
   // Find and call the pluginType() function in the plugin library.
@@ -52,24 +54,22 @@ private:
   std::string const pluginTypeFuncName_;
 };
 
-inline
-std::string
+inline std::string
 cet::BasicPluginFactory::pluginType(std::string const& libspec)
 {
   return call<std::string>(libspec, pluginTypeFuncName_);
 }
 
 template <typename RESULT_TYPE, typename... ARGS>
-inline
-std::enable_if_t<!std::is_function<RESULT_TYPE>::value, RESULT_TYPE>
+inline std::enable_if_t<!std::is_function<RESULT_TYPE>::value, RESULT_TYPE>
 cet::BasicPluginFactory::makePlugin(std::string const& libspec, ARGS&&... args)
 {
   return call<RESULT_TYPE>(libspec, makerName_, std::forward<ARGS>(args)...);
 }
 
 template <typename FUNCTION_TYPE>
-inline
-std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, std::function<FUNCTION_TYPE>>
+inline std::enable_if_t<std::is_function<FUNCTION_TYPE>::value,
+                        std::function<FUNCTION_TYPE>>
 cet::BasicPluginFactory::makePlugin(std::string const& libspec)
 {
   return find<FUNCTION_TYPE>(libspec, makerName_);

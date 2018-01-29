@@ -41,8 +41,8 @@ namespace cet {
 
     class ConnectionFactory {
     public:
-
-      template <typename DatabaseOpenPolicy = detail::DefaultDatabaseOpenPolicy, typename... PolicyArgs>
+      template <typename DatabaseOpenPolicy = detail::DefaultDatabaseOpenPolicy,
+                typename... PolicyArgs>
       auto make(std::string const& file_name, PolicyArgs&&...) -> Connection;
 
     private:
@@ -50,22 +50,23 @@ namespace cet {
       std::mutex mutex_;
     };
 
-  } //namespace sqlite
+  } // namespace sqlite
 } // cet
 
 template <typename DatabaseOpenPolicy, typename... PolicyArgs>
-auto cet::sqlite::ConnectionFactory::make(std::string const& filename, PolicyArgs&&... policyArgs)
-  -> Connection
+auto
+cet::sqlite::ConnectionFactory::make(std::string const& filename,
+                                     PolicyArgs&&... policyArgs) -> Connection
 {
   // Implementation a la Herb Sutter's favorite 10-liner
-  std::lock_guard<decltype(mutex_)> hold {mutex_};
+  std::lock_guard<decltype(mutex_)> hold{mutex_};
   auto m = databaseLocks_[filename].lock();
   if (!m) {
     databaseLocks_[filename] = m = std::make_shared<std::mutex>();
   }
-  return Connection{filename, m, DatabaseOpenPolicy{std::forward<PolicyArgs>(policyArgs)...}};
+  return Connection{
+    filename, m, DatabaseOpenPolicy{std::forward<PolicyArgs>(policyArgs)...}};
 }
-
 
 #endif /* cetlib_sqlite_ConnectionFactory_h */
 

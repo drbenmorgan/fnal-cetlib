@@ -33,7 +33,6 @@ namespace cet {
 
 class cet::PluginFactory {
 public:
-
   explicit PluginFactory(cet::search_path const& search_path,
                          std::string const& suffix = "plugin");
 
@@ -57,22 +56,18 @@ public:
   // specified name and type. Use "nothrow" to select the non-throwing
   // version of the function.
   template <typename RESULT_TYPE, typename... ARGS>
-  auto
-  find(std::string const& funcname,
-       std::string const& libspec) const
-    -> RESULT_TYPE (*) (ARGS...);
+  auto find(std::string const& funcname, std::string const& libspec) const
+    -> RESULT_TYPE (*)(ARGS...);
 
   template <typename RESULT_TYPE, typename... ARGS>
-  auto
-  find(std::string const& funcname,
-       std::string const& libspec,
-       LibraryManager::nothrow_t) const
-    -> RESULT_TYPE (*) (ARGS...);
+  auto find(std::string const& funcname,
+            std::string const& libspec,
+            LibraryManager::nothrow_t) const -> RESULT_TYPE (*)(ARGS...);
 
   template <typename FUNCTION_TYPE>
-  std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, FUNCTION_TYPE*>
-  find(std::string const& funcname,
-       std::string const& libspec) const;
+  std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, FUNCTION_TYPE*> find(
+    std::string const& funcname,
+    std::string const& libspec) const;
 
   // May define subclasses.
   virtual ~PluginFactory() = default;
@@ -80,7 +75,7 @@ public:
 private:
   // Not copyable.
   PluginFactory(PluginFactory const&) = delete;
-  PluginFactory& operator = (PluginFactory const&) = delete;
+  PluginFactory& operator=(PluginFactory const&) = delete;
 
   template <typename T>
   void resolveSymbolOrThrow_(std::string const& libspec,
@@ -90,66 +85,62 @@ private:
   std::string releaseVersion_() const;
 
   LibraryManager lm_;
-  std::string releaseVersionString_ {};
-  std::function<std::string()> releaseVersionFunc_ {};
+  std::string releaseVersionString_{};
+  std::function<std::string()> releaseVersionFunc_{};
 };
 
-inline
-void
+inline void
 cet::PluginFactory::setDiagReleaseVersion(std::function<std::string()> rvf)
 {
   releaseVersionFunc_ = rvf;
 }
 
-inline
-void
+inline void
 cet::PluginFactory::setDiagReleaseVersion(std::string const& rv)
 {
   releaseVersionString_ = rv;
 }
 
 template <typename RESULT_TYPE, typename... ARGS>
-inline
-RESULT_TYPE
+inline RESULT_TYPE
 cet::PluginFactory::call(std::string const& libspec,
                          std::string const& funcname,
                          ARGS&&... args) const
 {
-  return (*find<RESULT_TYPE, ARGS...>(libspec, funcname))(std::forward<ARGS>(args)...);
+  return (*find<RESULT_TYPE, ARGS...>(libspec, funcname))(
+    std::forward<ARGS>(args)...);
 }
 
 template <typename FUNCTION_TYPE>
-inline
-std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, FUNCTION_TYPE*>
+inline std::enable_if_t<std::is_function<FUNCTION_TYPE>::value, FUNCTION_TYPE*>
 cet::PluginFactory::find(std::string const& libspec,
                          std::string const& funcname) const
 {
-  FUNCTION_TYPE** symbol {nullptr};
+  FUNCTION_TYPE** symbol{nullptr};
   resolveSymbolOrThrow_(libspec, funcname, symbol);
   return *symbol;
 }
 
 template <typename RESULT_TYPE, typename... ARGS>
-inline
-auto
+inline auto
 cet::PluginFactory::find(std::string const& libspec,
                          std::string const& funcname) const
-  -> RESULT_TYPE (*) (ARGS...)
+  -> RESULT_TYPE (*)(ARGS...)
 {
-  RESULT_TYPE (*symbol) (ARGS...) = nullptr;
+  RESULT_TYPE (*symbol)(ARGS...) = nullptr;
   resolveSymbolOrThrow_(libspec, funcname, symbol);
   return symbol;
 }
 
 template <typename RESULT_TYPE, typename... ARGS>
-inline
-auto
+inline auto
 cet::PluginFactory::find(std::string const& libspec,
                          std::string const& funcname,
                          LibraryManager::nothrow_t nothrow) const
-  -> RESULT_TYPE (*) (ARGS...)
+  -> RESULT_TYPE (*)(ARGS...)
 {
-  return lm_.getSymbolByLibspec<RESULT_TYPE(*)(ARGS...)>(libspec, funcname, nothrow);
+  return lm_.getSymbolByLibspec<RESULT_TYPE (*)(ARGS...)>(
+    libspec, funcname, nothrow);
 }
 
 template <typename T>
@@ -162,15 +153,12 @@ cet::PluginFactory::resolveSymbolOrThrow_(std::string const& libspec,
     lm_.getSymbolByLibspec(libspec, funcname, symbol);
   }
   catch (exception const& e) {
-    detail::wrapLibraryManagerException(e,
-                                        "Plugin",
-                                        libspec,
-                                        releaseVersion_());
+    detail::wrapLibraryManagerException(
+      e, "Plugin", libspec, releaseVersion_());
   }
   if (symbol == nullptr) {
     throw exception("Configuration", "BadPluginLibrary")
-      << "Plugin " << libspec
-      << " with version " << releaseVersion_()
+      << "Plugin " << libspec << " with version " << releaseVersion_()
       << " has internal symbol definition problems: consult an expert.";
   }
 }

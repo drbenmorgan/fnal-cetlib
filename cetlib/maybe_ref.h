@@ -31,88 +31,106 @@
 #include <stdexcept>
 
 namespace cet {
-  template< class T >
-    class maybe_ref;
-
-  template< class T >
-  void
-    swap( maybe_ref<T> &, maybe_ref<T> & );
+  template <class T>
+  class maybe_ref;
 
   template <class T>
-  bool
-  operator == (maybe_ref<T> const & left,
-               maybe_ref<T> const & right);
+  void swap(maybe_ref<T>&, maybe_ref<T>&);
 
   template <class T>
-  std::ostream &
-  operator << (std::ostream & os, maybe_ref<T> const & item);
+  bool operator==(maybe_ref<T> const& left, maybe_ref<T> const& right);
+
+  template <class T>
+  std::ostream& operator<<(std::ostream& os, maybe_ref<T> const& item);
 }
 
 // ======================================================================
 
-template< class T >
-  class cet::maybe_ref
-{
+template <class T>
+class cet::maybe_ref {
 public:
-  typedef  T  value_type;
+  typedef T value_type;
 
-           maybe_ref(       ) : ptr_( 0  )  { }
-  explicit maybe_ref( T & t ) : ptr_( &t )  { }
+  maybe_ref() : ptr_(0) {}
+  explicit maybe_ref(T& t) : ptr_(&t) {}
 
   // use compiler-generated copy c'tor, copy assignment, and d'tor
 
-  bool  isValid( ) const  { return ptr_; }
-  explicit operator bool( ) const  { return isValid(); }
+  bool
+  isValid() const
+  {
+    return ptr_;
+  }
+  explicit operator bool() const { return isValid(); }
 
-  void  reseat(       )  { ptr_ = 0; }
-  void  reseat( T & p )  { ptr_ = &p; }
+  void
+  reseat()
+  {
+    ptr_ = 0;
+  }
+  void
+  reseat(T& p)
+  {
+    ptr_ = &p;
+  }
 
-  T       & ref( )       { return ref_iff_valid(); }
-  T const & ref( ) const { return ref_iff_valid(); }
+  T&
+  ref()
+  {
+    return ref_iff_valid();
+  }
+  T const&
+  ref() const
+  {
+    return ref_iff_valid();
+  }
 
-  void  swap( maybe_ref & other )  { std::swap(ptr_, other.ptr_); }
+  void
+  swap(maybe_ref& other)
+  {
+    std::swap(ptr_, other.ptr_);
+  }
 
 private:
-  T *  ptr_;
+  T* ptr_;
 
-  T &
-    ref_iff_valid( ) const
+  T&
+  ref_iff_valid() const
   {
-    if( isValid() )
+    if (isValid())
       return *ptr_;
 
     // TODO: consider throwing a cet::exception
-    throw std::logic_error( "cet::maybe_ref<>: referent does not exist" );
+    throw std::logic_error("cet::maybe_ref<>: referent does not exist");
   }
 
-};  // maybe_ref<>
+}; // maybe_ref<>
 
 // ======================================================================
 
-template< class T >
+template <class T>
 inline void
-  cet::swap( maybe_ref<T> & r1, maybe_ref<T> & r2 )
-{ r1.swap(r2); }
+cet::swap(maybe_ref<T>& r1, maybe_ref<T>& r2)
+{
+  r1.swap(r2);
+}
 
 template <class T>
-inline
-bool
-cet::operator == (maybe_ref<T> const & left,
-                  maybe_ref<T> const & right)
+inline bool
+cet::operator==(maybe_ref<T> const& left, maybe_ref<T> const& right)
 {
   return (&left.ref()) == (&right.ref());
 }
 
 template <class T>
-inline
-std::ostream &
-cet::operator << (std::ostream & os, maybe_ref<T> const & item)
+inline std::ostream&
+cet::operator<<(std::ostream& os, maybe_ref<T> const& item)
 {
   os << &item.ref();
   return os;
 }
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_maybe_ref_h */
 

@@ -44,51 +44,59 @@ namespace cet {
   namespace sqlite {
     namespace detail {
 
-      inline std::string maybe_quote(char const* s)
+      inline std::string
+      maybe_quote(char const* s)
       {
-        return "\""+std::string{s}+"\"";
+        return "\"" + std::string{s} + "\"";
       }
 
-      inline std::string maybe_quote(std::string const& s)
+      inline std::string
+      maybe_quote(std::string const& s)
       {
-        return "\""+s+"\"";
+        return "\"" + s + "\"";
       }
 
       template <typename T>
-      T maybe_quote(T const& t) { return t; }
+      T
+      maybe_quote(T const& t)
+      {
+        return t;
+      }
 
-      inline void values_str_impl(std::ostream&) {}
+      inline void
+      values_str_impl(std::ostream&)
+      {}
 
       template <typename H, typename... T>
-      void values_str_impl(std::ostream& os, H const& h, T const&... t)
+      void
+      values_str_impl(std::ostream& os, H const& h, T const&... t)
       {
         if (sizeof...(T) != 0u) {
           os << maybe_quote(h) << ',';
           values_str_impl(os, t...);
-        }
-        else
+        } else
           os << maybe_quote(h);
       }
 
       template <typename... Args>
-      std::string values_str(Args const&... args)
+      std::string
+      values_str(Args const&... args)
       {
         std::ostringstream oss;
         values_str_impl(oss, args...);
         return oss.str();
       }
-
     }
 
     struct IncompleteInsert {
 
       IncompleteInsert(sqlite3* const db, std::string&& ddl)
-        : db_{db}
-        , ddl_{std::move(ddl)}
+        : db_{db}, ddl_{std::move(ddl)}
       {}
 
       template <typename... T>
-      void values(T const&... t) &&
+      void
+      values(T const&... t) &&
       {
         ddl_ += " values (";
         ddl_ += detail::values_str(t...);
@@ -100,9 +108,10 @@ namespace cet {
       std::string ddl_;
     };
 
-    inline auto insert_into(sqlite3* const db, std::string const& tablename)
+    inline auto
+    insert_into(sqlite3* const db, std::string const& tablename)
     {
-      std::string result {"insert into "+tablename};
+      std::string result{"insert into " + tablename};
       return IncompleteInsert{db, std::move(result)};
     }
 

@@ -19,7 +19,7 @@ class cettest::TestPluginBase {
 public:
   TestPluginBase(std::string message);
 
-  std::string const & message() const;
+  std::string const& message() const;
 
   virtual ~TestPluginBase() = default;
 

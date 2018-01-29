@@ -11,7 +11,8 @@
 
 // ======================================================================
 
-std::string cet::getenv(std::string const& name)
+std::string
+cet::getenv(std::string const& name)
 {
   char const* p = std::getenv(name.c_str());
   if (p == nullptr)

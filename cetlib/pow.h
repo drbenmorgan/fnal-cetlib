@@ -17,15 +17,21 @@ namespace cet {
   constexpr T pow(T x);
 
   template <class T>
-  constexpr T square(T x) {
+  constexpr T
+  square(T x)
+  {
     return pow<2u>(x);
   }
   template <class T>
-  constexpr T cube(T x) {
+  constexpr T
+  cube(T x)
+  {
     return pow<3u>(x);
   }
   template <class T>
-  constexpr T fourth(T x) {
+  constexpr T
+  fourth(T x)
+  {
     return pow<4u>(x);
   }
 
@@ -60,12 +66,14 @@ namespace cet {
     template <class T>
     struct pow<2u, T, 0u>;
   }
-}  // cet::detail
+} // cet::detail
 
 // ----------------------------------------------------------------------
 
 template <unsigned N, class T>
-constexpr T cet::pow(T x) {
+constexpr T
+cet::pow(T x)
+{
   return detail::pow<N, T>()(x);
 }
 
@@ -74,52 +82,76 @@ constexpr T cet::pow(T x) {
 template <unsigned N, class T>
 struct cet::detail::pow<N, T, 0u> {
   pow<N / 2u, T> pow_half;
-  constexpr T operator()(T x) { return pow_half(x * x); }
-};  // pow<N,T,0>
+  constexpr T
+  operator()(T x)
+  {
+    return pow_half(x * x);
+  }
+}; // pow<N,T,0>
 
 template <unsigned N, class T>
 struct cet::detail::pow<N, T, 1u> {
   pow<N / 2u, T> pow_half;
-  constexpr T operator()(T x) { return x * pow_half(x * x); }
-};  // pow<N,T,1>
+  constexpr T
+  operator()(T x)
+  {
+    return x * pow_half(x * x);
+  }
+}; // pow<N,T,1>
 
 template <class T>
 struct cet::detail::pow<0u, T, 0u> {
-  constexpr T operator()(T x) {
-    return (x != 0) ? 1
-                    : throw cet::exception("cet::pow")
-                          << "pow<0>(0) is indeterminate!";
+  constexpr T
+  operator()(T x)
+  {
+    return (x != 0) ?
+             1 :
+             throw cet::exception("cet::pow") << "pow<0>(0) is indeterminate!";
   }
-};  // pow<0,T,0>
+}; // pow<0,T,0>
 
 template <class T>
 struct cet::detail::pow<1u, T, 1u> {
-  constexpr T operator()(T x) { return x; }
-};  // pow<1,T,1>
+  constexpr T
+  operator()(T x)
+  {
+    return x;
+  }
+}; // pow<1,T,1>
 
 template <class T>
 struct cet::detail::pow<2u, T, 0u> {
-  constexpr T operator()(T x) { return x * x; }
-};  // pow<2,T,0>
+  constexpr T
+  operator()(T x)
+  {
+    return x * x;
+  }
+}; // pow<2,T,0>
 
 // ----------------------------------------------------------------------
 
 template <class T>
-constexpr T cet::diff_of_squares(T x, T y) {
+constexpr T
+cet::diff_of_squares(T x, T y)
+{
   return (x + y) * (x - y);
 }
 
 template <class T>
-constexpr T cet::sum_of_squares(T x, T y) {
+constexpr T
+cet::sum_of_squares(T x, T y)
+{
   return square(x) + square(y);
 }
 
 template <class T>
-constexpr T cet::sum_of_squares(T x, T y, T z) {
+constexpr T
+cet::sum_of_squares(T x, T y, T z)
+{
   return square(x) + square(y) + square(z);
 }
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_pow_h */
 

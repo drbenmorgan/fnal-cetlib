@@ -4,9 +4,10 @@
 
 #include "sha1.h"
 
-#define TESTA  "abc"
-#define TESTB  "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
-#define TESTC  "\
+#define TESTA "abc"
+#define TESTB "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+#define TESTC                                                                  \
+  "\
 1 First God made heaven & earth \
 2 The earth was without form and void, and darkness was upon the face of the deep; and the Spirit of God was moving over the face of the waters. \
 3 And God said, \"Let there be light\"; and there was light. \
@@ -42,26 +43,25 @@
 
 using cet::sha1;
 
-
 void
-  ensure( int which, bool claim )
+ensure(int which, bool claim)
 {
-  if( not claim )
+  if (not claim)
     std::exit(which);
 }
 
-
 unsigned int
-  byteswap(unsigned int data)
+byteswap(unsigned int data)
 {
-  return   (data&0x000000FF)<<24 | (data&0x0000FF00)<<8
-         | (data&0xFF000000)>>24 | (data&0x00FF0000)>>8;
+  return (data & 0x000000FF) << 24 | (data & 0x0000FF00) << 8 |
+         (data & 0xFF000000) >> 24 | (data & 0x00FF0000) >> 8;
 }
 
 int
-  compare(unsigned * r, sha1::digest_t const & d)
+compare(unsigned* r, sha1::digest_t const& d)
 {
-  if(r==nullptr) return -1;
+  if (r == nullptr)
+    return -1;
 
   r[0] = byteswap(r[0]);
   r[1] = byteswap(r[1]);
@@ -69,9 +69,9 @@ int
   r[3] = byteswap(r[3]);
   r[4] = byteswap(r[4]);
 
-  for(int i=0;i<20;++i) {
-    if(((unsigned char *)r)[i] != d[i]) {
-      return i+1;
+  for (int i = 0; i < 20; ++i) {
+    if (((unsigned char*)r)[i] != d[i]) {
+      return i + 1;
     }
   }
 
@@ -79,14 +79,14 @@ int
 }
 
 int
-  main( )
+main()
 {
-  typedef  sha1::digest_t  digest_t;
+  typedef sha1::digest_t digest_t;
 
   {
     sha1 c1;
     c1 << TESTA;
-    digest_t  d1 = c1.digest();
+    digest_t d1 = c1.digest();
 
     fhicl::SHA1 s1;
     s1.Reset();
@@ -94,13 +94,13 @@ int
     unsigned r1[5];
     s1.Result(r1);
 
-    ensure( 1, compare(r1, d1)==0);
+    ensure(1, compare(r1, d1) == 0);
 
-// =====================================
+    // =====================================
 
     sha1 c2;
     c2 << TESTB;
-    digest_t  d2 = c2.digest();
+    digest_t d2 = c2.digest();
 
     fhicl::SHA1 s2;
     s2.Reset();
@@ -108,13 +108,13 @@ int
     unsigned r2[5];
     s2.Result(r2);
 
-    ensure( 2, compare(r2, d2)==0);
+    ensure(2, compare(r2, d2) == 0);
 
-// =====================================
+    // =====================================
 
     sha1 c3;
     c3 << TESTC;
-    digest_t  d3 = c3.digest();
+    digest_t d3 = c3.digest();
 
     fhicl::SHA1 s3;
     s3.Reset();
@@ -122,10 +122,9 @@ int
     unsigned r3[5];
     s3.Result(r3);
 
-    ensure( 3, compare(r3, d3)==0);
-
+    ensure(3, compare(r3, d3) == 0);
   }
 
   return 0;
 
-}  // main()
+} // main()

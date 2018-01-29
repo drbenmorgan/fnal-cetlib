@@ -20,14 +20,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/shlib_utils.cc.in
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc @ONLY
   )
 
-if (NOT DEFINED CET_HAVE_STD_CBEGIN_CEND)
-  try_compile(CET_HAVE_STD_CBEGIN_CEND ${CMAKE_CURRENT_BINARY_DIR}/config SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/config/test-cbegin.cc)
-endif()
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cetconfig.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/cetconfig.h @ONLY
-  )
-
 cet_make_library(LIBRARY_NAME ${LIB_NAME}
   SOURCE
   ${CMAKE_CURRENT_BINARY_DIR}/shlib_utils.cc

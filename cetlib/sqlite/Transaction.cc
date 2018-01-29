@@ -1,5 +1,5 @@
-#include "cetlib/sqlite/Exception.h"
 #include "cetlib/sqlite/Transaction.h"
+#include "cetlib/sqlite/Exception.h"
 
 #include "sqlite3.h"
 
@@ -11,19 +11,19 @@ namespace {
   public:
     explicit set_to_null_when_done(sqlite3*& db) : db_{db} {}
     ~set_to_null_when_done() noexcept { db_ = nullptr; }
+
   private:
     sqlite3*& db_;
   };
 }
 
-cet::sqlite::Transaction::Transaction(sqlite3* db) :
-  db_{db}
+cet::sqlite::Transaction::Transaction(sqlite3* db) : db_{db}
 {
   assert(db_);
-  int const rc {sqlite3_exec(db_, "BEGIN;", nullptr, nullptr, nullptr)};
+  int const rc{sqlite3_exec(db_, "BEGIN;", nullptr, nullptr, nullptr)};
   if (rc != SQLITE_OK) {
     throw sqlite::Exception{sqlite::errors::SQLExecutionError}
-    << "Failed to start SQLite transaction";
+      << "Failed to start SQLite transaction";
   }
 }
 
@@ -41,10 +41,10 @@ void
 cet::sqlite::Transaction::commit()
 {
   assert(db_);
-  set_to_null_when_done sentry {db_};
-  int const rc {sqlite3_exec(db_, "COMMIT;", nullptr, nullptr, nullptr)};
+  set_to_null_when_done sentry{db_};
+  int const rc{sqlite3_exec(db_, "COMMIT;", nullptr, nullptr, nullptr)};
   if (rc != SQLITE_OK) {
     throw sqlite::Exception{sqlite::errors::SQLExecutionError}
-    << "Failed to commit SQLite transaction.";
+      << "Failed to commit SQLite transaction.";
   }
 }

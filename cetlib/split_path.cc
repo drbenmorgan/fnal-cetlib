@@ -10,13 +10,10 @@
 #include "boost/algorithm/string.hpp"
 
 void
-cet::split_path(std::string const& path,
-                std::vector<std::string>& components)
+cet::split_path(std::string const& path, std::vector<std::string>& components)
 {
-  if(path.empty())
+  if (path.empty())
     components.clear();
   else
-    boost::algorithm::split(components,
-                            path,
-                            boost::algorithm::is_any_of(":"));
+    boost::algorithm::split(components, path, boost::algorithm::is_any_of(":"));
 }

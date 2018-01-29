@@ -5,14 +5,16 @@ using cet::split_path;
 using std::string;
 using std::vector;
 
-void test_empty_path()
+void
+test_empty_path()
 {
   vector<string> results;
   split_path("", results);
   assert(results.empty());
 }
 
-void test_single_entry_path()
+void
+test_single_entry_path()
 {
   vector<string> results;
   string sole_entry("ABC_D/EFG/H");
@@ -21,7 +23,8 @@ void test_single_entry_path()
   assert(results[0] == sole_entry);
 }
 
-void test_adjacent_colons()
+void
+test_adjacent_colons()
 {
   vector<string> results;
   string path("A::B");
@@ -32,7 +35,8 @@ void test_adjacent_colons()
   assert(results[2] == "B");
 }
 
-void test_leading_colon()
+void
+test_leading_colon()
 {
   vector<string> results;
   string path(":BOO");
@@ -42,7 +46,8 @@ void test_leading_colon()
   assert(results[1] == "BOO");
 }
 
-void test_trailing_colon()
+void
+test_trailing_colon()
 {
   vector<string> results;
   string path("A:");
@@ -52,7 +57,8 @@ void test_trailing_colon()
   assert(results[1].empty());
 }
 
-void test_typical_use()
+void
+test_typical_use()
 {
   vector<string> results;
   vector<string> path_elements;
@@ -62,18 +68,18 @@ void test_typical_use()
   path_elements.push_back("/p/cmake/v2_6_4/.");
   path_elements.push_back("/p/cppunit/v1_12_1/slf5.x86_64.a1/lib");
   string path = path_elements[0];
-  for (size_t i = 1; i < path_elements.size(); ++i)
-    {
-      path += ":";
-      path += path_elements[i];
-    }
+  for (size_t i = 1; i < path_elements.size(); ++i) {
+    path += ":";
+    path += path_elements[i];
+  }
 
   // Now do the test
   split_path(path, results);
   assert(results == path_elements);
 }
 
-int main()
+int
+main()
 {
   test_empty_path();
   test_single_entry_path();

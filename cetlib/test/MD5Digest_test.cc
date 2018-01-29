@@ -1,11 +1,13 @@
+#include "cetlib/MD5Digest.h"
 #include <cassert>
 #include <iostream>
-#include "cetlib/MD5Digest.h"
 
 using cet::MD5Digest;
 using cet::MD5Result;
 
-void testGivenString(std::string const& s) {
+void
+testGivenString(std::string const& s)
+{
   MD5Digest dig1(s);
   MD5Result r1 = dig1.digest();
 
@@ -15,12 +17,14 @@ void testGivenString(std::string const& s) {
   assert(r1 == r2);
 
   // The result should be valid *iff* s is non-empty.
-  assert(r1.isValid() == !s.empty() );
+  assert(r1.isValid() == !s.empty());
   assert(r1.toString().size() == 32);
   assert(r1.compactForm().size() == 16);
 }
 
-void testConversions() {
+void
+testConversions()
+{
   std::string data("aldjfakl\tsdjf34234 \najdf");
   MD5Digest dig(data);
   MD5Result r1 = dig.digest();
@@ -34,7 +38,9 @@ void testConversions() {
   assert(r1.compactForm() == r2.compactForm());
 }
 
-void testEmptyString() {
+void
+testEmptyString()
+{
   std::string e;
   testGivenString(e);
 
@@ -47,7 +53,9 @@ void testEmptyString() {
   assert(!r1.isValid());
 }
 
-int main() {
+int
+main()
+{
   MD5Digest dig1;
   dig1.append("hello");
   MD5Digest dig2("hello");

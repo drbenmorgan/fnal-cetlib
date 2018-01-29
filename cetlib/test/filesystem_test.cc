@@ -8,20 +8,18 @@
 
 #include <cstdlib>
 
-
 void
-  ensure( int which, bool claim )
+ensure(int which, bool claim)
 {
-  if( not claim )
+  if (not claim)
     std::exit(which);
 }
 
-
 int
-  main( )
+main()
 {
-  ensure( 1, ! cet::file_exists("xyxxy") );
+  ensure(1, !cet::file_exists("xyxxy"));
 
   return 0;
 
-}  // main()
+} // main()

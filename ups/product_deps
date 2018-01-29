@@ -1,5 +1,5 @@
-parent cetlib v3_01_00
-defaultqual e14
+parent cetlib v3_02_00
+defaultqual e15
 #
 incdir fq_dir include
 libdir	fq_dir lib
@@ -8,20 +8,22 @@ perllib  product_dir
 
 # define product/version pairs
 product	version
-boost		v1_64_0
-gcc		v6_3_0		e14
-sqlite		v3_16_02_00a
-cetlib_except   v1_01_03
-cetbuildtools	v5_13_01	-	only_for_build
-catch		v1_9_6		-nq-	only_for_build
+boost		v1_66_0
+sqlite		v3_20_01_00
+cetlib_except   v1_01_06
+cetbuildtools	v7_00_02	-	only_for_build
+catch		v1_11_0		-nq-	only_for_build
 end_product_list
 
 
 # Matrix of qualifiers versus dependent products
-qualifier	cetlib_except	boost		sqlite	gcc	compiler	notes
-e14:debug	e14:debug	e14:debug	-nq-	-nq-	gcc
-e14:opt		e14:opt		e14:opt		-nq-	-nq-	gcc
-e14:prof	e14:prof	e14:prof	-nq-	-nq-	gcc
+qualifier	cetlib_except	boost		sqlite	notes
+e15:debug	e15:debug	e15:debug	-nq-
+e15:opt		e15:opt		e15:opt		-nq-
+e15:prof	e15:prof	e15:prof	-nq-
+c2:debug	c2:debug	c2:debug	-nq-
+c2:opt		c2:opt		c2:opt		-nq-
+c2:prof		c2:prof		c2:prof		-nq-
 end_qualifier_list
 
 # Local Variables:

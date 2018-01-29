@@ -1,9 +1,9 @@
 #include "cetlib/replace_all.h"
 
 bool
-cet::replace_all(std::string & in,
-                 std::string const & from,
-                 std::string const & to)
+cet::replace_all(std::string& in,
+                 std::string const& from,
+                 std::string const& to)
 {
   bool result = false;
   auto const rep_length = from.size();

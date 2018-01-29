@@ -40,7 +40,8 @@
 
 using cet::crc32;
 
-static_assert(crc32{""}.digest() == 0, "Digest for CRC32 of empty string is not 0!");
+static_assert(crc32{""}.digest() == 0,
+              "Digest for CRC32 of empty string is not 0!");
 
 // ----------------------------------------------------------------------
 
@@ -55,8 +56,7 @@ crc32&
 crc32::operator<<(std::string const& mesg)
 {
   for (uchar const ch : mesg) {
-    context = crctable[(context ^ ch) & 0xFFL]
-            ^ (context >> 8);
+    context = crctable[(context ^ ch) & 0xFFL] ^ (context >> 8);
   }
   return *this;
 }

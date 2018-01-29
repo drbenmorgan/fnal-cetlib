@@ -10,14 +10,15 @@ using cet::canonical_number;
 
 namespace {
   bool
-  becomes(std::string const & input, std::string const & wanted)
+  becomes(std::string const& input, std::string const& wanted)
   {
     std::string result;
     return canonical_number(input, result) && result == wanted;
   }
 }
 
-TEST_CASE("Conversion of string representations of numbers to canonical representations.")
+TEST_CASE("Conversion of string representations of numbers to canonical "
+          "representations.")
 {
   CHECK(becomes("0", "0"));
   CHECK(becomes("+0", "0"));

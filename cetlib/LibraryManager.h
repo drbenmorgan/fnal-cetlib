@@ -17,7 +17,6 @@ namespace cet {
 
 class cet::LibraryManager {
 public:
-
   // Create a LibraryManager that searches through a search path
   // specified by search_path for dynamically loadable libraries
   // having the given lib_type. Library names are expected to be of
@@ -25,8 +24,7 @@ public:
   //      libaa_bb_cc_xyz_<lib_type>.<ext>
   // and where <ext> is provided automatically as appropriate for the
   // platform.
-  explicit LibraryManager(cet::search_path search_path,
-                          std::string lib_type);
+  explicit LibraryManager(cet::search_path search_path, std::string lib_type);
 
   explicit LibraryManager(cet::search_path search_path,
                           std::string lib_type,
@@ -34,8 +32,7 @@ public:
 
   // Use platform-dependent dynamic loader search path
   explicit LibraryManager(std::string lib_type);
-  explicit LibraryManager(std::string lib_type,
-                          std::string pattern);
+  explicit LibraryManager(std::string lib_type, std::string pattern);
 
   // The d'tor does NOT unload libraries, because that is dangerous to
   // do in C++. Use the compiler-generated destructor.
@@ -68,7 +65,8 @@ public:
                        T& sym) const;
 
   // Versions which won't throw if they can't find the symbol.
-  static struct nothrow_t {} nothrow;
+  static struct nothrow_t {
+  } nothrow;
 
   template <typename T>
   T getSymbolByLibspec(std::string const& libspec,
@@ -108,8 +106,8 @@ public:
 
   // Get pair of short and full libspecs corresponding to library full
   // path.
-  std::pair<std::string,std::string>
-  getSpecsByPath(std::string const& lib_loc) const;
+  std::pair<std::string, std::string> getSpecsByPath(
+    std::string const& lib_loc) const;
 
   // Load all libraries at once.
   void loadAllLibraries() const;
@@ -122,13 +120,20 @@ public:
   bool libraryIsLoadable(std::string const& path) const;
 
   // This manager's library type.
-  std::string libType() const { return lib_type_; }
+  std::string
+  libType() const
+  {
+    return lib_type_;
+  }
 
   // This managers library search pattern.
-  std::string patternStem() const { return pattern_stem_; }
+  std::string
+  patternStem() const
+  {
+    return pattern_stem_;
+  }
 
 private:
-
   // Internally-useful typedefs.
   using lib_loc_map_t = std::map<std::string, std::string>;
   using spec_trans_map_t = std::map<std::string, std::set<std::string>>;
@@ -150,7 +155,7 @@ private:
                          bool should_throw_on_dlsym = true) const;
 
   cet::search_path const search_path_;
-  std::string const lib_type_; // eg _plugin.
+  std::string const lib_type_;     // eg _plugin.
   std::string const pattern_stem_; // Library search pattern stem.
   // Map of library filename -> full path.
   lib_loc_map_t lib_loc_map_{};
@@ -162,61 +167,52 @@ private:
   mutable lib_ptr_map_t lib_ptr_map_{};
 };
 
-inline
-std::string
-cet::LibraryManager::
-dllExtPattern()
+inline std::string
+cet::LibraryManager::dllExtPattern()
 {
-  static std::string const dllExtPatt {"\\" + shlib_suffix()};
+  static std::string const dllExtPatt{"\\" + shlib_suffix()};
   return dllExtPatt;
 }
 
 template <typename T>
-inline
-T
-cet::LibraryManager::
-getSymbolByLibspec(std::string const& libspec,
-                   std::string const& sym_name) const
+inline T
+cet::LibraryManager::getSymbolByLibspec(std::string const& libspec,
+                                        std::string const& sym_name) const
 {
   return hard_cast<T>(getSymbolByLibspec_(libspec, sym_name));
 }
 
 template <typename T>
-inline
-void
-cet::LibraryManager::
-getSymbolByLibspec(std::string const& libspec,
-                   std::string const& sym_name,
-                   T& sym) const
+inline void
+cet::LibraryManager::getSymbolByLibspec(std::string const& libspec,
+                                        std::string const& sym_name,
+                                        T& sym) const
 {
   hard_cast<T>(getSymbolByLibspec_(libspec, sym_name), sym);
 }
 
 template <typename T>
-inline
-T
-cet::LibraryManager::
-getSymbolByPath(std::string const& lib_loc,
-                std::string const& sym_name) const
+inline T
+cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
+                                     std::string const& sym_name) const
 {
   return hard_cast<T>(getSymbolByPath_(lib_loc, sym_name));
 }
 
 template <typename T>
-inline
-void
-cet::LibraryManager::
-getSymbolByPath(std::string const& lib_loc,
-                std::string const& sym_name,
-                T& sym) const
+inline void
+cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
+                                     std::string const& sym_name,
+                                     T& sym) const
 {
   hard_cast<T>(getSymbolByPath_(lib_loc, sym_name), sym);
 }
 
 template <class OutIter>
-size_t cet::LibraryManager::getLoadableLibraries(OutIter dest) const
+size_t
+cet::LibraryManager::getLoadableLibraries(OutIter dest) const
 {
-  size_t count {};
+  size_t count{};
   for (auto const& lib_loc : lib_loc_map_) {
     *dest++ = lib_loc.second;
     ++count;
@@ -226,55 +222,48 @@ size_t cet::LibraryManager::getLoadableLibraries(OutIter dest) const
 
 // Versions which won't throw on failure to obtain symbol.
 template <typename T>
-inline
-T
-cet::LibraryManager::
-getSymbolByLibspec(std::string const& libspec,
-                   std::string const& sym_name,
-                   nothrow_t) const
+inline T
+cet::LibraryManager::getSymbolByLibspec(std::string const& libspec,
+                                        std::string const& sym_name,
+                                        nothrow_t) const
 {
   return hard_cast<T>(getSymbolByLibspec_(libspec, sym_name, false));
 }
 
 template <typename T>
-inline
-void
-cet::LibraryManager::
-getSymbolByLibspec(std::string const& libspec,
-                   std::string const& sym_name,
-                   T& sym,
-                   nothrow_t) const
+inline void
+cet::LibraryManager::getSymbolByLibspec(std::string const& libspec,
+                                        std::string const& sym_name,
+                                        T& sym,
+                                        nothrow_t) const
 {
   hard_cast<T>(getSymbolByLibspec_(libspec, sym_name, false), sym);
 }
 
 template <typename T>
-inline
-T
-cet::LibraryManager::
-getSymbolByPath(std::string const& lib_loc,
-                std::string const& sym_name,
-                nothrow_t) const
+inline T
+cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
+                                     std::string const& sym_name,
+                                     nothrow_t) const
 {
   return hard_cast<T>(getSymbolByPath_(lib_loc, sym_name, false));
 }
 
 template <typename T>
-inline
-void
-cet::LibraryManager::
-getSymbolByPath(std::string const& lib_loc,
-                std::string const& sym_name,
-                T& sym,
-                nothrow_t) const
+inline void
+cet::LibraryManager::getSymbolByPath(std::string const& lib_loc,
+                                     std::string const& sym_name,
+                                     T& sym,
+                                     nothrow_t) const
 {
   hard_cast<T>(getSymbolByPath_(lib_loc, sym_name, false), sym);
 }
 
 template <class OutIter>
-size_t cet::LibraryManager::getLoadedLibraries(OutIter dest) const
+size_t
+cet::LibraryManager::getLoadedLibraries(OutIter dest) const
 {
-  size_t count {};
+  size_t count{};
   for (auto const& lib_ptr : lib_ptr_map_) {
     *dest++ = lib_ptr.first;
     ++count;
@@ -283,9 +272,10 @@ size_t cet::LibraryManager::getLoadedLibraries(OutIter dest) const
 }
 
 template <class OutIter>
-size_t cet::LibraryManager::getValidLibspecs(OutIter dest) const
+size_t
+cet::LibraryManager::getValidLibspecs(OutIter dest) const
 {
-  size_t count {};
+  size_t count{};
   for (auto const& spec_trans : spec_trans_map_) {
     *dest++ = spec_trans.first;
     ++count;

@@ -14,14 +14,10 @@
 
 namespace cet {
 
-  bool
-    canonical_number( std::string const & value
-                    , std::string       & result
-                    );
-
+  bool canonical_number(std::string const& value, std::string& result);
 }
 
-// ======================================================================
+  // ======================================================================
 
 #endif /* cetlib_canonical_number_h */
 

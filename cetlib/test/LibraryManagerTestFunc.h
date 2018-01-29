@@ -4,7 +4,7 @@
 #include <string>
 
 namespace cettest {
-  using idString_t = std::string(*)();
+  using idString_t = std::string (*)();
 }
 
 #endif /* cetlib_test_LibraryManagerTestFunc_h */

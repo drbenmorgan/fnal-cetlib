@@ -9,17 +9,17 @@ BOOST_AUTO_TEST_SUITE(canonical_string_t)
 
 BOOST_AUTO_TEST_CASE(is_single_quoted_string_t)
 {
-  BOOST_CHECK(is_single_quoted_string("'3'")); // '3'
+  BOOST_CHECK(is_single_quoted_string("'3'"));    // '3'
   BOOST_CHECK(!is_single_quoted_string("\"3\"")); // "3"
-  BOOST_CHECK(!is_single_quoted_string("'3',")); // '3',
-  BOOST_CHECK(!is_single_quoted_string(",'3'")); // ,'3'
-  BOOST_CHECK(is_single_quoted_string("'\\\'")); // '\\\'
+  BOOST_CHECK(!is_single_quoted_string("'3',"));  // '3',
+  BOOST_CHECK(!is_single_quoted_string(",'3'"));  // ,'3'
+  BOOST_CHECK(is_single_quoted_string("'\\\'"));  // '\\\'
 }
 
 BOOST_AUTO_TEST_CASE(is_double_quoted_string_t)
 {
-  BOOST_CHECK(is_double_quoted_string("\"3\"")); // "3"
-  BOOST_CHECK(!is_double_quoted_string("'3'")); // '3'
+  BOOST_CHECK(is_double_quoted_string("\"3\""));   // "3"
+  BOOST_CHECK(!is_double_quoted_string("'3'"));    // '3'
   BOOST_CHECK(!is_double_quoted_string("\"3\",")); // "3",
   BOOST_CHECK(!is_double_quoted_string(",\"3\"")); // ,"3"
   // Controversial:
@@ -27,21 +27,23 @@ BOOST_AUTO_TEST_CASE(is_double_quoted_string_t)
 }
 
 void
-becomes(std::string const & input, std::string const & wanted)
+becomes(std::string const& input, std::string const& wanted)
 {
   std::string result;
-  BOOST_CHECK_MESSAGE(cet::canonical_string(input, result), "canonical_result returns false on input: '" << input << "'");
+  BOOST_CHECK_MESSAGE(cet::canonical_string(input, result),
+                      "canonical_result returns false on input: '" << input
+                                                                   << "'");
   BOOST_CHECK_EQUAL(result, wanted);
 }
 
 std::string
-  dquoted( std::string const & s )
+dquoted(std::string const& s)
 {
   return '"' + s + '"';
 }
 
 std::string
-  squoted( std::string const & s )
+squoted(std::string const& s)
 {
   return '\'' + s + '\'';
 }
@@ -53,8 +55,9 @@ BOOST_AUTO_TEST_CASE(canonical_string_t)
   becomes(dquoted("a"), dquoted("a"));
   {
     std::string result;
-    BOOST_CHECK_MESSAGE(!canonical_string("", result),
-                          "canonical_string() should return false on empty input.");
+    BOOST_CHECK_MESSAGE(
+      !canonical_string("", result),
+      "canonical_string() should return false on empty input.");
   }
   becomes(squoted("\n"), dquoted("\\n"));
   becomes(dquoted("\n"), dquoted("\\n"));

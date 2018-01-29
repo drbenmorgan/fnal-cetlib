@@ -2,12 +2,12 @@
 #include <cstdlib>
 #include <string>
 
-
 #include "sha1.h"
 
-#define TESTA  "abc"
-#define TESTB  "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
-#define TESTC  "\
+#define TESTA "abc"
+#define TESTB "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+#define TESTC                                                                  \
+  "\
 1 First God made heaven & earth \
 2 The earth was without form and void, and darkness was upon the face of the deep; and the Spirit of God was moving over the face of the waters. \
 3 And God said, \"Let there be light\"; and there was light. \
@@ -47,22 +47,22 @@ using cet::sha1;
 #include <sys/time.h>
 
 int
-  main( )
+main()
 {
-  typedef  sha1::digest_t  digest_t;
+  typedef sha1::digest_t digest_t;
 
   {
     timeval start, end;
     long long int start_;
     long long int end_;
 
-// =====================================
+    // =====================================
 
     gettimeofday(&start, nullptr);
 
     fhicl::SHA1 s;
     unsigned r[5];
-    for(int i=0; i<10000; ++i) {
+    for (int i = 0; i < 10000; ++i) {
       s.Reset();
       s << TESTC;
       s.Result(r);
@@ -70,19 +70,19 @@ int
 
     gettimeofday(&end, nullptr);
 
-    start_ = start.tv_sec*1000000 + start.tv_usec;
-    end_   = end.tv_sec*1000000 + end.tv_usec;
-    printf( "Reference SHA1 %gs for 10,000 SHA1 calculations\n"
-          , (end_ - start_) / 1000000.0);
+    start_ = start.tv_sec * 1000000 + start.tv_usec;
+    end_ = end.tv_sec * 1000000 + end.tv_usec;
+    printf("Reference SHA1 %gs for 10,000 SHA1 calculations\n",
+           (end_ - start_) / 1000000.0);
 
-// =====================================
+    // =====================================
 
     gettimeofday(&start, nullptr);
 
     sha1 c;
     digest_t d;
 
-    for(int i=0; i<10000; ++i) {
+    for (int i = 0; i < 10000; ++i) {
       c.reset();
       c << TESTC;
       d = c.digest();
@@ -90,15 +90,14 @@ int
 
     gettimeofday(&end, nullptr);
 
-    start_ = start.tv_sec*1000000 + start.tv_usec;
-    end_   = end.tv_sec*1000000 + end.tv_usec;
-    printf( "cet::SHA1 %gs for 10,000 SHA calcuations\n"
-          , (end_ - start_) / 1000000.0);
+    start_ = start.tv_sec * 1000000 + start.tv_usec;
+    end_ = end.tv_sec * 1000000 + end.tv_usec;
+    printf("cet::SHA1 %gs for 10,000 SHA calcuations\n",
+           (end_ - start_) / 1000000.0);
 
-// =====================================
-
+    // =====================================
   }
 
   return 0;
 
-}  // main()
+} // main()

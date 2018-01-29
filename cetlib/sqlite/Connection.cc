@@ -6,8 +6,7 @@ using namespace cet::sqlite;
 // shared across each connection.  The move c'tor/assignment operator
 // must therefore copy the shared pointer to the mutex.
 
-Connection::Connection(Connection&& c) noexcept
-  : m_{c.m_}
+Connection::Connection(Connection&& c) noexcept : m_{c.m_}
 {
   db_ = c.db_;
   c.db_ = nullptr;

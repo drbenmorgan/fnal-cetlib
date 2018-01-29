@@ -36,9 +36,12 @@ namespace cet {
   namespace sqlite {
 
     struct primary_key {
-      static std::string snippet() { return " PRIMARY KEY"; }
+      static std::string
+      snippet()
+      {
+        return " PRIMARY KEY";
+      }
     };
-
   }
 }
 

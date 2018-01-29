@@ -1,6 +1,6 @@
+#include "cetlib/sqlite/helpers.h"
 #include "cetlib/sqlite/Exception.h"
 #include "cetlib/sqlite/detail/normalize_statement.h"
-#include "cetlib/sqlite/helpers.h"
 
 #include <cassert>
 #include <cmath>
@@ -12,12 +12,13 @@ cet::sqlite::assembleNoLockURI(std::string const& filename)
   // Arbitrary decision: don't allow users to specify a URI since
   // they may (unintentionally) remove the 'nolock' parameter, thus
   // potentially causing issues with NFS.
-  if (filename.substr(0,5) == "file:") {
+  if (filename.substr(0, 5) == "file:") {
     throw Exception{errors::OtherError}
-    << "art does not allow an SQLite database filename that starts with 'file:'.\n"
-         << "Please contact artists@fnal.gov if you believe this is an error.";
+      << "art does not allow an SQLite database filename that starts with "
+         "'file:'.\n"
+      << "Please contact artists@fnal.gov if you believe this is an error.";
   }
-  return "file:"+filename+"?nolock=1";
+  return "file:" + filename + "?nolock=1";
 }
 
 //=================================================================
@@ -27,10 +28,14 @@ cet::sqlite::assembleNoLockURI(std::string const& filename)
 // throws an exception if there is a table of the given name but it
 // does not match both the given column names and column types.
 bool
-cet::sqlite::hasTableWithSchema(sqlite3* db, std::string const& name, std::string expectedSchema)
+cet::sqlite::hasTableWithSchema(sqlite3* db,
+                                std::string const& name,
+                                std::string expectedSchema)
 {
   query_result<std::string> res;
-  res << select("sql").from(db, "sqlite_master").where("type=\"table\" and name=\""s+name+'"');
+  res << select("sql")
+           .from(db, "sqlite_master")
+           .where("type=\"table\" and name=\""s + name + '"');
 
   if (res.empty()) {
     return false;
@@ -43,7 +48,7 @@ cet::sqlite::hasTableWithSchema(sqlite3* db, std::string const& name, std::strin
   // table (so as to avoid inserting then deleting a dummy row into
   // the desired table)according to the on-disk schema, and inserting
   // some default values according to the requested schema.
-  std::string retrievedSchema {unique_value(res)};
+  std::string retrievedSchema{unique_value(res)};
   detail::normalize_statement(retrievedSchema);
   detail::normalize_statement(expectedSchema);
   if (retrievedSchema == expectedSchema) {
@@ -56,23 +61,23 @@ cet::sqlite::hasTableWithSchema(sqlite3* db, std::string const& name, std::strin
     << "   Expected schema: " << expectedSchema << '\n';
 }
 
-
 void
 cet::sqlite::delete_from(sqlite3* const db, std::string const& tablename)
 {
-  exec(db, "delete from "s+tablename+';');
+  exec(db, "delete from "s + tablename + ';');
 }
 
 void
 cet::sqlite::drop_table(sqlite3* const db, std::string const& tablename)
 {
-  exec(db, "drop table "s+tablename+';');
+  exec(db, "drop table "s + tablename + ';');
 }
 
 void
-cet::sqlite::drop_table_if_exists(sqlite3* const db, std::string const& tablename)
+cet::sqlite::drop_table_if_exists(sqlite3* const db,
+                                  std::string const& tablename)
 {
-  exec(db, "drop table if exists "s+tablename+';');
+  exec(db, "drop table if exists "s + tablename + ';');
 }
 
 unsigned
