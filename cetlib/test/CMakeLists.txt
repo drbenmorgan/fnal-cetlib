@@ -1,7 +1,8 @@
 # ALT_CMAKE construct
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 # ======================================================================
 #
@@ -167,4 +168,3 @@ include(ParseAndAddCatchTests)
 set(AdditionalCatchParameters -s)
 ParseAndAddCatchTests(hypot_test)
 
-endif() # ALT_CMAKE

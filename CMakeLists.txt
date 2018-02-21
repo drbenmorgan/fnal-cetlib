@@ -1,7 +1,8 @@
 # - When user supplies "-DALT_CMAKE" use the non-CET/UPS system
 if(ALT_CMAKE)
   include(altCMakeLists.cmake)
-else()
+  return()
+endif()
 
 # ======================================================================
 #  cetlib main build file
@@ -54,7 +55,7 @@ find_ups_product(catch v1_11_0)
 
 # SQLite
 cet_find_library(SQLITE3 NAMES sqlite3_ups PATHS ENV SQLITE_LIB NO_DEFAULT_PATH)
-# find openSSL 
+# find openSSL
 # when building on macOS, use CommonCrypto
 if(NOT APPLE)
   find_package(OpenSSL REQUIRED )
@@ -74,4 +75,3 @@ include(UseCPack)
 
 #
 # ======================================================================
-endif() #ALT_CMAKE
