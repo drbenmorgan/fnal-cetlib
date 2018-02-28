@@ -1,9 +1,3 @@
-# ALT_CMAKE construct
-if(ALT_CMAKE)
-  include(altCMakeLists.cmake)
-  return()
-endif()
-
 # ======================================================================
 #
 # Testing
@@ -13,6 +7,16 @@ endif()
 include(CetTest)
 cet_enable_asserts()
 cet_test_env(CURRENT_DIR=${CMAKE_CURRENT_SOURCE_DIR})
+
+# Under alt-cmake we manage the environment to guarantee use of build-time
+# programs, libraries etc.
+if(ALT_CMAKE)
+  # Dynamic loader path for plugins
+  cet_test_env(CETD_LIBRARY_PATH=$<TARGET_FILE_DIR:cetlib>$ENV{CETD_LIBRARY_PATH})
+  # PATH for scripts that assume internal cetlib targets will be in PATH
+  # Set so we guarantee build time ones will be used.
+  cet_test_env(PATH=$<TARGET_FILE_DIR:inc-expand>:$ENV{PATH})
+endif()
 
 # Identify libraries to be linked:
 link_libraries(cetlib)
@@ -78,9 +82,15 @@ cet_test(value_ptr_test_4)
 cet_test(value_ptr_test_5)
 cet_test(zero_init_test USE_BOOST_UNIT)
 
+if(ALT_CMAKE)
+  # Use of cet_make_library is overkill here
+  add_library(cetlib_test_fakePlugin SHARED moduleType.cc)
+  add_library(cetlib_test_TestPluginBase SHARED TestPluginBase.cc)
+else()
 cet_make_library(LIBRARY_NAME cetlib_test_fakePlugin SOURCE moduleType.cc NO_INSTALL)
 
 cet_make_library(LIBRARY_NAME cetlib_test_TestPluginBase SOURCE TestPluginBase.cc NO_INSTALL)
+endif()
 
 include(BasicPlugin)
 basic_plugin(TestPlugin "plugin" NO_INSTALL cetlib_test_TestPluginBase)
@@ -163,7 +173,13 @@ cet_test(crc32_test USE_CATCH_MAIN SOURCES crc32_test.cc CRC32Calculator.cc TEST
 
 # Use ParseAndAddCatchTests to generate a test for each test case.
 cet_test(hypot_test USE_CATCH_MAIN NO_AUTO)
+
+if(ALT_CMAKE)
+  # cetbuildtools2 manages Catch for us
+else()
 list(APPEND CMAKE_MODULE_PATH $ENV{CATCH_DIR}/share/cmake/catch)
+endif()
+
 include(ParseAndAddCatchTests)
 set(AdditionalCatchParameters -s)
 ParseAndAddCatchTests(hypot_test)
