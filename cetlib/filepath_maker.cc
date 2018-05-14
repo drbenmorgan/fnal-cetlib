@@ -26,9 +26,7 @@ filepath_maker::operator()(std::string const& filename)
 
 // ----------------------------------------------------------------------
 
-filepath_lookup::filepath_lookup(std::string paths)
-  : paths{move(paths)}
-{}
+filepath_lookup::filepath_lookup(std::string paths) : paths{move(paths)} {}
 
 std::string
 filepath_lookup::operator()(std::string const& filename)
@@ -69,21 +67,21 @@ filepath_lookup_after1::reset()
 
 // ----------------------------------------------------------------------
 
-filepath_first_absolute_or_lookup_with_dot::filepath_first_absolute_or_lookup_with_dot(
-  std::string const& paths)
+filepath_first_absolute_or_lookup_with_dot::
+  filepath_first_absolute_or_lookup_with_dot(std::string const& paths)
   : first_paths{std::string("./:") + paths}, after_paths{paths + ':'}
 {
   if (after_paths.empty()) {
-    std::cerr
-      << "search path empty (nonexistent environment variable"
-      << (paths.empty() ? "" : std::string(" ") + paths) << ")?\n"
-      << "Any included configurations will not be found by this lookup "
-         "policy.\n";
+    std::cerr << "search path empty (nonexistent environment variable"
+              << (paths.empty() ? "" : std::string(" ") + paths) << ")?\n"
+              << "Any included configurations will not be found by this lookup "
+                 "policy.\n";
   }
 }
 
 std::string
-filepath_first_absolute_or_lookup_with_dot::operator()(std::string const& filename)
+filepath_first_absolute_or_lookup_with_dot::operator()(
+  std::string const& filename)
 {
   if (first) {
     first = false;
@@ -100,6 +98,5 @@ filepath_first_absolute_or_lookup_with_dot::reset()
 {
   first = true;
 }
-
 
 // ======================================================================

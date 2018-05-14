@@ -23,24 +23,25 @@ namespace {
   std::string const path{"FILEPATH_MAKER_TEST_FILES"};
   std::string const file_in_current_dir{"filepath_maker_test.txt"};
 
-  inline std::string current_dir()
+  inline std::string
+  current_dir()
   {
     return cet::getenv("CURRENT_DIR");
   }
 
-  inline std::string current_nested_dir()
+  inline std::string
+  current_nested_dir()
   {
     return current_dir() + "/filepath_maker-files";
   }
 
-  void check_exception(cet::filepath_maker& maker,
-                       std::string const& filepath)
+  void
+  check_exception(cet::filepath_maker& maker, std::string const& filepath)
   {
-    BOOST_CHECK_EXCEPTION(maker(filepath),
-                          cet::exception,
-                          [](cet::exception const& e){
-                            return e.category() == "search_path";
-                          });
+    BOOST_CHECK_EXCEPTION(
+      maker(filepath), cet::exception, [](cet::exception const& e) {
+        return e.category() == "search_path";
+      });
   }
 }
 
@@ -50,9 +51,7 @@ BOOST_AUTO_TEST_SUITE(filepath_maker_test)
 BOOST_AUTO_TEST_CASE(filepath_maker_t)
 {
   cet::filepath_maker maker{};
-  auto const files = {"a.txt",
-                      "./b.txt",
-                      "/c/d.txt"};
+  auto const files = {"a.txt", "./b.txt", "/c/d.txt"};
   for (auto const& filename : files) {
     BOOST_CHECK_EQUAL(filename, maker(filename));
   }
@@ -67,8 +66,8 @@ BOOST_AUTO_TEST_CASE(filepath_lookup_t1)
     auto const fullPath1 = maker(filename);
     // Adding './' or '/' makes no difference when everything is
     // looked up relative to the specified paths.
-    auto const fullPath2 = maker("./"+filename);
-    auto const fullPath3 = maker("/"+filename);
+    auto const fullPath2 = maker("./" + filename);
+    auto const fullPath3 = maker("/" + filename);
     bfs::path const p1{fullPath1};
     bfs::path const p2{fullPath2};
     bfs::path const p3{fullPath3};
@@ -166,7 +165,6 @@ BOOST_AUTO_TEST_CASE(filepath_lookup_after1_t4)
   // Absolute path not allowed for second file
   check_exception(maker, current_nested_dir() + "/a.txt");
 }
-
 
 BOOST_AUTO_TEST_CASE(filepath_first_absolute_or_lookup_with_dot_t1)
 {

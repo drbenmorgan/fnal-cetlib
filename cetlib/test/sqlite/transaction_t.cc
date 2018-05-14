@@ -16,7 +16,7 @@ using namespace std;
 namespace {
 
   vector<array<string, 2u>> const names{{{"Cindy", "Miller"}},
-    {{"Billy", "Baker"}}};
+                                        {{"Billy", "Baker"}}};
 
   void
   check_table_contents(Connection& c, string const& table_name)

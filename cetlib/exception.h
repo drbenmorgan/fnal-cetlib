@@ -1,9 +1,1 @@
-#ifndef cetlib_exception_h
-#define cetlib_exception_h
-
-#include "cetlib_except/exception.h"
-
-// Local variables
-// mode: c++
-// End:
-#endif /* cetlib_exception_h */
+#error "cetlib/exception.h is now located at cetlib_except/exception.h."

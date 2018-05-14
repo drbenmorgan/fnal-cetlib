@@ -1,7 +1,8 @@
 #define BOOST_TEST_MODULE (map_vector test)
-
-#include "cetlib/map_vector.h"
 #include "cetlib/quiet_unit_test.hpp"
+
+#include "cetlib/container_algorithms.h"
+#include "cetlib/map_vector.h"
 #include <boost/test/output_test_stream.hpp>
 #include <iostream>
 #include <string>
@@ -79,7 +80,7 @@ BOOST_AUTO_TEST_CASE(emptymap_test)
 
 BOOST_AUTO_TEST_CASE(nonemptymap_test)
 {
-  typedef int value_t;
+  using value_t = int;
   map_vector<value_t> m;
   std::size_t sz(0);
 
@@ -136,25 +137,43 @@ BOOST_AUTO_TEST_CASE(nonemptymap_test)
   }
 
   {
-    map_vector<value_t> m2(m);
+    // Test that insertion works
+    auto m2 = m;
     BOOST_CHECK(m2.size() == sz);
 
-    m2.insert(m.begin(), m.end());
-    BOOST_CHECK(m2.size() == 2 * sz);
-    map_vector<value_t>::const_iterator b = m.begin();
-    for (const auto& entry : m2) {
-      if (b == m.end())
-        b = m.begin();
-      BOOST_CHECK(b->second == entry.second);
-      ++b;
-    }
-    int d = m.delta();
-    for (map_vector<value_t>::const_iterator b1 = m2.begin(),
-                                             b2 = b1 + sz,
-                                             e = m2.end();
-         b2 != e;
-         ++b1, ++b2) {
-      BOOST_CHECK_EQUAL(b1->first.asInt() + d, b2->first.asInt());
+    auto result = m2.insert({map_vector_key{4}, value_t{14}});
+    BOOST_CHECK(result.second);
+  }
+
+  {
+    // Insertion should fail for already-existing keys, and the
+    // iterator to the existing element should be returned.
+    auto m2 = m;
+    BOOST_CHECK(m2.size() == sz);
+
+    auto result = m2.insert({map_vector_key{2}, value_t{13}});
+    BOOST_CHECK(!result.second);
+    BOOST_CHECK_EQUAL(result.first->second, 12);
+  }
+
+  {
+    auto m2 = m, m3 = m;
+    BOOST_CHECK(m2.size() == m.size());
+
+    // Now change the mapped values
+    cet::for_all(m2, [](auto& pr) { pr.second = pr.second + 2; });
+
+    // Attempt to insert all elements, even though they have the same
+    // keys as in m3.
+    m3.insert(m2.begin(), m2.end());
+
+    // Verify that the inserts were not successful (that the values of
+    // m3 have not changed).
+    auto b = m.begin(), b2 = m3.begin();
+    auto e = m.end();
+    for (; b != e; ++b, ++b2) {
+      BOOST_CHECK(b->second == b2->second);
+      BOOST_CHECK_EQUAL(b->first.asInt(), b2->first.asInt());
     }
   }
 }

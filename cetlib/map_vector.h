@@ -2,11 +2,9 @@
 #define cetlib_map_vector_h
 
 // ======================================================================
-//
 // map_vector: A map mimicking a sparse vector interface
 //
 // Integer subscripting is unsupported and yields a compilation failure.
-//
 // ======================================================================
 
 #include "cetlib_except/exception.h"
@@ -18,12 +16,12 @@
 namespace cet {
   class map_vector_key;
 
-  bool operator==(map_vector_key const&, map_vector_key const&);
-  bool operator!=(map_vector_key const&, map_vector_key const&);
-  bool operator<(map_vector_key const&, map_vector_key const&);
-  bool operator>(map_vector_key const&, map_vector_key const&);
-  bool operator<=(map_vector_key const&, map_vector_key const&);
-  bool operator>=(map_vector_key const&, map_vector_key const&);
+  bool operator==(map_vector_key const&, map_vector_key const&) noexcept;
+  bool operator!=(map_vector_key const&, map_vector_key const&) noexcept;
+  bool operator<(map_vector_key const&, map_vector_key const&) noexcept;
+  bool operator>(map_vector_key const&, map_vector_key const&) noexcept;
+  bool operator<=(map_vector_key const&, map_vector_key const&) noexcept;
+  bool operator>=(map_vector_key const&, map_vector_key const&) noexcept;
 
   std::ostream& operator<<(std::ostream&, map_vector_key const&);
 
@@ -36,21 +34,19 @@ namespace cet {
 class cet::map_vector_key {
 public:
   // c'tors:
-  map_vector_key() : key_(-1l) {}
+  constexpr map_vector_key() noexcept : key_(-1l) {}
   explicit map_vector_key(int key);
-  explicit map_vector_key(unsigned key) : key_(key) {}
-  explicit map_vector_key(unsigned long key);
-
-  // use compiler-generated copy c'tor, copy assignment, and d'tor
+  constexpr explicit map_vector_key(unsigned const key) noexcept : key_{key} {}
+  constexpr explicit map_vector_key(unsigned long key) noexcept;
 
   // observers:
   unsigned long
-  asInt() const
+  asInt() const noexcept
   {
     return key_;
   }
   unsigned long
-  asUint() const
+  asUint() const noexcept
   {
     return key_;
   }
@@ -69,7 +65,9 @@ inline cet::map_vector_key::map_vector_key(int key) : key_(key)
   }
 }
 
-inline cet::map_vector_key::map_vector_key(unsigned long key) : key_(key) {}
+constexpr cet::map_vector_key::map_vector_key(unsigned long const key) noexcept
+  : key_{key}
+{}
 
 inline void
 cet::map_vector_key::ensure_valid() const
@@ -106,10 +104,10 @@ public:
   using const_reference = typename allocator_type::const_reference;
 
   // c'tors:
-  map_vector() : v_() {}
+  map_vector() = default;
 
   template <class InIter>
-  map_vector(InIter b, InIter e) : v_()
+  map_vector(InIter const b, InIter const e)
   {
     insert(b, e);
   }
@@ -118,28 +116,28 @@ public:
 
   // properties:
   bool
-  empty() const
+  empty() const noexcept
   {
     return v_.empty();
   }
   size_type
-  size() const
+  size() const noexcept
   {
     return v_.size();
   }
   size_type
-  max_size() const
+  max_size() const noexcept
   {
     return v_.max_size();
   }
   size_type
-  capacity() const
+  capacity() const noexcept
   {
     return v_.capacity();
   }
 
   allocator_type
-  get_allocator() const
+  get_allocator() const noexcept
   {
     return v_.get_allocator();
   }
@@ -148,6 +146,8 @@ public:
   value_type const& front() const;
   value_type const& back() const;
 
+  // To be used in case map_vectors must be concatenated, and not
+  // merged.
   size_t
   delta() const
   {
@@ -158,6 +158,7 @@ public:
 
   iterator find(key_type key);
   const_iterator find(key_type key) const;
+  const_iterator findOrThrow(key_type key) const;
 
   mapped_type* getOrNull(key_type key);
   mapped_type const* getOrNull(key_type key) const;
@@ -175,56 +176,56 @@ public:
 
   // iterators:
   iterator
-  begin()
+  begin() noexcept
   {
     return v_.begin();
   }
   const_iterator
-  begin() const
+  begin() const noexcept
   {
     return v_.begin();
   }
 
   iterator
-  end()
+  end() noexcept
   {
     return v_.end();
   }
   const_iterator
-  end() const
+  end() const noexcept
   {
     return v_.end();
   }
 
   reverse_iterator
-  rbegin()
+  rbegin() noexcept
   {
     return v_.rbegin();
   }
   const_reverse_iterator
-  rbegin() const
+  rbegin() const noexcept
   {
     return v_.rbegin();
   }
 
   reverse_iterator
-  rend()
+  rend() noexcept
   {
     return v_.rend();
   }
   const_reverse_iterator
-  rend() const
+  rend() const noexcept
   {
     return v_.rend();
   }
 
   const_iterator
-  cbegin() const
+  cbegin() const noexcept
   {
     return v_.cbegin();
   }
   const_iterator
-  cend() const
+  cend() const noexcept
   {
     return v_.cend();
   }
@@ -234,20 +235,20 @@ public:
     return v_.crbegin();
   }
   const_reverse_iterator
-  crend() const
+  crend() const noexcept
   {
     return v_.crend();
   }
 
   // mutators:
   void
-  clear()
+  clear() noexcept
   {
     v_.clear();
   }
 
   void
-  reserve(size_type n)
+  reserve(size_type const n)
   {
     v_.reserve(n);
   }
@@ -258,7 +259,7 @@ public:
     v_.swap(other.v_);
   }
 
-  void push_back(value_type const& x);
+  std::pair<iterator, bool> insert(value_type const& x);
 
   template <class InIter>
   void insert(InIter b, InIter e);
@@ -271,11 +272,12 @@ public:
   }
 
 private:
-  impl_type v_;
+  impl_type v_{};
 
   bool class_invariant() const;
 
-  static bool lt(value_type const&, value_type const&);
+  static bool lt(value_type const&, value_type const&) noexcept;
+  static bool eq(value_type const&, value_type const&) noexcept;
 
 }; // map_vector<>
 
@@ -286,37 +288,37 @@ private:
 // comparisons:
 
 inline bool
-cet::operator==(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator==(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() == k2.asInt();
 }
 
 inline bool
-cet::operator!=(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator!=(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() != k2.asInt();
 }
 
 inline bool
-cet::operator<(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator<(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() < k2.asInt();
 }
 
 inline bool
-cet::operator>(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator>(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() > k2.asInt();
 }
 
 inline bool
-cet::operator<=(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator<=(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() <= k2.asInt();
 }
 
 inline bool
-cet::operator>=(map_vector_key const& k1, map_vector_key const& k2)
+cet::operator>=(map_vector_key const& k1, map_vector_key const& k2) noexcept
 {
   return k1.asInt() >= k2.asInt();
 }
@@ -356,63 +358,69 @@ cet::map_vector<Value>::back() const
 
 template <class Value>
 bool
-cet::map_vector<Value>::has(key_type key) const
+cet::map_vector<Value>::has(key_type const key) const
 {
-  value_type v{key, mapped_type()};
+  value_type const v{key, mapped_type{}};
   return std::binary_search(v_.begin(), v_.end(), v, lt);
 }
 
 template <class Value>
 typename cet::map_vector<Value>::iterator
-cet::map_vector<Value>::find(key_type key)
+cet::map_vector<Value>::find(key_type const key)
 {
-  value_type v{key, mapped_type()};
-
-  iterator const begin = v_.begin(), end = v_.end();
-
-  iterator it = std::lower_bound(begin, end, v, lt);
+  value_type const v{key, mapped_type{}};
+  auto const begin = v_.begin(), end = v_.end();
+  auto it = std::lower_bound(begin, end, v, lt);
   if (it != end && it->first != key)
     it = end;
-
   return it;
 }
 
 template <class Value>
 typename cet::map_vector<Value>::const_iterator
-cet::map_vector<Value>::find(key_type key) const
+cet::map_vector<Value>::find(key_type const key) const
 {
-  value_type v{key, mapped_type()};
-
-  const_iterator const begin = v_.begin(), end = v_.end();
-
-  const_iterator it = std::lower_bound(begin, end, v, lt);
+  value_type const v{key, mapped_type{}};
+  auto const begin = v_.cbegin(), end = v_.cend();
+  auto it = std::lower_bound(begin, end, v, lt);
   if (it != end && it->first != key)
     it = end;
-
   return it;
 }
 
 template <class Value>
-Value*
-cet::map_vector<Value>::getOrNull(key_type key)
+typename cet::map_vector<Value>::const_iterator
+cet::map_vector<Value>::findOrThrow(key_type const key) const
 {
-  iterator it = find(key);
+  auto p = find(key);
+  if (p == v_.cend())
+    throw cet::exception("map_vector::getOrThrow")
+      << "out of range (no such key): " << key.asInt() << std::endl;
+
+  return p;
+}
+
+template <class Value>
+Value*
+cet::map_vector<Value>::getOrNull(key_type const key)
+{
+  auto it = find(key);
   return it == v_.end() ? nullptr : &it->second;
 }
 
 template <class Value>
 Value const*
-cet::map_vector<Value>::getOrNull(key_type key) const
+cet::map_vector<Value>::getOrNull(key_type const key) const
 {
-  const_iterator it = find(key);
-  return it == v_.end() ? nullptr : &it->second;
+  auto it = find(key);
+  return it == v_.cend() ? nullptr : &it->second;
 }
 
 template <class Value>
 Value&
-cet::map_vector<Value>::getOrThrow(key_type key)
+cet::map_vector<Value>::getOrThrow(key_type const key)
 {
-  Value* p = getOrNull(key);
+  auto* p = getOrNull(key);
   if (p == nullptr)
     throw cet::exception("map_vector::getOrThrow")
       << "out of range (no such key): " << key.asInt() << std::endl;
@@ -422,9 +430,9 @@ cet::map_vector<Value>::getOrThrow(key_type key)
 
 template <class Value>
 Value const&
-cet::map_vector<Value>::getOrThrow(key_type key) const
+cet::map_vector<Value>::getOrThrow(key_type const key) const
 {
-  Value const* p = getOrNull(key);
+  auto const* p = getOrNull(key);
   if (p == nullptr)
     throw cet::exception("map_vector::getOrThrow")
       << "out of range (no such key): " << key.asInt() << std::endl;
@@ -433,16 +441,13 @@ cet::map_vector<Value>::getOrThrow(key_type key) const
 }
 
 template <class Value>
-Value& cet::map_vector<Value>::operator[](key_type key)
+Value& cet::map_vector<Value>::operator[](key_type const key)
 {
-  value_type v{key, mapped_type()};
-
-  iterator const begin = v_.begin(), end = v_.end();
-
-  iterator it = std::lower_bound(begin, end, v, lt);
+  value_type const v{key, mapped_type{}};
+  auto const begin = v_.begin(), end = v_.end();
+  auto it = std::lower_bound(begin, end, v, lt);
   if (it == end || it->first != key)
-    it = v_.insert(it, v);
-
+    it = v_.insert(it, std::move(v));
   return it->second;
 }
 
@@ -450,23 +455,28 @@ Value& cet::map_vector<Value>::operator[](key_type key)
 // mutators:
 
 template <class Value>
-void
-cet::map_vector<Value>::push_back(value_type const& x)
+std::pair<typename cet::map_vector<Value>::iterator, bool>
+cet::map_vector<Value>::insert(value_type const& v)
 {
-  x.first.ensure_valid();
-  v_.emplace_back(map_vector_key{x.first.asInt() + delta()}, x.second);
+  v.first.ensure_valid();
+  auto const begin = v_.begin(), end = v_.end();
+  auto it = std::lower_bound(begin, end, v, lt);
+  if (it == end || it->first != v.first)
+    return std::make_pair(v_.insert(it, v), true);
+  return std::make_pair(it, false);
 }
 
 template <class Value>
 template <class InIter>
 void
-cet::map_vector<Value>::insert(InIter b, InIter e)
+cet::map_vector<Value>::insert(InIter const b, InIter const e)
 {
-  size_t d = delta();
-  for (; b != e; ++b) {
-    b->first.ensure_valid();
-    v_.emplace_back(map_vector_key{b->first.asInt() + d}, b->second);
-  }
+  std::for_each(b, e, [](auto const& pr) { return pr.first.ensure_valid(); });
+  impl_type result;
+  std::merge(v_.cbegin(), v_.cend(), b, e, back_inserter(result), lt);
+  auto new_end = std::unique(result.begin(), result.end(), eq);
+  result.erase(new_end, result.end());
+  v_.swap(result);
 }
 
 // ----------------------------------------------------------------------
@@ -483,9 +493,16 @@ cet::map_vector<Value>::class_invariant() const
 
 template <class Value>
 bool
-cet::map_vector<Value>::lt(value_type const& v1, value_type const& v2)
+cet::map_vector<Value>::lt(value_type const& v1, value_type const& v2) noexcept
 {
   return v1.first < v2.first;
+}
+
+template <class Value>
+bool
+cet::map_vector<Value>::eq(value_type const& v1, value_type const& v2) noexcept
+{
+  return v1.first == v2.first;
 }
 
 // ======================================================================

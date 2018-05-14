@@ -33,11 +33,10 @@ namespace cet {
 
     template <typename... Args> // Could arguably go in detail namespace due to
                                 // obscurity of permissive_column.
-                                void createTableIfNeeded(
-                                  sqlite3* db,
-                                  bool const delete_contents,
-                                  std::string const& tablename,
-                                  permissive_column<Args> const&... cols);
+    void createTableIfNeeded(sqlite3* db,
+                             bool const delete_contents,
+                             std::string const& tablename,
+                             permissive_column<Args> const&... cols);
 
   } // namespace sqlite
 } // namespace cet
