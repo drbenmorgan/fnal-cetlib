@@ -1,6 +1,6 @@
 # - Toplevel CMake script for fnal::cetlib
 cmake_minimum_required(VERSION 3.3)
-project(cetlib VERSION 3.2.0)
+project(cetlib VERSION 3.3.0)
 
 # - Cetbuildtools, version2
 find_package(cetbuildtools2 0.4.0 REQUIRED)
@@ -11,7 +11,7 @@ include(CetCMakeSettings)
 include(CetCompilerSettings)
 
 # Exceptions/demangling moved to lower cetlib_except package
-find_package(cetlib_except 1.1.0 REQUIRED)
+find_package(cetlib_except 1.2.0 REQUIRED)
 
 # Need Boost for
 # - Filesystem

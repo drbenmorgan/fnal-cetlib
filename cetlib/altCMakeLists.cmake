@@ -90,7 +90,6 @@ set(cetlib_SOURCES
   test_macros.h
   trim.h
   value_ptr.h
-  zero_init.h
   # Detail
   detail/ostream_handle_impl.h
   detail/wrapLibraryManagerException.cc
@@ -158,10 +157,13 @@ endif()
 add_executable(inc-expand inc-expand.cc)
 target_link_libraries(inc-expand cetlib)
 
+add_executable(get-loadable-libraries get-loadable-libraries.cc)
+target_link_libraries(get-loadable-libraries cetlib)
+
 #-----------------------------------------------------------------------
 # Install
 #
-install(TARGETS cetlib inc-expand
+install(TARGETS cetlib inc-expand get-loadable-libraries
   EXPORT ${PROJECT_NAME}Targets
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
